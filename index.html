@@ -1,5 +1,65 @@
 <!DOCTYPE html>
 <html lang="ja">
+
+<lang-switch>
+<div class="lang-switch-container">
+    <button onclick="switchLanguage('ja')" id="btn-ja" class="lang-btn active">JP</button>
+    <span class="lang-divider">|</span>
+    <button onclick="switchLanguage('en')" id="btn-en" class="lang-btn">EN</button>
+</div>
+
+<style>
+  /* 言語切り替えタブ */
+.lang-switch-container {
+    text-align: 0%;
+    padding: 15px 0;
+    background-color: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(5px);
+    width: 100%;
+}
+.lang-btn {
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    color: #888;
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: color 0.3s;
+}
+/* 選択されている側の言語を黒く目立たせる */
+.lang-btn.active {
+    color: #222;
+}
+.lang-divider {
+    color: #ccc;
+    font-size: 12px;
+}
+</style>  
+
+<body>
+    <script>
+function switchLanguage(lang) {
+    // 1. ボタンの見た目（アクティブ状態）を切り替える
+    document.getElementById('btn-ja').classList.remove('active');
+    document.getElementById('btn-en').classList.remove('active');
+    document.getElementById('btn-' + lang).classList.add('active');
+
+    // 2. ページ内の「data-ja」「data-en」属性を持っている要素をすべて探す
+    const elements = document.querySelectorAll('[data-ja]');
+    
+    // 3. 選択された言語のテキストにその場で書き換える
+    elements.forEach(el => {
+        if (lang === 'ja') {
+            el.innerHTML = el.getAttribute('data-ja');
+        } else if (lang === 'en') {
+            el.innerHTML = el.getAttribute('data-en');
+        }
+    });
+}
+</script>
+</body>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,17 +80,6 @@
             background-position: center;
             background-attachment: fixed; /* スクロールしても動かない */
         }
-
-        /* 🌐 Google言語切り替えタブ（最上部に綺麗に配置） */
-        #google_translate_element {
-            text-align: center;
-            padding: 15px 0;
-            background-color: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(5px); /* 背景をほんのりぼかすトレンドデザイン */
-            width: 100%;
-        }
-        .goog-te-banner-frame.skiptranslate { display: none !important; }
-        body { top: 0px !important; }
 
         /* 2. 中央のコンテンツコンテナ（共通） */
         .container {
@@ -60,7 +109,7 @@
         }
 
         /* ---------------------------------------------
-         * 🏰 各セクション固有の背景・透過率設定（ここだけ分ければOK！）
+         * 各セクション固有の背景・透過率設定
          * --------------------------------------------- */
         
         /* セクション1: プロフィール (Disney背景) */
@@ -161,25 +210,28 @@
             font-weight: normal;
             margin-top: 4px;
         }
+
     </style>
 </head>
 <body>
-
-    <!-- 🌐 翻訳タブ -->
-    <div id="google_translate_element"></div>
 
     <!-- 🏰 セクション1：プロフィールエリア -->
     <div class="section sec-profile">
         <div class="container">
             <img src="images/clarice.wmc.shdl.001.JPG" alt="profile icon" class="profile-icon">
             <h1 class="profile-name">Yu</h1>
-            <div class="profile-tag">ハッピーオタクライフ</div>
-            <div class="profile-bio">
-                Disneyが大好きなYuのオタクライフを詰め込んだページです。不定期更新中。<br>
-                同じ好きを通してたくさんのシェアハピを目指してます。<br><br>
-                📍 Pin Trading & Collector<br>
-                🏰 Past AP : TDR HKDL DLP<br>
-                ✨ Now AP : SHDL Diamond
+            <div class="profile-tag" data-ja="ハッピーオタクライフ" data-en="My happy life">ハッピーオタクライフ</div>
+            <div class="profile-bio"
+             data-ja="Disneyが大好きなYuのオタクライフを詰め込んだページです。不定期更新中。<br>
+             同じ好きを通してたくさんのシェアハピを目指してます。<br>
+             Pin Trading & Collector<br>
+             Now AP : SHDL Diamond<br> 
+             Past AP : TDR HKDL DLP"
+
+             data-en="This page is filled with Yu's Disney otaku life. Frequently updated.<br>
+             Pin Trading & Collector<br>
+             Now AP : SHDL Diamond<br> 
+             Past AP : TDR HKDL DLP">
             </div>
         </div>
     </div>
@@ -223,27 +275,5 @@
             </div>
         </div>
     </div>
-
-    <!-- Google翻訳スクリプト -->
-    <script type="text/javascript">
-    function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-            pageLanguage: 'ja',
-            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-            autoDisplay: true
-        }, 'google_translate_element');
-    }
-    </script>
-    <script type="text/javascript">
-    function googleTranslateElementInit() {
-      new google.translate.TranslateElement({
-        pageLanguage: 'ja',
-        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-        autoDisplay: true
-      }, 'google_translate_element');
-   }
-    </script>
-    <script type="text/javascript" src="https://google.com"></script>
-
 </body>
 </html>
