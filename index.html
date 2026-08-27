@@ -1,3 +1,122 @@
-#Yu's_DLife!
-<<<<<<< HEAD
-#個人活動用webサイトの作成
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yu's DLife</title>
+    
+    <style>
+        /* 1. 全体のデザイン（背景画像の設定など） */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: #333;
+            min-height: 100vh;
+            
+            /* ⭐ 背景画像の固定設定（規約に触れないフリー素材画像や自分の写真のURLを指定してください） */
+            background-image: url('images/back.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* スクロールしても背景が動かない設定 */
+        }
+
+        /* 2. プロフィール全体を囲う中央の透明なコンテナ */
+        .container {
+            max-width: 580px; /* スマホやPCで見た時にちょうどいい横幅 */
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* 3. まん丸のプロフィール画像 */
+        .profile-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%; /* 正方形を綺麗な丸にする魔法のプロパティ */
+            object-fit: cover;
+            border: 3px solid #fff; /* 白いフチをつけて引き締める */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* 4. お名前やテキスト */
+        .profile-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 15px 0 5px 0;
+        }
+        .profile-tag {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .profile-bio {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            background-color: rgba(255, 255, 255, 0.7); /* 文字の背景を少し白くして読みやすく */
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        /* 5. lit.link風の縦並びリンクボタン */
+        .link-button {
+            display: block;
+            background-color: rgba(255, 255, 255, 0.95); /* ボタンの背景色（白） */
+            color: #333;
+            text-decoration: none; /* 下線を消す */
+            padding: 16px;
+            margin-bottom: 15px;
+            border-radius: 16px; /* 角を丸くして可愛い印象に */
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease; /* マウスを載せた時の滑らかな動き */
+        }
+        /* ボタンにマウスを載せた（スマホでタップした）ときの動き */
+        .link-button:hover {
+            transform: translateY(-2px); /* 少し上に浮き上がる */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+        
+        .link-sub {
+            display: block;
+            font-size: 12px;
+            color: #888;
+            font-weight: normal;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- プロフィールエリア -->
+        <img src="images/clarice.wmc.shdl.001.JPG" alt="profile icon" class="profile-icon">
+        <h1 class="profile-name">Yu</h1>
+        <div class="profile-tag">YuのDLife!</div>
+        <p class="profile-bio">
+            Disneyが大好きなYuのオタクライフを詰め込んだページです。不定期更新中。
+         <br>同じ好きを通してたくさんのシェアハピを目指してます。
+        </p>
+
+        <!-- リンク一覧エリア（lit.linkと同じ配置！） -->
+        <a href="https://note.com/divaclarice321" target="_blank" rel="noopener noreferrer" class="link-button">
+            ブログ
+            <span class="link-sub">言語化してる</span>
+        </a>
+
+        <a href="https://filmarks.com/users/DivaClarice321" target="_blank" rel="noopener noreferrer" class="link-button">
+            Filmarks
+            <span class="link-sub">映画レビュー</span>
+        </a>
+        
+        <a href="https://divaclarice321.hatenablog.jp/" target="_blank" rel="noopener noreferrer" class="link-button">
+            旅行系記事
+            <span class="link-sub">Yuのこれって何？</span>
+        </a>
+    </div>
+
+</body>
+</html>
