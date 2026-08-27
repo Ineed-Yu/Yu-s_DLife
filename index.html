@@ -84,6 +84,22 @@
 
 <body>
 
+    <!-- 🌐 言語切り替えタブを表示する場所 -->
+<div id="google_translate_element"></div>
+
+<!-- Google翻訳の機能を読み込むスクリプト -->
+<script type="text/javascript">
+function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+        pageLanguage: 'ja', // 元のサイトの言語（日本語）
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE, // シンプルなタブ形式
+        autoDisplay: true // ユーザーの言語に合わせて自動翻訳を促す
+    }, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="//://google.com"></script>
+
+
     <!-- セクション1：プロフィール -->
     <div class="section-profile">
         <div class="container">
@@ -102,7 +118,9 @@
 
     <!-- セクション2：ブログ -->
     <div class="section-blog">
-        <div class="container">
+      <div class="container">
+        <div class="link-wrapper">
+
             <a href="https://note.com/divaclarice321" target="_blank" rel="noopener noreferrer" class="link-button">
                 note
                 <span class="link-sub">言語化してる</span>
@@ -118,10 +136,12 @@
                 <span class="link-sub">Yuのこれって何？</span>
             </a>
         </div>
+     </div>
 
     <!-- セクション3：SNS -->
     <div class="section-sns">
         <div class="container">
+            <div class="link-wrapper">
             <a href="https://x.com/DivaClarice321" target="_blank" rel="noopener noreferrer" class="link-button">
                 Twitter
                 <span class="link-sub">つぶやき</span>
@@ -136,6 +156,7 @@
                 YouTube
                 <span class="link-sub">動画</span>
             </a>
+            </div>
         </div>
     </div>
 
@@ -143,6 +164,22 @@
 </html>
 
     <style>
+
+        /* 🌐 言語切り替えタブの見た目調整 */
+#google_translate_element {
+    text-align: center;
+    margin: 20px 0;
+    z-index: 10;
+    position: relative;
+}
+/* Googleのバーが上に出てきてデザインが崩れるのを防ぐおまじない */
+.goog-te-banner-frame.skiptranslate {
+    display: none !important;
+}
+body {
+    top: 0px !important;
+}
+
         /* ---------------------------------------------
          * ⭐【重要】背景画像を透過させて配置する共通設定
          * --------------------------------------------- */
@@ -164,27 +201,27 @@
         }
 
         /* ---------------------------------------------
-         * プロフィールエリア
+         * プロフィールセクション
          * --------------------------------------------- */
         .section-profile::before {
             background-image: url("images/back.JPG"); /*プロフィール用画像 */
-            opacity: 0.4; /* ⭐ 透明度（0.0〜1.0で調整。0.4は40%の濃さ＝結構薄め） */
+            opacity: 0.4;
         }
 
         /* ---------------------------------------------
-         * ブログエリア
+         * ブログセクション
          * --------------------------------------------- */
         .section-blog::before {
             background-image: url("images/clarice.shn.dlr.001.jpg"); /* ブログエリア用画像 */
-            opacity: 0.6; /* ⭐ 透明度（0.6は60%の濃さ＝少し暗め・深め） */
+            opacity: 0.6;
         }
 
         /* ---------------------------------------------
-         * snsエリア
+         * snsセクション
          * --------------------------------------------- */
         .section-sns::before {
             background-image: url("images/clarice.wmc.shdl.001.jpg"); /* SNSエリア用画像 */
-            opacity: 0.6; /* ⭐ 透明度（0.6は60%の濃さ＝少し暗め・深め） */
+            opacity: 0.6;
         }
 
 
@@ -250,6 +287,52 @@
             color: #888;
             font-weight: normal;
             margin-top: 4px;
+        }
+
+       /* ---------------------------------------------
+        * 🌟 New layout for the horizontal buttons
+        * --------------------------------------------- */
+        .link-wrapper {
+            display: flex;          /* Activates horizontal layout */
+            justify-content: center; /* Centers the buttons horizontally */
+            gap: 12px;              /* Sets spacing between buttons */
+            flex-wrap: wrap;        /* Automatically drops buttons to the next line on small screens */
+            width: 100%;
+        }
+
+       /* ---------------------------------------------
+        * 📋 Adjusted existing button styles
+        * --------------------------------------------- */
+        .link-button {
+       /* Change 'display: block;' to 'inline-block' or 'flex' so they don't take full width */
+            display: flex;
+            flex-direction: column;  /* Stack main text and sub text vertically inside the button */
+            align-items: center;     /* Center text inside the button */
+    
+       /* Responsive sizing */
+            flex: 1;                 /* Allows buttons to share the space equally */
+            min-width: 140px;        /* Prevents buttons from getting squished too narrow */
+            max-width: 180px;        /* Limits max width so they don't look stretched on PC */
+    
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #333;
+            text-decoration: none;
+            padding: 16px 8px;       /* Reduced side padding slightly for better text fitting */
+            border-radius: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+    
+       /* Remove 'margin-bottom: 15px;' since 'gap' in the wrapper handles spacing now */
+            margin-bottom: 0; 
+            box-sizing: border-box;  /* Ensures padding is included in width calculations */
+        }
+
+       /* Hover effect remains the same */
+        .link-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+                    background-color: #fff;
         }
     </style>
 </head>
