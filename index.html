@@ -2,62 +2,89 @@
 <html lang="ja">
 
 <lang-switch>
-<div class="lang-switch-container">
-    <button onclick="switchLanguage('ja')" id="btn-ja" class="lang-btn active">JP</button>
-    <span class="lang-divider">|</span>
-    <button onclick="switchLanguage('en')" id="btn-en" class="lang-btn">EN</button>
+<div class="lang-switch-wrapper">
+    <div class="lang-switch-box">
+        <button onclick="switchLanguage('ja')" id="btn-ja" class="lang-btn active">JP</button>
+        <button onclick="switchLanguage('en')" id="btn-en" class="lang-btn">EN</button>
+        <button onclick="switchLanguage('fr')" id="btn-fr" class="lang-btn">FR</button>
+        <button onclick="switchLanguage('zh')" id="btn-zh" class="lang-btn">ZH</button>
+    </div>
 </div>
 
 <style>
   /* 言語切り替えタブ */
-.lang-switch-container {
-    text-align: 0%;
-    padding: 15px 0;
-    background-color: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(5px);
+.lang-switch-wrapper {
+    display: flex;
+    justify-content: 0%;
+    padding: 20px 0;
     width: 100%;
+    position: relative;
+    z-index: 10;
 }
+
+/* 🎯 1つの枠（カプセル）のデザイン */
+.lang-switch-box {
+    display: flex;
+    background-color: rgba(255, 255, 255, 0.6); /* 背景 */
+    backdrop-filter: blur(8px);                 /* エフェクト */
+    padding: 4px;
+    border-radius: 30px;                         /* 型 */
+    border: 1px solid rgba(255, 255, 255, 0.4);   /* フチの線 */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);   /* 影 */
+}
+
+/* 枠の中の各ボタンの共通デザイン */
 .lang-btn {
     background: none;
     border: none;
-    font-size: 14px;
-    font-weight: bold;
-    color: #888;
-    cursor: pointer;
-    padding: 5px 10px;
-    transition: color 0.3s;
-}
-/* 選択されている側の言語を黒く目立たせる */
-.lang-btn.active {
-    color: #222;
-}
-.lang-divider {
-    color: #ccc;
     font-size: 12px;
+    font-weight: bold;
+    color: #777;                                 /* 選択されていない時 */
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: all 0.5s ease;                   /* 切り替えエフェクト */
+}
+
+/* 🌟 タップされて「アクティブ」になった言語ボタンのデザイン */
+.lang-btn.active {
+    background-color: #fff;                      /* 選択時 */
+    color: #222;                                 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);    /* 浮かせる */
 }
 </style>  
 
 <body>
-    <script>
+    
+<script>
 function switchLanguage(lang) {
-    // 1. ボタンの見た目（アクティブ状態）を切り替える
-    document.getElementById('btn-ja').classList.remove('active');
-    document.getElementById('btn-en').classList.remove('active');
+    // 1. 枠の中にあるすべての言語ボタン（.lang-btn）から一旦 active クラスを消す
+    const buttons = document.querySelectorAll('.lang-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+
+    // 2. タップされた言語のボタンだけに active クラスをつけて白くする
     document.getElementById('btn-' + lang).classList.add('active');
 
-    // 2. ページ内の「data-ja」「data-en」属性を持っている要素をすべて探す
+    // 3. ページ内の「data-〇〇」属性を持っている要素をすべて探す
+    // 例：data-ja を持っている要素（＝多言語化対象のテキスト）
     const elements = document.querySelectorAll('[data-ja]');
     
-    // 3. 選択された言語のテキストにその場で書き換える
+    // 4. 指定された言語のテキストを引っ張ってきて、その場で書き換える
     elements.forEach(el => {
-        if (lang === 'ja') {
+        const translatedText = el.getAttribute('data-' + lang);
+        
+        // もし将来、まだ翻訳テキストを書いていない項目（空っぽ）があっても、
+        // 画面が空白にならないように元の日本語（data-ja）を保険で表示する優しい設計
+        if (translatedText) {
+            el.innerHTML = translatedText;
+        } else {
             el.innerHTML = el.getAttribute('data-ja');
-        } else if (lang === 'en') {
-            el.innerHTML = el.getAttribute('data-en');
         }
     });
 }
 </script>
+
+
 </body>
 
 <head>
@@ -77,7 +104,7 @@ function switchLanguage(lang) {
             /* ⭐ サイト全体の固定背景（基本のベース背景） */
             background-image: url("images/back.jpg"); 
             background-size: cover;
-            background-position: center;
+            background-position: 50% 88%;
             background-attachment: fixed; /* スクロールしても動かない */
         }
 
@@ -220,7 +247,13 @@ function switchLanguage(lang) {
         <div class="container">
             <img src="images/clarice.wmc.shdl.001.JPG" alt="profile icon" class="profile-icon">
             <h1 class="profile-name">Yu</h1>
-            <div class="profile-tag" data-ja="ハッピーオタクライフ" data-en="My happy life">ハッピーオタクライフ</div>
+
+            <div class="profile-tag"
+                 data-ja="ハッピーオタクライフ"
+                 data-en="My happy life">
+                 ハッピーオタクライフ
+            </div>
+
             <div class="profile-bio"
              data-ja="Disneyが大好きなYuのオタクライフを詰め込んだページです。不定期更新中。<br>
              同じ好きを通してたくさんのシェアハピを目指してます。<br>
@@ -231,7 +264,11 @@ function switchLanguage(lang) {
              data-en="This page is filled with Yu's Disney otaku life. Frequently updated.<br>
              Pin Trading & Collector<br>
              Now AP : SHDL Diamond<br> 
-             Past AP : TDR HKDL DLP">
+             Past AP : TDR HKDL DLP"
+
+             data-fr="Cette page est remplie de la vie d'otaku Disney de Yu." 
+
+             data-zh="这是一个充满Yu的大爱迪士尼宅生活的页面。">
             </div>
         </div>
     </div>
