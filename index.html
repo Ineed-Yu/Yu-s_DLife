@@ -50,12 +50,13 @@
         /* 透過背景を作るための裏地（全セクション共通） */
         .section::before {
             content: "";
-            position: absolute;
+            position:absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             z-index: -1; /* 文字の裏側に配置 */
             background-size: cover;
             background-position: center;
-            background-attachment: fixed; /* スクロールしても背景がその場に固定されるプロパティ */
+            /* これを追加すると、ブラウザの「GPU（グラフィック専用の頭脳）」を使って動きがさらに滑らかになります */
+            will-change: transform; 
         }
 
         /* ---------------------------------------------
@@ -65,7 +66,7 @@
         /* セクション1: プロフィール (Disney背景) */
         .sec-profile::before {
             background-image: url("images/clarice.shn.dlr.001.JPG"); 
-            background-position: 50% 30%; 
+            background-position: 60% 30%; 
             opacity: 0.85;
         }
 
@@ -233,7 +234,16 @@
         }, 'google_translate_element');
     }
     </script>
-    <script type="text/javascript" src="//://google.com"></script>
+    <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'ja',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        autoDisplay: true
+      }, 'google_translate_element');
+   }
+    </script>
+    <script type="text/javascript" src="https://google.com"></script>
 
 </body>
 </html>
