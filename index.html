@@ -73,8 +73,7 @@ function switchLanguage(lang) {
     elements.forEach(el => {
         const translatedText = el.getAttribute('data-' + lang);
         
-        // もし将来、まだ翻訳テキストを書いていない項目（空っぽ）があっても、
-        // 画面が空白にならないように元の日本語（data-ja）を保険で表示する優しい設計
+        // 画面が空白にならないように元の日本語（data-ja）を表示
         if (translatedText) {
             el.innerHTML = translatedText;
         } else {
@@ -101,7 +100,7 @@ function switchLanguage(lang) {
             color: #333;
             min-height: 100vh;
             
-            /* ⭐サイト全体の固定背景（基本のベース背景） */
+            /* サイト全体の固定背景 */
             background-image: url("images/back.JPG"); 
             background-size: cover;
             background-position: 50% 88%;
@@ -162,7 +161,7 @@ function switchLanguage(lang) {
         }
 
 
-        /* 4. 各種パーツのデザイン（重複や無駄を排除） */
+        /* 4. 各種パーツのデザイン */
         .profile-icon {
             width: 100px;
             height: 100px;
@@ -170,6 +169,7 @@ function switchLanguage(lang) {
             object-fit: cover;
             border: 3px solid #fff;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            margin-top: -60px; 
         }
 
         .profile-name {
