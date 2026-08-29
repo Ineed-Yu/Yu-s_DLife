@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 
+
 <lang-switch>
 <div class="lang-switch-wrapper">
     <div class="lang-switch-box">
@@ -12,7 +13,6 @@
 </div>
 
 <style>
-  /* 言語切り替えタブ */
 .lang-switch-wrapper {
     display: flex;
     justify-content: 0%;
@@ -22,35 +22,32 @@
     z-index: 10;
 }
 
-/* 🎯 1つの枠（カプセル）のデザイン */
 .lang-switch-box {
     display: flex;
-    background-color: rgba(255, 255, 255, 0.6); /* 背景 */
-    backdrop-filter: blur(8px);                 /* エフェクト */
+    background-color: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(8px);
     padding: 4px;
-    border-radius: 30px;                         /* 型 */
-    border: 1px solid rgba(255, 255, 255, 0.4);   /* フチの線 */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);   /* 影 */
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
-/* 枠の中の各ボタンの共通デザイン */
 .lang-btn {
     background: none;
     border: none;
     font-size: 12px;
     font-weight: bold;
-    color: #777;                                 /* 選択されていない時 */
+    color: #777;
     cursor: pointer;
     padding: 8px 16px;
     border-radius: 20px;
-    transition: all 0.5s ease;                   /* 切り替えエフェクト */
+    transition: all 0.5s ease;
 }
 
-/* 🌟 タップされて「アクティブ」になった言語ボタンのデザイン */
 .lang-btn.active {
-    background-color: #fff;                      /* 選択時 */
+    background-color: #fff;
     color: #222;                                 
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);    /* 浮かせる */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 </style>  
 
@@ -58,22 +55,12 @@
     
 <script>
 function switchLanguage(lang) {
-    // 1. 枠の中にあるすべての言語ボタン（.lang-btn）から一旦 active クラスを消す
     const buttons = document.querySelectorAll('.lang-btn');
     buttons.forEach(btn => btn.classList.remove('active'));
-
-    // 2. タップされた言語のボタンだけに active クラスをつけて白くする
     document.getElementById('btn-' + lang).classList.add('active');
-
-    // 3. ページ内の「data-〇〇」属性を持っている要素をすべて探す
-    // 例：data-ja を持っている要素（＝多言語化対象のテキスト）
     const elements = document.querySelectorAll('[data-ja]');
-    
-    // 4. 指定された言語のテキストを引っ張ってきて、その場で書き換える
     elements.forEach(el => {
         const translatedText = el.getAttribute('data-' + lang);
-        
-        // 画面が空白にならないように元の日本語（data-ja）を表示
         if (translatedText) {
             el.innerHTML = translatedText;
         } else {
@@ -92,22 +79,18 @@ function switchLanguage(lang) {
     <title>Yu's DLife</title>
     
     <style>
-        /* 1. サイト全体のベース設定 */
         body {
             margin: 0;
             padding: 0;
             font-family: 'Helvetica Neue', Arial, sans-serif;
             color: #333;
             min-height: 100vh;
-            
-            /* サイト全体の固定背景 */
             background-image: url("images/back.JPG"); 
             background-size: cover;
             background-position: 50% 88%;
-            background-attachment: fixed; /* スクロールしても動かない */
+            background-attachment: fixed;
         }
 
-        /* 2. 中央のコンテンツコンテナ（共通） */
         .container {
             max-width: 580px;
             margin: 0 auto;
@@ -115,44 +98,34 @@ function switchLanguage(lang) {
             box-sizing: border-box;
         }
 
-        /* 3. 各セクションの共通設定（統合CSS） */
         .section {
             position: relative;
-            padding: 60px 20px; /* 上下に少し余白を持たせて背景を魅せる */
+            padding: 60px 20px; 
             overflow: hidden;
         }
 
-        /* 透過背景を作るための裏地（全セクション共通） */
         .section::before {
             content: "";
             position:absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            z-index: -1; /* 文字の裏側に配置 */
+            z-index: -1; 
             background-size: cover;
             background-position: center;
-            /* これを追加すると、ブラウザの「GPU（グラフィック専用の頭脳）」を使って動きがさらに滑らかになります */
             will-change: transform; 
         }
 
-        /* ---------------------------------------------
-         * 各セクション固有の背景・透過率設定
-         * --------------------------------------------- */
-        
-        /* セクション1: プロフィール (Disney背景) */
         .sec-profile::before {
             background-image: url("images/clarice.shn.dlr.001.JPG"); 
             background-position: 60% 30%; 
             opacity: 0.85;
         }
 
-        /* セクション2: ブログ */
         .sec-blog::before {
             background-image: url("images/clarice.wmc.shdl.001.JPG"); 
             background-position: 50% 50%;
             opacity: 0.85;
         }
 
-        /* セクション3: SNS */
         .sec-sns::before {
             background-image: url("images/clarice_hkdl_001.JPG");
             background-position: 47% 40%;
@@ -160,8 +133,6 @@ function switchLanguage(lang) {
             opacity: 0.85;
         }
 
-
-        /* 4. 各種パーツのデザイン */
         .profile-icon {
             width: 100px;
             height: 100px;
@@ -191,12 +162,11 @@ function switchLanguage(lang) {
             background-color: rgba(255, 255, 255, 0.75); 
             padding: 20px;
             border-radius: 16px;
-            text-align: center; /* 中央寄せに */
-            display: inline-block; /* 中央寄せの中に左寄せを同居させる */
+            text-align: center; 
+            display: inline-block; 
             max-width: 100%;
         }
 
-        /* 横並びリンクボタンのラッパー */
         .link-wrapper {
             display: flex;
             justify-content: center;
@@ -206,7 +176,6 @@ function switchLanguage(lang) {
             margin-top: 20px;
         }
 
-        /* 横並びリンクボタン本体 */
         .link-button {
             display: flex;
             flex-direction: column;
@@ -244,7 +213,7 @@ function switchLanguage(lang) {
 </head>
 <body>
 
-    <!-- セクション1：プロフィールエリア -->
+    <!-- section1 -->
     <div class="section sec-profile">
         <div class="container">
             <img src="images/clarice.wmc.shdl.001.JPG" alt="profile icon" class="profile-icon">
@@ -270,7 +239,7 @@ function switchLanguage(lang) {
 
              data-fr="Cette page est remplie de la vie d'otaku Disney de Yu." 
 
-             data-zh="这是一个充满Yu的大爱迪士尼宅生活的页面。">
+             data-zh="这是一个充满Yu的大爱迪士尼宅生活的页面">
 
              Disneyが大好きなYuのオタクライフを詰め込んだページです。不定期更新中。<br>
              同じ好きを通してたくさんのシェアハピを目指してます。<br>
@@ -282,7 +251,7 @@ function switchLanguage(lang) {
         </div>
     </div>
 
-    <!-- セクション2：ブログ＆映画エリア -->
+    <!-- section2 -->
     <div class="section sec-blog">
         <div class="container">
             <div class="link-wrapper">
@@ -302,7 +271,7 @@ function switchLanguage(lang) {
         </div>
     </div>
 
-    <!-- セクション3：SNSエリア -->
+    <!-- section3 -->
     <div class="section sec-sns">
         <div class="container">
             <div class="link-wrapper">
@@ -322,15 +291,14 @@ function switchLanguage(lang) {
         </div>
     </div>
 
-    <!-- セクション4：タイムライン -->
-    <!-- タイムライン: Twitter -->
+    <!-- section4 -->
+    <!-- timeline: Twitter -->
 <div class="section sec-x-feed">
     <div class="container">
         
-        <!-- 横スクロールさせるための外枠 -->
         <div class="x-cards-scroll">
 
-            <!-- カード1 -->
+            <!-- card1 -->
             <a href="https://x.com/DivaClarice321/status/2088146897433477303?s=20" target="_blank" rel="noopener noreferrer" class="x-card">
                 <div class="x-card-header">
                     <img src="images/clarice.wmc.shdl.001.JPG" alt="Yu" class="x-card-avatar" loading="lazy">
@@ -346,7 +314,7 @@ function switchLanguage(lang) {
                 </div>
             </a>
 
-            <!-- カード2 -->
+            <!-- card2 -->
             <a href="https://x.com/DivaClarice321/status/2092597824970191023?s=20" target="_blank" rel="noopener noreferrer" class="x-card">
                 <div class="x-card-header">
                     <img src="images/clarice.wmc.shdl.001.JPG" alt="Yu" class="x-card-avatar" loading="lazy">
@@ -362,7 +330,7 @@ function switchLanguage(lang) {
                 </div>
             </a>
 
-            <!-- カード3 -->
+            <!-- card3 -->
             <a href="https://x.com/DivaClarice321/status/2091854903887253899?s=20" target="_blank" rel="noopener noreferrer" class="x-card">
                 <div class="x-card-header">
                     <img src="images/clarice.wmc.shdl.001.JPG" alt="Yu" class="x-card-avatar" loading="lazy">
@@ -380,30 +348,27 @@ function switchLanguage(lang) {
 
         </div><!-- /.x-cards-scroll -->
         
-<!-- 📸 Instagram最新ポスト風セクション -->
+<!-- timeline:instagram -->
 <div class="section sec-insta-feed">
     <div class="container">
-        
-        <!-- 横スクロールさせるための外枠 -->
+       
         <div class="insta-cards-scroll">
 
-            <!-- インスタカード1 -->
+            <!-- card1 -->
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="insta-card">
                 <div class="insta-card-header">
                     <img src="images/icon_001.PNG" alt="Yu" class="insta-card-avatar" loading="lazy">
                     <div class="insta-card-user">
                         <span class="insta-card-name">Yu🐿</span>
-                        <span class="insta-card-location">Disneyland Paris</span> <!-- ロケーション -->
+                        <span class="insta-card-location">Disneyland Paris</span>
                     </div>
                     <span class="insta-icon">📸</span>
                 </div>
-                
-                <!-- 写真 -->
+              
                 <div class="insta-card-media">
                     <img src="images/clarice_dsb_dlp_001.JPG" alt="Instagram Photo" loading="lazy">
                 </div>
 
-                <!-- ダミーアイコン -->
                 <div class="insta-card-actions">
                     <span>❤️</span> <span>💬</span> <span>✈️</span>
                 </div>
@@ -423,7 +388,7 @@ function switchLanguage(lang) {
                 </p>
             </a>
 
-            <!-- インスタカード2 -->
+            <!-- card2 -->
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="insta-card">
                 <div class="insta-card-header">
                     <img src="images/icon_001.PNG" alt="Yu" class="insta-card-avatar" loading="lazy">
@@ -447,7 +412,7 @@ function switchLanguage(lang) {
                 </p>
             </a>
 
-            <!-- インスタカード3 -->
+            <!-- card3 -->
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="insta-card">
                 <div class="insta-card-header">
                     <img src="images/icon_001.PNG" alt="Yu" class="insta-card-avatar" loading="lazy">
@@ -475,17 +440,16 @@ function switchLanguage(lang) {
         
 
 <style>
-    /* 𝕏 スクロールエリアの設定 */
+
 .x-cards-scroll {
     display: flex;
     gap: 16px;
-    overflow-x: auto;          /* 横スクロールを有効にする */
-    scroll-snap-type: x mandatory; /* スクロールした時にカードの位置にピタッと止まる */
+    overflow-x: auto;          
+    scroll-snap-type: x mandatory; 
     padding: 10px 4px 20px 4px;
     width: 100%;
     box-sizing: border-box;
     
-    /* スクロールバーのデザインをすっきり隠す・または細くするおまじない */
     scrollbar-width: thin;
 }
 .x-cards-scroll::-webkit-scrollbar {
@@ -496,11 +460,10 @@ function switchLanguage(lang) {
     border-radius: 3px;
 }
 
-/* 𝕏 各カードの個別デザイン */
 .x-card {
-    flex: 0 0 85%;            /* スマホ画面で次のカードが少し見えてる絶妙な幅にする */
+    flex: 0 0 85%;         
     max-width: 360px;
-    scroll-snap-align: center; /* スクロール時に中央で止まる */
+    scroll-snap-align: center;
     background-color: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(8px);
     border-radius: 20px;
@@ -522,31 +485,26 @@ function switchLanguage(lang) {
     margin-bottom: 10px;
 }
 
-/* 𝕏カードとインスタカードのアイコン設定 */
 .x-card-avatar {
-    /* Twitter標準サイズ */
     width: 40px;
     height: 40px;
-    border-radius: 50%; /* 丸型 */
+    border-radius: 50%;
     margin-right: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.08); /* フチ */
+    border: 1px solid rgba(0, 0, 0, 0.08); 
     
     object-fit: cover; 
-    
-    /* 画像の「中心」を基準に丸くくり抜く */
+  
     object-position: center; 
 }
 
 .insta-card-avatar {
     width: 40px;
     height: 40px;
-    border-radius: 50%; /* 丸型 */
+    border-radius: 50%; 
     margin-right: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.08); /* フチ */
-    
+    border: 1px solid rgba(0, 0, 0, 0.08);
     object-fit: cover; 
-    
-    /* 画像の「中心」を基準に丸くくり抜く */
+   
     object-position: 10% 90%; 
 }
 
@@ -580,15 +538,11 @@ function switchLanguage(lang) {
     border-radius: 12px;
     overflow: hidden;
     width: 100%;
-    
-    /* 縦幅固定 */
+  
     height: 300px; 
     background-color: rgba(0, 0, 0, 0.03); 
 }
 
-/* ---------------------------------------------
- * 中の画像サイズを自動調整して枠に収める
- * --------------------------------------------- */
 .x-card-media img, 
 .insta-card-media img {
     width: 100%;
@@ -605,7 +559,7 @@ function switchLanguage(lang) {
 
     <style>
 
-/* 📸 Instagramスクロールエリアの設定 */
+
 .insta-cards-scroll {
     display: flex;
     gap: 16px;
@@ -614,18 +568,17 @@ function switchLanguage(lang) {
     padding: 10px 4px 20px 4px;
     width: 100%;
     box-sizing: border-box;
-    scrollbar-width: thin; /* スクロールバーを完全に隠してアプリ感を出す */
+    scrollbar-width: thin; 
 }
 .insta-cards-scroll::-webkit-scrollbar {
-    display: none; /* Chrome用スクロールバー非表示 */
+    display: none; 
 }
 
-/* 📸 インスタ各カードの個別デザイン */
 .insta-card {
-    flex: 0 0 85%;            /* スマホで横のカードがチラ見えする絶妙なサイズ */
+    flex: 0 0 85%;            
     max-width: 360px;
     scroll-snap-align: center;
-    background-color: rgba(255, 255, 255, 0.8); /* サイトに合わせた半透明の白 */
+    background-color: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(8px);
     border-radius: 20px;
     padding: 14px;
@@ -664,8 +617,7 @@ function switchLanguage(lang) {
     top: 5px;
     font-size: 14px;
 }
-
-/* いいねアイコンなどの並び */
+/
 .insta-card-actions {
     display: flex;
     gap: 12px;

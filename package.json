@@ -1,0 +1,26 @@
+{
+  "name": "yu-s_dlife",
+  "version": "1.0.0",
+  "description": "My hobby account site.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ineed-Yu/Yu-s_DLife.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Ineed-Yu/Yu-s_DLife/issues"
+  },
+  "homepage": "https://github.com/Ineed-Yu/Yu-s_DLife#readme",
+  "devDependencies": {
+    "vite": "^8.2.2",
+    "vite-plugin-image-optimizer": "^2.0.3"
+  }
+}
