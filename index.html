@@ -270,6 +270,13 @@ function switchLanguage(lang) {
              data-fr="Cette page est remplie de la vie d'otaku Disney de Yu." 
 
              data-zh="这是一个充满Yu的大爱迪士尼宅生活的页面。">
+
+             Disneyが大好きなYuのオタクライフを詰め込んだページです。不定期更新中。<br>
+             同じ好きを通してたくさんのシェアハピを目指してます。<br>
+             Pin Trading & Collector<br>
+             Now AP : SHDL Diamond<br> 
+             Past AP : TDR HKDL DLP
+
             </div>
         </div>
     </div>
@@ -372,6 +379,89 @@ function switchLanguage(lang) {
 
         </div><!-- /.x-cards-scroll -->
         
+<!-- 📸 Instagram最新ポスト風セクション -->
+<div class="section sec-insta-feed">
+    <div class="container">
+        
+        <!-- 横スクロールさせるための外枠 -->
+        <div class="insta-cards-scroll">
+
+            <!-- インスタカード1 -->
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="insta-card">
+                <div class="insta-card-header">
+                    <img src="images/icon_001.PNG" alt="Yu" class="insta-card-avatar">
+                    <div class="insta-card-user">
+                        <span class="insta-card-name">Yu🐿</span>
+                        <span class="insta-card-location">Shanghai Disneyland</span> <!-- ロケーションもおしゃれに配置 -->
+                    </div>
+                    <span class="insta-icon">📸</span>
+                </div>
+                
+                <!-- 写真 -->
+                <div class="insta-card-media">
+                    <img src="" alt="Instagram Photo">
+                </div>
+
+                <!-- 💬 いいね・コメントのダミーアイコン（雰囲気作り） -->
+                <div class="insta-card-actions">
+                    <span>❤️</span> <span>💬</span> <span>✈️</span>
+                </div>
+                
+                <p class="insta-card-text">
+                    <strong>DivaClarice321</strong> 上海ディズニーの秋の魔法の瞬間。大好きなピンバッジたちと一緒に🍁✨
+                </p>
+            </a>
+
+            <!-- インスタカード2 -->
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="insta-card">
+                <div class="insta-card-header">
+                    <img src="images/icon_001.PNG" alt="Yu" class="insta-card-avatar">
+                    <div class="insta-card-user">
+                        <span class="insta-card-name">Yu🐿</span>
+                        <span class="insta-card-location">Disneyland Paris</span>
+                    </div>
+                    <span class="insta-icon">📸</span>
+                </div>
+                
+                <div class="insta-card-media">
+                    <img src="images/insta_post2.jpg" alt="Instagram Photo">
+                </div>
+
+                <div class="insta-card-actions">
+                    <span>❤️</span> <span>💬</span> <span>✈️</span>
+                </div>
+                
+                <p class="insta-card-text">
+                    <strong>DivaClarice321</strong> 30周年の思い出の景色。いつ来てもここは特別。
+                </p>
+            </a>
+
+            <!-- インスタカード3 -->
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="insta-card">
+                <div class="insta-card-header">
+                    <img src="images/icon_001.PNG" alt="Yu" class="insta-card-avatar">
+                    <div class="insta-card-user">
+                        <span class="insta-card-name">Yu🐿</span>
+                        <span class="insta-card-location">Disneyland Paris</span>
+                    </div>
+                    <span class="insta-icon">📸</span>
+                </div>
+                
+                <div class="insta-card-media">
+                    <img src="images/insta_post2.jpg" alt="Instagram Photo">
+                </div>
+
+                <div class="insta-card-actions">
+                    <span>❤️</span> <span>💬</span> <span>✈️</span>
+                </div>
+                
+                <p class="insta-card-text">
+                    <strong>DivaClarice321</strong> 30周年の思い出の景色。いつ来てもここは特別。
+                </p>
+            </a>
+
+        </div><!-- /.insta-cards-scroll -->
+        
 
 <style>
     /* 𝕏 スクロールエリアの設定 */
@@ -422,8 +512,7 @@ function switchLanguage(lang) {
 }
 
 /* 𝕏カードとインスタカードのアイコン設定 */
-.x-card-avatar,
-.insta-card-avatar {
+.x-card-avatar {
     /* Twitter標準サイズ */
     width: 40px;
     height: 40px;
@@ -435,6 +524,20 @@ function switchLanguage(lang) {
     
     /* 画像の「中心」を基準に丸くくり抜く */
     object-position: center; 
+}
+
+.insta-card-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* 丸型 */
+    margin-right: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.08); /* フチ */
+    
+    object-fit: cover; 
+    
+    /* 画像の「中心」を基準に丸くくり抜く */
+    object-position: 10% 90%; 
+    object-size: cover;
 }
 
 .x-card-user {
@@ -489,66 +592,7 @@ function switchLanguage(lang) {
     </div>
 </div>
 
-<!-- タイムライン: Twitter -->
-<!-- 📸 Instagram最新ポスト風セクション -->
-<div class="section sec-insta-feed">
-    <div class="container">
-        
-        <!-- 横スクロールさせるための外枠 -->
-        <div class="insta-cards-scroll">
 
-            <!-- 📄 インスタカード1 -->
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="insta-card">
-                <div class="insta-card-header">
-                    <img src="images/icon.jpg" alt="Yu" class="insta-card-avatar">
-                    <div class="insta-card-user">
-                        <span class="insta-card-name">Yu🐿</span>
-                        <span class="insta-card-location">Shanghai Disneyland</span> <!-- ロケーションもおしゃれに配置 -->
-                    </div>
-                    <span class="insta-icon">📸</span>
-                </div>
-                
-                <!-- 🖼️ インスタの象徴：綺麗な正方形の写真 -->
-                <div class="insta-card-media">
-                    <img src="images/icon.jpg" alt="Instagram Photo">
-                </div>
-
-                <!-- 💬 いいね・コメントのダミーアイコン（雰囲気作り） -->
-                <div class="insta-card-actions">
-                    <span>❤️</span> <span>💬</span> <span>✈️</span>
-                </div>
-                
-                <p class="insta-card-text">
-                    <strong>DivaClarice321</strong> 上海ディズニーの秋の魔法の瞬間。大好きなピンバッジたちと一緒に🍁✨
-                </p>
-            </a>
-
-            <!-- 📄 インスタカード2 -->
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="insta-card">
-                <div class="insta-card-header">
-                    <img src="images/icon.jpg" alt="Yu" class="insta-card-avatar">
-                    <div class="insta-card-user">
-                        <span class="insta-card-name">Yu🐿</span>
-                        <span class="insta-card-location">Disneyland Paris</span>
-                    </div>
-                    <span class="insta-icon">📸</span>
-                </div>
-                
-                <div class="insta-card-media">
-                    <img src="images/insta_post2.jpg" alt="Instagram Photo">
-                </div>
-
-                <div class="insta-card-actions">
-                    <span>❤️</span> <span>💬</span> <span>✈️</span>
-                </div>
-                
-                <p class="insta-card-text">
-                    <strong>DivaClarice321</strong> 30周年の思い出の景色。いつ来てもここは特別。
-                </p>
-            </a>
-
-        </div><!-- /.insta-cards-scroll -->
-        
     <style>
 
 /* 📸 Instagramスクロールエリアの設定 */
@@ -560,7 +604,7 @@ function switchLanguage(lang) {
     padding: 10px 4px 20px 4px;
     width: 100%;
     box-sizing: border-box;
-    scrollbar-width: none; /* スクロールバーを完全に隠してアプリ感を出す */
+    scrollbar-width: thin; /* スクロールバーを完全に隠してアプリ感を出す */
 }
 .insta-cards-scroll::-webkit-scrollbar {
     display: none; /* Chrome用スクロールバー非表示 */
