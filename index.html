@@ -312,5 +312,330 @@ function switchLanguage(lang) {
             </div>
         </div>
     </div>
+
+    <!-- セクション4：タイムライン -->
+    <!-- タイムライン: Twitter -->
+<div class="section sec-x-feed">
+    <div class="container">
+        
+        <!-- 横スクロールさせるための外枠 -->
+        <div class="x-cards-scroll">
+
+            <!-- カード1 -->
+            <a href="https://x.com/DivaClarice321/status/2088146897433477303?s=20" target="_blank" rel="noopener noreferrer" class="x-card">
+                <div class="x-card-header">
+                    <img src="images/clarice.wmc.shdl.001.jpg" alt="Yu" class="x-card-avatar">
+                    <div class="x-card-user">
+                        <span class="x-card-name">Yu🐿</span>
+                        <span class="x-card-handle">@DivaClarice321</span>
+                    </div>
+                    <span class="x-logo">𝕏</span>
+                </div>
+                <p class="x-card-text">Just doing all I can cuz you love.🐿❄</p>
+                <div class="x-card-media">
+                    <img src="images/clarice.wmc.shdl.001.JPG" alt="X Photo">
+                </div>
+            </a>
+
+            <!-- カード2 -->
+            <a href="https://x.com/DivaClarice321/status/2092597824970191023?s=20" target="_blank" rel="noopener noreferrer" class="x-card">
+                <div class="x-card-header">
+                    <img src="images/icon.jpg" alt="Yu" class="x-card-avatar">
+                    <div class="x-card-user">
+                        <span class="x-card-name">Yu🐿</span>
+                        <span class="x-card-handle">@DivaClarice321</span>
+                    </div>
+                    <span class="x-logo">𝕏</span>
+                </div>
+                <p class="x-card-text">what makes the winter magic❄</p>
+                <div class="x-card-media">
+                    <img src="images/x_post2.jpg" alt="X Photo">
+                </div>
+            </a>
+
+            <!-- カード3 -->
+            <a href="https://x.com/DivaClarice321/status/2091854903887253899?s=20" target="_blank" rel="noopener noreferrer" class="x-card">
+                <div class="x-card-header">
+                    <img src="images/clarice.wmc.shdl.001.jpg" alt="Yu" class="x-card-avatar">
+                    <div class="x-card-user">
+                        <span class="x-card-name">Yu🐿</span>
+                        <span class="x-card-handle">@DivaClarice321</span>
+                    </div>
+                    <span class="x-logo">𝕏</span>
+                </div>
+                <p class="x-card-text">It only takes a moment.</p>
+                <div class="x-card-media">
+                    <img src="images/back.jpg" alt="X Photo">
+                </div>
+            </a>
+
+        </div><!-- /.x-cards-scroll -->
+        
+
+<style>
+    /* 𝕏 スクロールエリアの設定 */
+.x-cards-scroll {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;          /* 横スクロールを有効にする */
+    scroll-snap-type: x mandatory; /* スクロールした時にカードの位置にピタッと止まる */
+    padding: 10px 4px 20px 4px;
+    width: 100%;
+    box-sizing: border-box;
+    
+    /* スクロールバーのデザインをすっきり隠す・または細くするおまじない */
+    scrollbar-width: thin;
+}
+.x-cards-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+.x-cards-scroll::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.1);
+    border-radius: 3px;
+}
+
+/* 𝕏 各カードの個別デザイン */
+.x-card {
+    flex: 0 0 85%;            /* スマホ画面で次のカードが少し見えてる絶妙な幅にする */
+    max-width: 360px;
+    scroll-snap-align: center; /* スクロール時に中央で止まる */
+    background-color: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 16px;
+    text-align: left;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s;
+    box-sizing: border-box;
+}
+.x-card:hover {
+    transform: translateY(-3px);
+}
+.x-card-header {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-bottom: 10px;
+}
+argin-right: 8px;
+
+/* 𝕏カードとインスタカードのアイコン設定 */
+.x-card-avatar,
+.insta-card-avatar {
+    /* Twitter標準サイズ */
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* 丸型 */
+    margin-right: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.08); /* フチ */
+    
+    object-fit: cover; 
+    
+    /* 画像の「中心」を基準に丸くくり抜く */
+    object-position: center; 
+}
+
+.x-card-user {
+    display: flex;
+    flex-direction: column;
+}
+.x-card-name {
+    font-weight: bold;
+    font-size: 14px;
+}
+.x-card-handle {
+    color: #666;
+    font-size: 12px;
+}
+.x-logo {
+    position: absolute;
+    right: 0;
+    top: 2px;
+    font-size: 16px;
+    color: #444;
+}
+.x-card-text {
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0 0 10px 0;
+}
+
+.x-card-media, 
+.insta-card-media {
+    border-radius: 12px;
+    overflow: hidden;
+    width: 100%;
+    
+    /* 縦幅固定 */
+    height: 300px; 
+    background-color: rgba(0, 0, 0, 0.03); 
+}
+
+/* ---------------------------------------------
+ * 📐 中の画像サイズを自動調整して枠に収める魔法
+ * --------------------------------------------- */
+.x-card-media img, 
+.insta-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: 50% 50%; 
+}
+
+</style>
+
+    </div>
+</div>
+
+<!-- タイムライン: Twitter -->
+<!-- 📸 Instagram最新ポスト風セクション -->
+<div class="section sec-insta-feed">
+    <div class="container">
+        
+        <!-- 横スクロールさせるための外枠 -->
+        <div class="insta-cards-scroll">
+
+            <!-- 📄 インスタカード1 -->
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="insta-card">
+                <div class="insta-card-header">
+                    <img src="images/icon.jpg" alt="Yu" class="insta-card-avatar">
+                    <div class="insta-card-user">
+                        <span class="insta-card-name">Yu🐿</span>
+                        <span class="insta-card-location">Shanghai Disneyland</span> <!-- ロケーションもおしゃれに配置 -->
+                    </div>
+                    <span class="insta-icon">📸</span>
+                </div>
+                
+                <!-- 🖼️ インスタの象徴：綺麗な正方形の写真 -->
+                <div class="insta-card-media">
+                    <img src="images/insta_post1.jpg" alt="Instagram Photo">
+                </div>
+
+                <!-- 💬 いいね・コメントのダミーアイコン（雰囲気作り） -->
+                <div class="insta-card-actions">
+                    <span>❤️</span> <span>💬</span> <span>✈️</span>
+                </div>
+                
+                <p class="insta-card-text">
+                    <strong>DivaClarice321</strong> 上海ディズニーの秋の魔法の瞬間。大好きなピンバッジたちと一緒に🍁✨
+                </p>
+            </a>
+
+            <!-- 📄 インスタカード2 -->
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="insta-card">
+                <div class="insta-card-header">
+                    <img src="images/icon.jpg" alt="Yu" class="insta-card-avatar">
+                    <div class="insta-card-user">
+                        <span class="insta-card-name">Yu🐿</span>
+                        <span class="insta-card-location">Disneyland Paris</span>
+                    </div>
+                    <span class="insta-icon">📸</span>
+                </div>
+                
+                <div class="insta-card-media">
+                    <img src="images/insta_post2.jpg" alt="Instagram Photo">
+                </div>
+
+                <div class="insta-card-actions">
+                    <span>❤️</span> <span>💬</span> <span>✈️</span>
+                </div>
+                
+                <p class="insta-card-text">
+                    <strong>DivaClarice321</strong> 30周年の思い出の景色。いつ来てもここは特別。
+                </p>
+            </a>
+
+        </div><!-- /.insta-cards-scroll -->
+        
+    <style>
+
+/* 📸 Instagramスクロールエリアの設定 */
+.insta-cards-scroll {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 10px 4px 20px 4px;
+    width: 100%;
+    box-sizing: border-box;
+    scrollbar-width: none; /* スクロールバーを完全に隠してアプリ感を出す */
+}
+.insta-cards-scroll::-webkit-scrollbar {
+    display: none; /* Chrome用スクロールバー非表示 */
+}
+
+/* 📸 インスタ各カードの個別デザイン */
+.insta-card {
+    flex: 0 0 85%;            /* スマホで横のカードがチラ見えする絶妙なサイズ */
+    max-width: 360px;
+    scroll-snap-align: center;
+    background-color: rgba(255, 255, 255, 0.8); /* サイトに合わせた半透明の白 */
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 14px;
+    text-align: left;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    transition: transform 0.3s;
+    box-sizing: border-box;
+}
+.insta-card:hover {
+    transform: translateY(-3px);
+}
+.insta-card-header {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-bottom: 10px;
+}
+.insta-card-user {
+    display: flex;
+    flex-direction: column;
+}
+.insta-card-name {
+    font-weight: bold;
+    font-size: 13px;
+}
+.insta-card-location {
+    color: #666;
+    font-size: 11px;
+    margin-top: 1px;
+}
+.insta-icon {
+    position: absolute;
+    right: 0;
+    top: 5px;
+    font-size: 14px;
+}
+
+/* いいねアイコンなどの並び */
+.insta-card-actions {
+    display: flex;
+    gap: 12px;
+    margin: 10px 0 6px 0;
+    font-size: 16px;
+}
+.insta-card-text {
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 0;
+    word-break: break-all;
+}
+.insta-card-text strong {
+    margin-right: 4px;
+}
+
+
+    </style>
+
+    </div>
+</div>
+
+
+
+
 </body>
 </html>
