@@ -66,6 +66,8 @@ function switchLanguage(lang) {
         } else {
             el.innerHTML = el.getAttribute('data-ja');
         }
+         // ★この1行を追加：選んだ言語（'ja' や 'en'）をブラウザに記憶させる
+    localStorage.setItem('selectedLanguage', lang);
     });
 }
 </script>
@@ -83,8 +85,7 @@ function switchLanguage(lang) {
     <!-- メニューの中身 -->
     <div class="menu-content">
         <ul>
-            <li><a href="index.html?lang=ja">ホーム</a></li>
-            <li><a href="pins.html?lang=en">Pin Badges</a></li>
+            <li><a href="index.html">ホーム</a></li>
             <li><a href="pins.html">ピンバッジ</a></li>
             <li><a href="#access">ブログ</a></li>
         </ul>
