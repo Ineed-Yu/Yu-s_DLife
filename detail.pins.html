@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ピンバッジ詳細</title>
+    <style>
+        .detail-container { padding: 20px; max-width: 600px; margin: 0 auto; }
+        .back-link { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #007bff; }
+        .detail-main { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .detail-main img { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .info-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .info-table th, .info-table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        .info-table th { background-color: #f8f9fa; width: 30%; }
+    </style>
+</head>
+<body>
+
+    <div class="detail-container">
+        <a href="pins.html" class="back-link">← 一覧に戻る</a>
+        
+        <div id="detail-content" class="detail-main">
+            <!-- ここにJavaScriptで詳細データが流し込まれます -->
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const pinId = urlParams.get('id');
+        const currentLang = urlParams.get('lang') || 'ja'; // 言語を取得
+
+    // テーブルの項目名（ヘッダー）を言語ごとに定義しておく
+        const labels = {
+    ja: { year: "リリース", char: "キャラクター", size: "エディションサイズ", memo: "メモ" },
+    en: { year: "Release Year", char: "Character", size: "Edition Size", memo: "Memo" }
+    };
+
+    fetch('data.json')
+        .then(response => response.json())
+        .then(data => {
+        const pin = data.find(item => item.id === pinId);
+        const content = document.getElementById('detail-content');
+
+        if (pin) {
+            const pinData = pin[currentLang]; // ja か en のデータを取得
+            const label = labels[currentLang]; // 項目名を取得
+
+            content.innerHTML = `
+                <img src="${pin.image}" alt="${pinData.name}">
+                <h2>${pinData.Mame}</h2>
+                <table class="info-table">
+                    <tr><th>${label.year}</th><td>${pinData.ReleaseYear || '-'}</td></tr>
+                    <tr><th>${label.char}</th><td>${pinData.Character || '-'}</td></tr>
+                    <tr><th>${label.size}</th><td>${pinData.Editionsize || '-'}</td></tr>
+                    <tr><th>${label.memo}</th><td>${pinData.Memo || '-'}</td></tr>
+                </table>
+            `;
+        }
+    });
+    </script>
+</body>
+</html>

@@ -73,6 +73,84 @@ function switchLanguage(lang) {
 
 </body>
 
+
+<body>
+<!-- ハンバーガーメニューのボタン -->
+<div class="hamburger-menu">
+    <input type="checkbox" id="menu-btn-check">
+    <label for="menu-btn-check" class="menu-btn"><span></span></label>
+    
+    <!-- メニューの中身 -->
+    <div class="menu-content">
+        <ul>
+            <li><a href="index.html?lang=ja">ホーム</a></li>
+            <li><a href="pins.html?lang=en">Pin Badges</a></li>
+            <li><a href="pins.html">ピンバッジ</a></li>
+            <li><a href="#access">ブログ</a></li>
+        </ul>
+    </div>
+</div>
+</body>
+
+<style>
+    /* ボタンの配置と見た目 */
+.menu-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    height: 60px;
+    width: 60px;
+    justify-content: center;
+    align-items: center;
+    z-index: 90;
+    background-color: #333;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.menu-btn span, .menu-btn span::before, .menu-btn span::after {
+    content: '';
+    display: block;
+    height: 3px;
+    width: 25px;
+    border-radius: 3px;
+    background-color: #fff;
+    position: absolute;
+}
+.menu-btn span::before { bottom: 8px; }
+.menu-btn span::after { top: 8px; }
+
+/* チェックボックスは隠す */
+#menu-btn-check { display: none; }
+
+/* チェックが入ったらメニューを表示 */
+#menu-btn-check:checked ~ .menu-content { right: 0; }
+
+/* メニューの画面 */
+.menu-content {
+    width: 300px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    right: -300px; /* 最初は画面の外に隠す */
+    z-index: 80;
+    background-color: #f4f4f4;
+    transition: all 0.5s;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    padding-top: 80px;
+}
+.menu-content ul { list-style: none; padding: 0; }
+.menu-content ul li a {
+    display: block;
+    width: 100%;
+    padding: 15px 20px;
+    color: #333;
+    text-decoration: none;
+    border-bottom: 1px solid #ddd;
+}
+</style>
+
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

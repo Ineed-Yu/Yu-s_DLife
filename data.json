@@ -1,0 +1,50 @@
+[
+  {
+    "Id": "0001",
+    "Name": "pins_0001",
+    "ReleaseYear": "20xx年",
+    "Character": "???",
+    "Editionsize": "OE",
+    "Image": "images/.JPG",
+    "Memo": "???"
+  },
+ "en" {
+    "Id": "0001",
+    "Name": "pins_0001",
+    "ReleaseYear": "20xx年",
+    "Character": "???",
+    "Editionsize": "OE",
+    "Image": "images/.JPG",
+    "Memo": "???"
+  }, 
+
+   "fr" {
+    "Id": "0001",
+    "Name": "pins_0001",
+    "ReleaseYear": "20xx年",
+    "Character": "???",
+    "Editionsize": "OE",
+    "Image": "images/.JPG",
+    "Memo": "???"
+  },
+
+ "zh" {
+    "Id": "0001",
+    "Name": "pins_0001",
+    "ReleaseYear": "20xx年",
+    "Character": "???",
+    "Editionsize": "OE",
+    "Image": "images/.JPG",
+    "Memo": "???"
+  }, 
+
+  {
+    "Id": "0002",
+    "Name": "pins_0002",
+    "ReleaseYear": "20xx年",
+    "Character": "???",
+    "Edition size": "OE",
+    "Image": "images/pin001.jpg",
+    "Memo": "???"
+  }
+]

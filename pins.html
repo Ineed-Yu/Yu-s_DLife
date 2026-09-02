@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<script>
+// 1. URLから「?lang=en」などの言語設定を読み取る（指定がなければ 'ja' にする）
+const urlParams = new URLSearchParams(window.location.search);
+const currentLang = urlParams.get('lang') || 'ja'; // 'ja' または 'en'
+
+fetch('data.json')
+  .then(response => response.json())
+  .then(data => {
+    const pins = document.getElementById('pins');
+    
+    data.forEach(pin => {
+      const item = document.createElement('a');
+      item.className = 'pins-item';
+      
+      // 重要：詳細ページへ行くときも、選ばれている言語（lang）を引き継ぐ！
+      item.href = `detail.html?id=${pin.id}&lang=${currentLang}`; 
+      
+      // 現在の言語に応じたデータを取得する（pin.ja または pin.en）
+      const pinData = pin[currentLang];
+      
+      item.innerHTML = `
+        <img src="${pin.image}" alt="${pinData.name}">
+        <p>${pinData.name}</p>
+      `;
+      pins.appendChild(item);
+    });
+  });
+</script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>所有ピンバッジ一覧</title>
+    <style>
+        /* ギャラリー全体のレイアウト（グリッド） */
+        .pins-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        /* 1つのピンバッジの枠 */
+        .pins-item {
+            text-decoration: none;
+            color: #333;
+            text-align: center;
+            border: 1px solid #eee;
+            padding: 10px;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+        .pins-item:hover {
+            transform: translateY(-5px); /* ホバー時に少し浮かす */
+        }
+        .pins-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="detail-container">
+        <a href="index.html" class="back-link">← ホームに戻る</a>
+        
+        <div id="detail-content" class="detail-main">
+
+    <h1>所有ピンバッジ一覧</h1>
+
+    <div id="pins" class="pins-container">
+        <!-- ここにJavaScriptで自動的にバッジが追加されます -->
+    </div>
+
+    <script>
+      // JSONファイルを読み込む
+      fetch('data.json')
+        .then(response => response.json())
+        .then(data => {
+          const pins = document.getElementById('pins');
+          
+          // データの数だけループしてHTMLを作り出す
+          data.forEach(pin => {
+            const item = document.createElement('a');
+            item.className = 'pins-item';
+            // 詳細ページへIDをくっつけて移動する
+            item.href = `detail.pins.html?id=${pin.id}`; 
+            
+            item.innerHTML = `
+              <img src="${pin.image}" alt="${pin.name}">
+              <p>${pin.name}</p>
+            `;
+            pins.appendChild(item);
+          });
+        })
+        .catch(error => console.error('データの読み込みに失敗しました:', error));
+    </script>
+</body>
+</html>
