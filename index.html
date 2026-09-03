@@ -55,6 +55,24 @@
     
 <script>
 function switchLanguage(lang) {
+
+    //1.言語をブラウザに記憶
+    localStorage.setItem('selectedLanguage', lang);
+
+    //2.data-言語属性のテキストを書き換え
+    document.querySelectorAll(`[data-${lang}]`).forEach(el => {
+        el.innerText = el.getAttribute(`data-${lang}`);
+    });
+
+    //3.data-言語属性のurlを書き換え
+    document.querySelectorAll('.nav-link').forEach(link => {
+        const targetUrl = link.getAttribute(`data-url-${lang}`);
+        if (targetUrl) {
+            link.href = targetUrl;
+        }
+    });
+
+    //4.言語ボタンのui
     const buttons = document.querySelectorAll('.lang-btn');
     buttons.forEach(btn => btn.classList.remove('active'));
     document.getElementById('btn-' + lang).classList.add('active');
@@ -66,8 +84,6 @@ function switchLanguage(lang) {
         } else {
             el.innerHTML = el.getAttribute('data-ja');
         }
-         // ★この1行を追加：選んだ言語（'ja' や 'en'）をブラウザに記憶させる
-    localStorage.setItem('selectedLanguage', lang);
     });
 }
 </script>
@@ -85,9 +101,29 @@ function switchLanguage(lang) {
     <!-- メニューの中身 -->
     <div class="menu-content">
         <ul>
-            <li><a href="index.html">ホーム</a></li>
-            <li><a href="pins.html">ピンバッジ</a></li>
-            <li><a href="#access">ブログ</a></li>
+            <li><a href="index.html"
+                class="nav-link"
+                data-ja="ホーム" data-en="Home" data-fr="Accueil" data-zh="首页"
+                data-url-ja="index.html" data-url-en="index.html" data-url-fr="index.html" data-url-zh="index.html">
+                ホーム
+                </a>
+            </li>
+
+            <li><a href="pins.html"
+                class="nav-link"
+                data-ja="ピンバッジ" data-en="Pin Badges" data-fr="Badges" data-zh="徽章"
+                data-url-ja="pins.html" data-url-en="pins.html" data-url-fr="pins.html" data-url-zh="pins.html">
+                ピンバッジ
+                </a>
+            </li>
+
+            <li><a href="#access"
+                class="nav-link"
+                data-ja="ブログ" data-en="Blog" data-fr="Blog" data-zh="博客"
+                data-url-ja="#access" data-url-en="access" data-url-fr="#access" data-url-zh="#access">
+                ブログ
+                </a>
+            </li>
         </ul>
     </div>
 </div>

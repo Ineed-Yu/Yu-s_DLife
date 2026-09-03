@@ -1,6 +1,102 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+
+<body>
+<!-- ハンバーガーメニューのボタン -->
+<div class="hamburger-menu">
+    <input type="checkbox" id="menu-btn-check">
+    <label for="menu-btn-check" class="menu-btn"><span></span></label>
+    
+    <!-- メニューの中身 -->
+    <div class="menu-content">
+        <ul>
+            <li><a href="index.html"
+                class="nav-link"
+                data-ja="ホーム" data-en="Home" data-fr="Accueil" data-zh="首页"
+                data-url-ja="index.html" data-url-en="index.html" data-url-fr="index.html" data-url-zh="index.html">
+                ホーム
+                </a>
+            </li>
+
+            <li><a href="pins.html"
+                class="nav-link"
+                data-ja="ピンバッジ" data-en="Pin Badges" data-fr="Badges" data-zh="徽章"
+                data-url-ja="pins.html" data-url-en="pins.html" data-url-fr="pins.html" data-url-zh="pins.html">
+                ピンバッジ
+                </a>
+            </li>
+
+            <li><a href="#access"
+                class="nav-link"
+                data-ja="ブログ" data-en="Blog" data-fr="Blog" data-zh="博客"
+                data-url-ja="#access" data-url-en="access" data-url-fr="#access" data-url-zh="#access">
+                ブログ
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+
+<style>
+    /* ボタンの配置と見た目 */
+.menu-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    height: 60px;
+    width: 60px;
+    justify-content: center;
+    align-items: center;
+    z-index: 90;
+    background-color: #333;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.menu-btn span, .menu-btn span::before, .menu-btn span::after {
+    content: '';
+    display: block;
+    height: 3px;
+    width: 25px;
+    border-radius: 3px;
+    background-color: #fff;
+    position: absolute;
+}
+.menu-btn span::before { bottom: 8px; }
+.menu-btn span::after { top: 8px; }
+
+/* チェックボックスは隠す */
+#menu-btn-check { display: none; }
+
+/* チェックが入ったらメニューを表示 */
+#menu-btn-check:checked ~ .menu-content { right: 0; }
+
+/* メニューの画面 */
+.menu-content {
+    width: 300px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    right: -300px; /* 最初は画面の外に隠す */
+    z-index: 80;
+    background-color: #f4f4f4;
+    transition: all 0.5s;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    padding-top: 80px;
+}
+.menu-content ul { list-style: none; padding: 0; }
+.menu-content ul li a {
+    display: block;
+    width: 100%;
+    padding: 15px 20px;
+    color: #333;
+    text-decoration: none;
+    border-bottom: 1px solid #ddd;
+}
+</style>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pin Badges Detail</title>
@@ -28,6 +124,27 @@
     </div>
 
     <script>
+        // ページが読み込まれたら実行
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. ブラウザの記憶から言語を読み込む（なければ 'ja'）
+    const currentLang = localStorage.getItem('selectedLanguage') || 'ja';
+
+    // 2. ページ全体の文字を記憶された言語に一括書き換え
+    document.querySelectorAll(`[data-${currentLang}]`).forEach(el => {
+        el.innerText = el.getAttribute(`data-${currentLang}`);
+    });
+
+    // 3. ページ全体のリンク（URL）も記憶された言語に一括書き換え
+    document.querySelectorAll('.nav-link').forEach(link => {
+        const targetUrl = link.getAttribute(`data-url-${currentLang}`);
+        if (targetUrl) {
+            link.href = targetUrl;
+        }
+    });
+    
+    // (この後ろに、前回の fetch('data.json') などの続きの処理を書きます)
+});
+
         const urlParams = new URLSearchParams(window.location.search);
         const pinId = urlParams.get('id');
         
