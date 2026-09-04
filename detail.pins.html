@@ -114,18 +114,17 @@
 
     <div class="detail-container">
         <!-- 戻るボタンも言語切り替えに対応 -->
-        <a href="pins.html" class="back-link" data-ja="← ギャラリーに戻る" data-en="← Back to Gallery" data-fr="← Retour" data-zh="← 返回">
-            ← ギャラリーに戻る
+        <a href="pins.html" class="back-link" data-ja="← ピンボードに戻る" data-en="← Back to Pin Board" data-fr="← Retour au tableau des broches" data-zh="← 返回_PIN板">
+            ← ピンボードに戻る
         </a>
         
         <div id="detail-content" class="detail-main">
-            <!-- ここにJavaScriptで詳細データが流し込まれます -->
+            <!-- 詳細データ -->
         </div>
     </div>
 
     <script>
-        // ページが読み込まれたら実行
-document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", () => {
     // 1. ブラウザの記憶から言語を読み込む（なければ 'ja'）
     const currentLang = localStorage.getItem('selectedLanguage') || 'ja';
 
@@ -144,14 +143,14 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // (この後ろに、前回の fetch('data.json') などの続きの処理を書きます)
 });
-
+        // 1. URLから「?id=0001」の「0001」の部分を取り出す
         const urlParams = new URLSearchParams(window.location.search);
         const pinId = urlParams.get('id');
         
         // ★ブラウザの記憶から言語を取得
         const currentLang = localStorage.getItem('selectedLanguage') || 'ja';
 
-        // 戻るボタンの文字を切り替え
+        // 表示言語の切り替え
         document.querySelectorAll('[data-' + currentLang + ']').forEach(el => {
             el.innerText = el.getAttribute('data-' + currentLang);
         });
@@ -167,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch('data.json')
             .then(response => response.json())
             .then(data => {
-                const pin = data.find(item => item.id === pinId);
+                const pin = data.find(item => item.Id == pinId);
                 const content = document.getElementById('detail-content');
 
                 if (pin) {
@@ -178,16 +177,23 @@ document.addEventListener("DOMContentLoaded", () => {
                         <img src="${pin.image}" alt="${pinData.name}">
                         <h2>${pinData.name}</h2>
                         <table class="info-table">
-                            <tr><th>${label.year}</th><td>${pinData.release_year || '-'}</td></tr>
-                            <tr><th>${label.char}</th><td>${pinData.character || '-'}</td></tr>
-                            <tr><th>${label.size}</th><td>${pinData.edition_size || '-'}</td></tr>
-                            <tr><th>${label.memo}</th><td>${pinData.memo || '-'}</td></tr>
+                            <tr><th>${label.year}</th><td>${pinData.ReleaseYear || '-'}</td></tr>
+                            <tr><th>${label.char}</th><td>${pinData.Character || '-'}</td></tr>
+                            <tr><th>${label.size}</th><td>${pinData.Editionsize || '-'}</td></tr>
+                            <tr><th>${label.memo}</th><td>${pinData.Memo || '-'}</td></tr>
                         </table>
                     `;
                 } else {
-                    content.innerHTML = `<p>Not Found</p>`;
+                  // IDが一致するデータが見つからなかった場合
+                    content.innerHTML = `
+                        <p style="color:red; font-weight:bold;">
+                            ピンバッジのデータが見つかりませんでした。<br>
+                            (探したID: ${pinId})
+                        </p>
+                    `;
                 }
-            });
+            })
+            .catch(error => console.error('データの読み込みに失敗しました:', error));
     </script>
 </body>
 </html>

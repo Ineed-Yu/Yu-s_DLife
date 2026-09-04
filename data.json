@@ -5,36 +5,36 @@
     "ReleaseYear": "20xx年",
     "Character": "???",
     "Editionsize": "OE",
-    "Image": "images/.JPG",
+    "Image": "images/_DSC1106.JPG",
     "Memo": "???"
   },
- "en" {
+ "en" ,{
     "Id": "0001",
     "Name": "pins_0001",
     "ReleaseYear": "20xx年",
     "Character": "???",
     "Editionsize": "OE",
-    "Image": "images/.JPG",
+    "Image": "images/DSC_9556.JPG",
     "Memo": "???"
   }, 
 
-   "fr" {
+   "fr" ,{
     "Id": "0001",
     "Name": "pins_0001",
     "ReleaseYear": "20xx年",
     "Character": "???",
     "Editionsize": "OE",
-    "Image": "images/.JPG",
+    "Image": "images/DSC_9584.JPG",
     "Memo": "???"
   },
 
- "zh" {
+ "zh" ,{
     "Id": "0001",
     "Name": "pins_0001",
     "ReleaseYear": "20xx年",
     "Character": "???",
     "Editionsize": "OE",
-    "Image": "images/.JPG",
+    "Image": "images/DSC_9584.JPG",
     "Memo": "???"
   }, 
 

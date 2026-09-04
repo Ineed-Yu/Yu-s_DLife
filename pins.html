@@ -21,7 +21,7 @@
 
             <li><a href="pins.html"
                 class="nav-link"
-                data-ja="ピンバッジ" data-en="Pin Badges" data-fr="Badges" data-zh="徽章"
+                data-ja="ピンボード" data-en="Pin Badges" data-fr="Badges" data-zh="徽章"
                 data-url-ja="pins.html" data-url-en="pins.html" data-url-fr="pins.html" data-url-zh="pins.html">
                 ピンバッジ
                 </a>
@@ -122,8 +122,8 @@
 </head>
 <body>
 
-    <!-- あなたが今やっている書き方に合わせて、data-属性でタイトルを用意 -->
-    <h1 data-ja="ピンバッジ コレクション" data-en="Pin Badge Collection" data-fr="Collection de Badges" data-zh="徽章收藏">
+    <!-- 書き方に合わせて、data-属性でタイトルを用意 -->
+    <h1 data-ja="ピンボード" data-en="Pin Badge Collection" data-fr="Collection de Badges" data-zh="徽章收藏">
         ピンバッジ コレクション
     </h1>
 
@@ -149,8 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
             link.href = targetUrl;
         }
     });
-    
-    // (この後ろに、前回の fetch('data.json') などの続きの処理を書きます)
+
 });
 
 
@@ -166,27 +165,202 @@ document.addEventListener("DOMContentLoaded", () => {
       fetch('data.json')
         .then(response => response.json())
         .then(data => {
-          const pins = document.getElementById('pins');
+          const pinsContainer = document.getElementById('pins');
+
+          if (!pinsContainer){
+            console,error("エラー: id='pins'のタグが見つかりません。");
+            return;
+          }
           
           data.forEach(pin => {
             const item = document.createElement('a');
             item.className = 'pins-item';
             
             // 次のページへはシンプルに遷移（URLパラメータは不要！）
-            item.href = `detail.html?id=${pin.id}`; 
+            item.href = `detail.pins.html?id=${pin.Id}`; 
             
-            // 現在の言語に応じたデータを取得（例: pin['ja'] や pin['en']）
-            // フランス語(fr)や中国語(zh)のデータがJSONにまだ無い時のために、無ければ日本語を出す安全対策
+            // 現在の言語に応じたデータを取得
+            // (fr)や(zh)のデータがJSONに無ければ日本語
             const pinData = pin[currentLang] || pin['ja'];
             
             item.innerHTML = `
-              <img src="${pin.image}" alt="${pinData.name}">
-              <p>${pinData.name}</p>
+              <img src="${pin.Image}" alt="${pinData.Name}">
+              <p>${pinData.Name}</p>
             `;
-            pins.appendChild(item);
+            pinsContainer.appendChild(item);
           });
         })
         .catch(error => console.error('データの読み込みに失敗しました:', error));
     </script>
 </body>
+
+
+<style>
+    /* 1. ページ全体の背景（部屋の壁紙のようなイメージ） */
+body {
+    margin: 0;
+    padding: 20px;
+    background-color: #eae3d2; /* 落ち着いた壁紙風のベージュ */
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ページのタイトル（焼き印のような色合いに） */
+h1 {
+    color: #4a3319;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.6);
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+/* 2. 画面サイズに合わせて自動調整されるピンボード（額縁） */
+.pins-container {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 1000px; /* PCでの最大幅 */
+    min-height: 80vh;   /* 画面の高さに合わせる */
+    
+    /* コルクボードの背景（CSSのグラデーション機能でコルクっぽい質感を表現） */
+    background-color: #cca473;
+    background-image: 
+        radial-gradient(rgba(0,0,0,0.08) 15%, transparent 16%),
+        radial-gradient(rgba(0,0,0,0.08) 15%, transparent 16%);
+    background-size: 4px 4px;
+    background-position: 0 0, 2px 2px;
+
+    /* 🌲 木のフレーム（額縁）を2重のボーダーと影で表現 */
+    border: 16px solid #5c3a21; /* 外枠の太い木 */
+    outline: 4px solid #3d2411; /* 内枠の濃い木 */
+    border-radius: 4px;
+    
+    /* ボードが壁に掛かっているようなリアルな影 */
+    box-shadow: 
+        inset 0 10px 20px rgba(0,0,0,0.3), /* ボード内側の影 */
+        0 15px 30px rgba(0,0,0,0.3);      /* ボード外側の影 */
+
+    /* ピンバッジを並べる設定（レスポンシブ対応グリッド） */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); /* 画面幅に合わせて自動で列数が変わる */
+    gap: 30px; /* ピン同士の間隔 */
+    padding: 40px; /* 額縁とピンの間の余白 */
+}
+
+/* 3. コルクボードに刺さっているピンバッジ1つの枠 */
+.pins-item {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+}
+
+/* 4. ピンバッジ画像（ボードに直接刺さっているように見せる魔法） */
+.pins-item img {
+    width: 100%;
+    height: auto;
+    max-width: 110px; /* ピンバッジが大きくなりすぎないように制限 */
+    
+    /* 背景を透明にしたピンバッジ画像（PNG/JPG）に、斜め下のリアルな影をつける */
+    filter: drop-shadow(8px 12px 6px rgba(0, 0, 0, 0.4));
+    
+    /* ほんの少しだけピンを傾けることで、手作業で刺したようなリアルさを演出 */
+    transform: rotate(-3deg); 
+    
+    transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+/* 5. バッジの名前（コレクションのラベル風） */
+.pins-item p {
+    margin: 8px 0 0 0;
+    font-size: 11px;
+    font-weight: bold;
+    color: #fff;
+    background-color: rgba(61, 36, 17, 0.75); /* 木の色の半透明座布団 */
+    padding: 3px 8px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    word-break: break-all; /* 文字が長すぎても枠からはみ出さないように */
+}
+
+/* 💡 マウスを乗せたとき（スマホならタップしたとき）のリアクション */
+.pins-item:hover img {
+    /* 触ると、ピンがボードに「ぐっと奥まで押し込まれた」ように、影を薄くして位置を少しずらす */
+    filter: drop-shadow(3px 4px 2px rgba(0, 0, 0, 0.5));
+    transform: translate(3px, 4px) rotate(0deg);
+}
+
+/* 📱 スマホ画面（幅600px以下）のときだけの自動調整 */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+    .pins-container {
+        border: 10px solid #5c3a21; /* 額縁を少し細くして画面を広く使う */
+        padding: 20px; /* 余白を狭くする */
+        gap: 20px;
+        min-height: 85vh;
+    }
+    .pins-container {
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); /* スマホ用にピンの並びをコンパクトに */
+    }
+    .pins-item img {
+        max-width: 80px;
+    }
+    .pins-item p {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+}
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+      // 1. ブラウザが記憶している言語（'ja', 'en' など）を読み込む
+      const currentLang = localStorage.getItem('selectedLanguage') || 'ja';
+
+      // 2. ページ全体の data-属性がついたテキスト（タイトルなど）を現在の言語に書き換える
+      document.querySelectorAll(`[data-${currentLang}]`).forEach(el => {
+          el.innerText = el.getAttribute(`data-${currentLang}`);
+      });
+
+      // 3. JSONファイルを読み込む
+      fetch('data.json')
+        .then(response => response.json())
+        .then(data => {
+          const pinsContainer = document.getElementById('pins');
+          
+          if (!pinsContainer) return;
+
+          data.forEach(pin => {
+            const item = document.createElement('a');
+            item.className = 'pins-item';
+            
+            // ★大文字の「Id」を使って、詳細ページ（detail.pins.html）へのリンクを作る
+            item.href = `detail.pins.html?id=${pin.Id}`; 
+            
+            // ★大文字の「Image」と「Name」を確実に受け取る
+            const pinImage = pin.Image;
+            const pinName = pin.Name;
+            
+            // もし将来的にバッジ名自体も多言語化（JSON内に ja や en を用意）した時のために
+            // pin[currentLang] があればそれを使い、無ければ直下の pinName を使う安全な設計にしています
+            const displayName = (pin[currentLang] && pin[currentLang].Name) ? pin[currentLang].Name : pinName;
+
+            item.innerHTML = `
+              <img src="${pinImage}" alt="${displayName}">
+              <p>${displayName}</p>
+            `;
+            pinsContainer.appendChild(item);
+          });
+        })
+        .catch(error => console.error('データの読み込みに失敗しました:', error));
+  });
+</script>
+
 </html>
