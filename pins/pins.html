@@ -121,7 +121,9 @@
     </style>
 </head>
 <body>
-
+    <a href="/index.html" class="back-link" data-ja="← ホームに戻る" data-en="← Back to Home" data-fr="← Retour à l'accueil" data-zh="← 返回首页">
+            ← ホームに戻る
+     </a>
     <!-- 書き方に合わせて、data-属性でタイトルを用意 -->
     <h1 data-ja="ピンボード" data-en="Pin Badge Collection" data-fr="Collection de Badges" data-zh="徽章收藏">
         ピンバッジ コレクション
@@ -207,7 +209,7 @@ body {
     align-items: center;
 }
 
-/* ページのタイトル（焼き印のような色合いに） */
+/* ページのタイトル */
 h1 {
     color: #4a3319;
     text-shadow: 1px 1px 1px rgba(255,255,255,0.6);
@@ -244,8 +246,8 @@ h1 {
     /* ピンバッジを並べる設定（レスポンシブ対応グリッド） */
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); /* 画面幅に合わせて自動で列数が変わる */
-    gap: 30px; /* ピン同士の間隔 */
-    padding: 40px; /* 額縁とピンの間の余白 */
+    gap: 20px; /* ピン同士の間隔 */
+    padding: 20px; /* 額縁とピンの間の余白 */
 }
 
 /* 3. コルクボードに刺さっているピンバッジ1つの枠 */
@@ -265,12 +267,11 @@ h1 {
     height: auto;
     max-width: 110px; /* ピンバッジが大きくなりすぎないように制限 */
     
-    /* 背景を透明にしたピンバッジ画像（PNG/JPG）に、斜め下のリアルな影をつける */
+    /* 背景を透明にしたピンバッジ画像に、斜め下のリアルな影をつける */
     filter: drop-shadow(8px 12px 6px rgba(0, 0, 0, 0.4));
     
     /* ほんの少しだけピンを傾けることで、手作業で刺したようなリアルさを演出 */
-    transform: rotate(-3deg); 
-    
+    transform: rotate(-5deg); 
     transition: filter 0.2s ease, transform 0.2s ease;
 }
 
@@ -280,22 +281,22 @@ h1 {
     font-size: 11px;
     font-weight: bold;
     color: #fff;
-    background-color: rgba(61, 36, 17, 0.75); /* 木の色の半透明座布団 */
+    background-color: rgba(61, 36, 17, 0.75); /* 木の色 */
     padding: 3px 8px;
     border-radius: 10px;
     text-align: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    word-break: break-all; /* 文字が長すぎても枠からはみ出さないように */
+    word-break: break-all; /* 文字が枠からはみ出さないように */
 }
 
-/* 💡 マウスを乗せたとき（スマホならタップしたとき）のリアクション */
+/* タップした時のアクション */
 .pins-item:hover img {
-    /* 触ると、ピンがボードに「ぐっと奥まで押し込まれた」ように、影を薄くして位置を少しずらす */
-    filter: drop-shadow(3px 4px 2px rgba(0, 0, 0, 0.5));
+    /* タップ時のアクション/位置を少しずらす */
+    filter: drop-shadow(3px 4px 2px rgba(170, 56, 56, 0.5));
     transform: translate(3px, 4px) rotate(0deg);
 }
 
-/* 📱 スマホ画面（幅600px以下）のときだけの自動調整 */
+/* 画面幅の自動調整 */
 @media (max-width: 600px) {
     body {
         padding: 10px;
@@ -307,7 +308,7 @@ h1 {
         min-height: 85vh;
     }
     .pins-container {
-        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); /* スマホ用にピンの並びをコンパクトに */
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); /* ピンの並び */
     }
     .pins-item img {
         max-width: 80px;
@@ -321,7 +322,7 @@ h1 {
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-      // 1. ブラウザが記憶している言語（'ja', 'en' など）を読み込む
+      // 1. ブラウザが記憶している言語を読み込む
       const currentLang = localStorage.getItem('selectedLanguage') || 'ja';
 
       // 2. ページ全体の data-属性がついたテキスト（タイトルなど）を現在の言語に書き換える
@@ -341,14 +342,14 @@ h1 {
             const item = document.createElement('a');
             item.className = 'pins-item';
             
-            // ★大文字の「Id」を使って、詳細ページ（detail.pins.html）へのリンクを作る
+            // 「Id」を使って、詳細ページ（detail.pins.html）のリンクを作る
             item.href = `detail.pins.html?id=${pin.Id}`; 
             
             // ★大文字の「Image」と「Name」を確実に受け取る
             const pinImage = pin.Image;
             const pinName = pin.Name;
             
-            // もし将来的にバッジ名自体も多言語化（JSON内に ja や en を用意）した時のために
+            // バッジ名多言語化（JSON内に ja や en を用意)
             // pin[currentLang] があればそれを使い、無ければ直下の pinName を使う安全な設計にしています
             const displayName = (pin[currentLang] && pin[currentLang].Name) ? pin[currentLang].Name : pinName;
 

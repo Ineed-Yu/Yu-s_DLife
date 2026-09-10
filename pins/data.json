@@ -1,0 +1,82 @@
+[
+  {
+    "Id": "0001",
+    "Name": "pins_0001",
+    "ReleaseYear": "20xx年",
+    "Character": "???",
+    "Editionsize": "OE",
+    "Image": "images/_DSC1106.JPG",
+    "Memo": "???"
+  },
+ 
+  {
+    "Id": "0002",
+    "Name": "pins_0002",
+    "ReleaseYear": "20xx年",
+    "Character": "???",
+    "Editionsize": "OE",
+    "Image": "images/_DSC1106.JPG",
+    "Memo": "???"
+  },
+
+ {
+    "Id": "0003",
+    "Name": "pins_0003",
+    "ReleaseYear": "20xx年",
+    "Character": "???",
+    "Editionsize": "OE",
+    "Image": "images/_DSC1106.JPG",
+    "Memo": "???"
+  },
+
+   {
+    "Id": "0004",
+    "Name": "pins_0004",
+    "ReleaseYear": "20xx年",
+    "Character": "???",
+    "Editionsize": "OE",
+    "Image": "images/_DSC1106.JPG",
+    "Memo": "???"
+  },
+
+   {
+    "Id": "0005",
+    "Name": "pins_0005",
+    "ReleaseYear": "20xx年",
+    "Character": "???",
+    "Editionsize": "OE",
+    "Image": "images/_DSC1106.JPG",
+    "Memo": "???"
+  },
+
+   {
+    "Id": "0006",
+    "Name": "pins_0006",
+    "ReleaseYear": "20xx年",
+    "Character": "???",
+    "Editionsize": "OE",
+    "Image": "images/_DSC1106.JPG",
+    "Memo": "???"
+  },
+
+   {
+    "Id": "0007",
+    "Name": "pins_0007",
+    "ReleaseYear": "20xx年",
+    "Character": "???",
+    "Editionsize": "OE",
+    "Image": "images/_DSC1106.JPG",
+    "Memo": "???"
+  },
+
+ {
+    "Id": "0008",
+    "Name": "pins_0008",
+    "ReleaseYear": "20xx年",
+    "Character": "???",
+    "Editionsize": "OE",
+    "Image": "images/_DSC1106.JPG",
+    "Memo": "???"
+  }
+
+]
