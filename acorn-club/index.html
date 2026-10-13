@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 準備中の間は検索結果に出さない（公開時にこの行を削除） -->
+    <meta name="robots" content="noindex">
+    <title>Acorn Club | Yu's DLife</title>
+
+<style>
+.lang-switch-wrapper {
+    display: flex;
+    justify-content: 0%;
+    padding: 20px 0;
+    width: 100%;
+    position: relative;
+    z-index: 10;
+}
+
+.lang-switch-box {
+    display: flex;
+    background-color: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(8px);
+    padding: 4px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.lang-btn {
+    background: none;
+    border: none;
+    font-size: 12px;
+    font-weight: bold;
+    color: #777;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: all 0.5s ease;
+}
+
+.lang-btn.active {
+    background-color: #fff;
+    color: #222;                                 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+</style>
+
+<style>
+    /* ボタンの配置と見た目 */
+.menu-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    height: 60px;
+    width: 60px;
+    justify-content: center;
+    align-items: center;
+    z-index: 90;
+    background-color: #333;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.menu-btn span, .menu-btn span::before, .menu-btn span::after {
+    content: '';
+    display: block;
+    height: 3px;
+    width: 25px;
+    border-radius: 3px;
+    background-color: #fff;
+    position: absolute;
+}
+.menu-btn span::before { bottom: 8px; }
+.menu-btn span::after { top: 8px; }
+
+/* チェックボックスは隠す */
+#menu-btn-check { display: none; }
+
+/* チェックが入ったらメニューを表示 */
+#menu-btn-check:checked ~ .menu-content { right: 0; }
+
+/* メニューの画面 */
+.menu-content {
+    width: 300px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    right: -300px; /* 最初は画面の外に隠す */
+    z-index: 80;
+    background-color: #f4f4f4;
+    transition: all 0.5s;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    padding-top: 80px;
+}
+.menu-content ul { list-style: none; padding: 0; }
+.menu-content ul li a {
+    display: block;
+    width: 100%;
+    padding: 15px 20px;
+    color: #333;
+    text-decoration: none;
+    border-bottom: 1px solid #ddd;
+}
+</style>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: #333;
+            min-height: 100vh;
+            background-image: url("/images/clarice.shn.dlr.001.JPG");
+            background-size: cover;
+            background-position: 60% 30%;
+            background-attachment: fixed;
+            background-color: #eae3d2;
+        }
+
+        .soon-wrapper {
+            max-width: 580px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .soon-card {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            padding: 36px 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .soon-label {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            color: #fff;
+            background-color: #333;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+
+        .soon-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 0 16px 0;
+        }
+
+        .soon-text {
+            font-size: 14px;
+            line-height: 1.8;
+            margin: 0 0 24px 0;
+        }
+
+        .soon-note {
+            font-size: 11px;
+            line-height: 1.6;
+            color: #777;
+            margin: 0 0 24px 0;
+        }
+
+        .soon-back {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.92);
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            padding: 12px 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .soon-back:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.12);
+        }
+    </style>
+</head>
+<body>
+
+<lang-switch>
+<div class="lang-switch-wrapper">
+    <div class="lang-switch-box">
+        <button onclick="switchLanguage('ja')" id="btn-ja" class="lang-btn active">JP</button>
+        <button onclick="switchLanguage('en')" id="btn-en" class="lang-btn">EN</button>
+        <button onclick="switchLanguage('fr')" id="btn-fr" class="lang-btn">FR</button>
+        <button onclick="switchLanguage('zh')" id="btn-zh" class="lang-btn">ZH</button>
+    </div>
+</div>
+</lang-switch>
+
+<!-- ハンバーガーメニューのボタン -->
+<div class="hamburger-menu">
+    <input type="checkbox" id="menu-btn-check">
+    <label for="menu-btn-check" class="menu-btn"><span></span></label>
+    
+    <!-- メニューの中身 -->
+    <div class="menu-content">
+        <ul>
+            <li><a href="/index.html"
+                class="nav-link"
+                data-ja="ホーム" data-en="Home" data-fr="Accueil" data-zh="首页"
+                data-url-ja="/index.html" data-url-en="/index.html" data-url-fr="/index.html" data-url-zh="/index.html">
+                ホーム
+                </a>
+            </li>
+
+            <li><a href="/pins/pins.html"
+                class="nav-link"
+                data-ja="ピンボード" data-en="Pin Badges" data-fr="Badges" data-zh="徽章"
+                data-url-ja="/pins/pins.html" data-url-en="/pins/pins.html" data-url-fr="/pins/pins.html" data-url-zh="/pins/pins.html">
+                ピンボード
+                </a>
+            </li>
+
+            <li><a href="/blog/"
+                class="nav-link"
+                data-ja="ブログ" data-en="Blog" data-fr="Blog" data-zh="博客"
+                data-url-ja="/blog/" data-url-en="/blog/" data-url-fr="/blog/" data-url-zh="/blog/">
+                ブログ
+                </a>
+            </li>
+            <li><a href="/acorn-club/"
+                class="nav-link"
+                data-ja="Acorn Club" data-en="Acorn Club" data-fr="Acorn Club" data-zh="Acorn Club"
+                data-url-ja="/acorn-club/" data-url-en="/acorn-club/" data-url-fr="/acorn-club/" data-url-zh="/acorn-club/">
+                Acorn Club
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+    <!-- Acorn Club の受け皿（クラリスにまつわる非公式・非収益のファンページ／wiki として制作予定） -->
+    <main class="soon-wrapper">
+        <div class="soon-card">
+            <span class="soon-label"
+                  data-ja="準備中" data-en="Coming Soon" data-fr="Bientôt" data-zh="准备中">準備中</span>
+            <h1 class="soon-title">Acorn Club</h1>
+            <p class="soon-text"
+               data-ja="クラリスが大好きな人のための、非公式ファンページを準備しています。<br>公開まで、もう少しお待ちください。"
+               data-en="An unofficial fan page for everyone who loves Clarice is in the works.<br>Please stay tuned."
+               data-fr="Une page de fans non officielle pour tous ceux qui aiment Clarice est en préparation.<br>Restez connectés."
+               data-zh="为喜爱Clarice的大家准备的非官方粉丝页面正在制作中。<br>敬请期待。">クラリスが大好きな人のための、非公式ファンページを準備しています。<br>公開まで、もう少しお待ちください。</p>
+            <p class="soon-note"
+               data-ja="※ 個人による非公式・非営利のファンページです。ウォルト・ディズニー・カンパニーおよび関連会社とは一切関係ありません。"
+               data-en="* This is an unofficial, non-commercial fan page made by an individual. It is not affiliated with The Walt Disney Company or its affiliates."
+               data-fr="* Page de fans non officielle et non commerciale, réalisée par un particulier. Sans lien avec The Walt Disney Company ni ses filiales."
+               data-zh="※ 本页面为个人制作的非官方、非营利粉丝页面，与华特迪士尼公司及其关联公司无任何关系。">※ 個人による非公式・非営利のファンページです。ウォルト・ディズニー・カンパニーおよび関連会社とは一切関係ありません。</p>
+
+            <a href="/index.html" class="soon-back"
+               data-ja="← ホームに戻る" data-en="← Back to Home" data-fr="← Retour à l'accueil" data-zh="← 返回首页">← ホームに戻る</a>
+        </div>
+    </main>
+
+<script>
+function getSavedLanguage() {
+    try {
+        return localStorage.getItem('selectedLanguage') || 'ja';
+    } catch (e) {
+        return 'ja';
+    }
+}
+
+function switchLanguage(lang) {
+    // 1.言語をブラウザに記憶
+    try {
+        localStorage.setItem('selectedLanguage', lang);
+    } catch (e) {}
+
+    // 2.data-言語属性のテキストを書き換え（無い言語は日本語）
+    document.querySelectorAll('[data-ja]').forEach(el => {
+        el.innerHTML = el.getAttribute('data-' + lang) || el.getAttribute('data-ja');
+    });
+
+    // 3.data-言語属性のurlを書き換え
+    document.querySelectorAll('.nav-link').forEach(link => {
+        const targetUrl = link.getAttribute(`data-url-${lang}`);
+        if (targetUrl) link.href = targetUrl;
+    });
+
+    // 4.言語ボタンのui
+    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = document.getElementById('btn-' + lang);
+    if (activeBtn) activeBtn.classList.add('active');
+}
+
+// 5.ページを開いた時に、前回選んだ言語を反映
+document.addEventListener('DOMContentLoaded', () => {
+    const savedLang = getSavedLanguage();
+    if (savedLang !== 'ja' && document.getElementById('btn-' + savedLang)) {
+        switchLanguage(savedLang);
+    }
+});
+</script>
+</body>
+</html>

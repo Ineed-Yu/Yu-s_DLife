@@ -107,9 +107,11 @@ h1 {
 /* 2. 画面サイズに合わせて自動調整されるピンボード（額縁） */
 .pins-container {
     box-sizing: border-box;
-    width: 100%;
-    max-width: 1000px; /* PCでの最大幅 */
-    min-height: 80vh;   /* 画面の高さに合わせる */
+    /* 登録されているピンの点数に合わせて、ボードの大きさが自動で決まる */
+    width: fit-content;
+    max-width: min(100%, 1000px); /* PCでの最大幅 */
+    --pin-size: 130px; /* ピン1つ分の幅 */
+    --pin-cols: 5;     /* 列数（JavaScriptが点数と画面幅から自動計算して上書き） */
 
     /* コルクボードの背景（CSSのグラデーション機能でコルクっぽい質感を表現） */
     background-color: #cca473;
@@ -131,9 +133,15 @@ h1 {
 
     /* ピンバッジを並べる設定（レスポンシブ対応グリッド） */
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); /* 画面幅に合わせて自動で列数が変わる */
+    grid-template-columns: repeat(var(--pin-cols), var(--pin-size)); /* 点数と画面幅に合わせて列数が変わる */
     gap: 20px; /* ピン同士の間隔 */
     padding: 20px; /* 額縁とピンの間の余白 */
+}
+
+/* ピンが0点の時も、空のボードとして見えるようにする */
+.pins-container.is-empty {
+    width: 100%;
+    min-height: 200px;
 }
 
 /* 3. コルクボードに刺さっているピンバッジ1つの枠 */
@@ -191,10 +199,7 @@ h1 {
         border: 10px solid #5c3a21; /* 額縁を少し細くして画面を広く使う */
         padding: 20px; /* 余白を狭くする */
         gap: 20px;
-        min-height: 85vh;
-    }
-    .pins-container {
-        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); /* ピンの並び */
+        --pin-size: 90px; /* スマホでのピン1つ分の幅 */
     }
     .pins-item img {
         max-width: 80px;
@@ -227,21 +232,21 @@ h1 {
                 class="nav-link"
                 data-ja="ピンボード" data-en="Pin Badges" data-fr="Badges" data-zh="徽章"
                 data-url-ja="/pins/pins.html" data-url-en="/pins/pins.html" data-url-fr="/pins/pins.html" data-url-zh="/pins/pins.html">
-                ピンバッジ
+                ピンボード
                 </a>
             </li>
 
-            <li><a href="#access"
+            <li><a href="/blog/"
                 class="nav-link"
                 data-ja="ブログ" data-en="Blog" data-fr="Blog" data-zh="博客"
-                data-url-ja="#access" data-url-en="#access" data-url-fr="#access" data-url-zh="#access">
+                data-url-ja="/blog/" data-url-en="/blog/" data-url-fr="/blog/" data-url-zh="/blog/">
                 ブログ
                 </a>
             </li>
-            <li><a href="#access"
+            <li><a href="/acorn-club/"
                 class="nav-link"
                 data-ja="Acorn Club" data-en="Acorn Club" data-fr="Acorn Club" data-zh="Acorn Club"
-                data-url-ja="#access" data-url-en="#access" data-url-fr="#access" data-url-zh="#access">
+                data-url-ja="/acorn-club/" data-url-en="/acorn-club/" data-url-fr="/acorn-club/" data-url-zh="/acorn-club/">
                 Acorn Club
                 </a>
             </li>
@@ -254,7 +259,7 @@ h1 {
      </a>
     <!-- 書き方に合わせて、data-属性でタイトルを用意 -->
     <h1 data-ja="ピンボード" data-en="Pin Badge Collection" data-fr="Collection de Badges" data-zh="徽章收藏">
-        ピンバッジ コレクション
+        ピンボード
     </h1>
 
     <div id="pins" class="pins-container">
@@ -270,6 +275,30 @@ h1 {
           return 'ja';
       }
   }
+
+  // ピンの点数と画面幅から、行ごとの数がそろう列数を計算する
+  // 例: PCで10点 → 5列×2行 / スマホで10点 → 3列×4行
+  function layoutPinBoard() {
+      const board = document.getElementById('pins');
+      if (!board) return;
+      const count = board.children.length;
+      board.classList.toggle('is-empty', count === 0);
+      if (count === 0) return;
+
+      const style = getComputedStyle(board);
+      const pinSize = parseFloat(style.getPropertyValue('--pin-size')) || 130;
+      const gap = parseFloat(style.columnGap) || 20;
+      const frame = (parseFloat(style.borderLeftWidth) + parseFloat(style.paddingLeft)) * 2;
+      const bodyStyle = getComputedStyle(document.body);
+      const available = Math.min(1000,
+          document.body.clientWidth - parseFloat(bodyStyle.paddingLeft) - parseFloat(bodyStyle.paddingRight));
+
+      const maxCols = Math.max(1, Math.floor((available - frame + gap) / (pinSize + gap)));
+      const rows = Math.ceil(count / maxCols);
+      const cols = Math.ceil(count / rows);
+      board.style.setProperty('--pin-cols', cols);
+  }
+  window.addEventListener('resize', layoutPinBoard);
 
   document.addEventListener("DOMContentLoaded", () => {
       // 1. ブラウザが記憶している言語を読み込む
@@ -321,6 +350,9 @@ h1 {
             item.append(img, label);
             pinsContainer.appendChild(item);
           });
+
+          // 並べ終わったら、点数に合わせてボードを整える
+          layoutPinBoard();
         })
         .catch(error => console.error('データの読み込みに失敗しました:', error));
   });
