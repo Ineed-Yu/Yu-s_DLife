@@ -1,16 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
-
-
-<lang-switch>
-<div class="lang-switch-wrapper">
-    <div class="lang-switch-box">
-        <button onclick="switchLanguage('ja')" id="btn-ja" class="lang-btn active">JP</button>
-        <button onclick="switchLanguage('en')" id="btn-en" class="lang-btn">EN</button>
-        <button onclick="switchLanguage('fr')" id="btn-fr" class="lang-btn">FR</button>
-        <button onclick="switchLanguage('zh')" id="btn-zh" class="lang-btn">ZH</button>
-    </div>
-</div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yu's DLife</title>
 
 <style>
 .lang-switch-wrapper {
@@ -50,91 +43,6 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 </style>  
-
-<body>
-    
-<script>
-function switchLanguage(lang) {
-
-    //1.言語をブラウザに記憶
-    localStorage.setItem('selectedLanguage', lang);
-
-    //2.data-言語属性のテキストを書き換え
-    document.querySelectorAll(`[data-${lang}]`).forEach(el => {
-        el.innerText = el.getAttribute(`data-${lang}`);
-    });
-
-    //3.data-言語属性のurlを書き換え
-    document.querySelectorAll('.nav-link').forEach(link => {
-        const targetUrl = link.getAttribute(`data-url-${lang}`);
-        if (targetUrl) {
-            link.href = targetUrl;
-        }
-    });
-
-    //4.言語ボタンのui
-    const buttons = document.querySelectorAll('.lang-btn');
-    buttons.forEach(btn => btn.classList.remove('active'));
-    document.getElementById('btn-' + lang).classList.add('active');
-    const elements = document.querySelectorAll('[data-ja]');
-    elements.forEach(el => {
-        const translatedText = el.getAttribute('data-' + lang);
-        if (translatedText) {
-            el.innerHTML = translatedText;
-        } else {
-            el.innerHTML = el.getAttribute('data-ja');
-        }
-    });
-}
-</script>
-
-
-</body>
-
-
-<body>
-<!-- ハンバーガーメニューのボタン -->
-<div class="hamburger-menu">
-    <input type="checkbox" id="menu-btn-check">
-    <label for="menu-btn-check" class="menu-btn"><span></span></label>
-    
-    <!-- メニューの中身 -->
-    <div class="menu-content">
-        <ul>
-            <li><a href="index.html"
-                class="nav-link"
-                data-ja="ホーム" data-en="Home" data-fr="Accueil" data-zh="首页"
-                data-url-ja="index.html" data-url-en="index.html" data-url-fr="index.html" data-url-zh="index.html">
-                ホーム
-                </a>
-            </li>
-
-            <li><a href="pins/pins.html"
-                class="nav-link"
-                data-ja="ピンボード" data-en="Pin Badges" data-fr="Badges" data-zh="徽章"
-                data-url-ja="pins.html" data-url-en="pins.html" data-url-fr="pins.html" data-url-zh="pins.html">
-                ピンバッジ
-                </a>
-            </li>
-
-            <li><a href="#access"
-                class="nav-link"
-                data-ja="ブログ" data-en="Blog" data-fr="Blog" data-zh="博客"
-                data-url-ja="#access" data-url-en="access" data-url-fr="#access" data-url-zh="#access">
-                ブログ
-                </a>
-            </li>
-            <li><a href="#access"
-                class="nav-link"
-                data-ja="Acorn Clib" data-en="Acorn Clib" data-fr="Acorn Club" data-zh="Acorn Club"
-                data-url-ja="#access" data-url-en="access" data-url-fr="#access" data-url-zh="#access">
-                Acorn Club
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
-</body>
 
 <style>
     /* ボタンの配置と見た目 */
@@ -194,12 +102,6 @@ function switchLanguage(lang) {
 }
 </style>
 
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yu's DLife</title>
-    
     <style>
         body {
             margin: 0;
@@ -332,8 +234,304 @@ function switchLanguage(lang) {
         }
 
     </style>
+
+<style>
+
+.x-cards-scroll {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;          
+    scroll-snap-type: x mandatory; 
+    padding: 10px 4px 20px 4px;
+    width: 100%;
+    box-sizing: border-box;
+    
+    scrollbar-width: thin;
+}
+.x-cards-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+.x-cards-scroll::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.1);
+    border-radius: 3px;
+}
+
+.x-card {
+    flex: 0 0 85%;         
+    max-width: 360px;
+    scroll-snap-align: center;
+    background-color: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 16px;
+    text-align: left;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s;
+    box-sizing: border-box;
+}
+.x-card:hover {
+    transform: translateY(-3px);
+}
+.x-card-header {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.x-card-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.08); 
+    
+    object-fit: cover; 
+  
+    object-position: center; 
+}
+
+.insta-card-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; 
+    margin-right: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    object-fit: cover; 
+   
+    object-position: 10% 90%; 
+}
+
+.x-card-user {
+    display: flex;
+    flex-direction: column;
+}
+.x-card-name {
+    font-weight: bold;
+    font-size: 14px;
+}
+.x-card-handle {
+    color: #666;
+    font-size: 12px;
+}
+.x-logo {
+    position: absolute;
+    right: 0;
+    top: 2px;
+    font-size: 16px;
+    color: #444;
+}
+.x-card-text {
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0 0 10px 0;
+}
+
+.x-card-media, 
+.insta-card-media {
+    border-radius: 12px;
+    overflow: hidden;
+    width: 100%;
+  
+    height: 300px; 
+    background-color: rgba(0, 0, 0, 0.03); 
+}
+
+.x-card-media img, 
+.insta-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: 50% 50%; 
+}
+
+</style>
+
+    <style>
+
+
+.insta-cards-scroll {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 10px 4px 20px 4px;
+    width: 100%;
+    box-sizing: border-box;
+    scrollbar-width: thin; 
+}
+.insta-cards-scroll::-webkit-scrollbar {
+    display: none; 
+}
+
+.insta-card {
+    flex: 0 0 85%;            
+    max-width: 360px;
+    scroll-snap-align: center;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 14px;
+    text-align: left;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    transition: transform 0.3s;
+    box-sizing: border-box;
+}
+.insta-card:hover {
+    transform: translateY(-3px);
+}
+.insta-card-header {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-bottom: 10px;
+}
+.insta-card-user {
+    display: flex;
+    flex-direction: column;
+}
+.insta-card-name {
+    font-weight: bold;
+    font-size: 13px;
+}
+.insta-card-location {
+    color: #666;
+    font-size: 11px;
+    margin-top: 1px;
+}
+.insta-icon {
+    position: absolute;
+    right: 0;
+    top: 5px;
+    font-size: 14px;
+}
+.insta-card-actions {
+    display: flex;
+    gap: 12px;
+    margin: 10px 0 6px 0;
+    font-size: 16px;
+}
+.insta-card-text {
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 0;
+    word-break: break-all;
+}
+.insta-card-text strong {
+    margin-right: 4px;
+}
+    </style>
 </head>
 <body>
+
+<lang-switch>
+<div class="lang-switch-wrapper">
+    <div class="lang-switch-box">
+        <button onclick="switchLanguage('ja')" id="btn-ja" class="lang-btn active">JP</button>
+        <button onclick="switchLanguage('en')" id="btn-en" class="lang-btn">EN</button>
+        <button onclick="switchLanguage('fr')" id="btn-fr" class="lang-btn">FR</button>
+        <button onclick="switchLanguage('zh')" id="btn-zh" class="lang-btn">ZH</button>
+    </div>
+</div>
+</lang-switch>
+
+<script>
+function switchLanguage(lang) {
+
+    //1.言語をブラウザに記憶
+    try {
+        localStorage.setItem('selectedLanguage', lang);
+    } catch (e) {
+        // 保存できない環境でも表示の切り替えは続ける
+    }
+
+    //2.data-言語属性のテキストを書き換え
+    document.querySelectorAll(`[data-${lang}]`).forEach(el => {
+        el.innerText = el.getAttribute(`data-${lang}`);
+    });
+
+    //3.data-言語属性のurlを書き換え
+    document.querySelectorAll('.nav-link').forEach(link => {
+        const targetUrl = link.getAttribute(`data-url-${lang}`);
+        if (targetUrl) {
+            link.href = targetUrl;
+        }
+    });
+
+    //4.言語ボタンのui
+    const buttons = document.querySelectorAll('.lang-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    const activeBtn = document.getElementById('btn-' + lang);
+    if (activeBtn) activeBtn.classList.add('active');
+    const elements = document.querySelectorAll('[data-ja]');
+    elements.forEach(el => {
+        const translatedText = el.getAttribute('data-' + lang);
+        if (translatedText) {
+            el.innerHTML = translatedText;
+        } else {
+            el.innerHTML = el.getAttribute('data-ja');
+        }
+    });
+}
+
+// 5.ページを開いた時に、前回選んだ言語を反映
+document.addEventListener('DOMContentLoaded', () => {
+    let savedLang = 'ja';
+    try {
+        savedLang = localStorage.getItem('selectedLanguage') || 'ja';
+    } catch (e) {}
+    if (savedLang !== 'ja' && document.getElementById('btn-' + savedLang)) {
+        switchLanguage(savedLang);
+    }
+});
+</script>
+
+<!-- ハンバーガーメニューのボタン -->
+<div class="hamburger-menu">
+    <input type="checkbox" id="menu-btn-check">
+    <label for="menu-btn-check" class="menu-btn"><span></span></label>
+    
+    <!-- メニューの中身 -->
+    <div class="menu-content">
+        <ul>
+            <li><a href="/index.html"
+                class="nav-link"
+                data-ja="ホーム" data-en="Home" data-fr="Accueil" data-zh="首页"
+                data-url-ja="/index.html" data-url-en="/index.html" data-url-fr="/index.html" data-url-zh="/index.html">
+                ホーム
+                </a>
+            </li>
+
+            <li><a href="/pins/pins.html"
+                class="nav-link"
+                data-ja="ピンボード" data-en="Pin Badges" data-fr="Badges" data-zh="徽章"
+                data-url-ja="/pins/pins.html" data-url-en="/pins/pins.html" data-url-fr="/pins/pins.html" data-url-zh="/pins/pins.html">
+                ピンバッジ
+                </a>
+            </li>
+
+            <li><a href="#access"
+                class="nav-link"
+                data-ja="ブログ" data-en="Blog" data-fr="Blog" data-zh="博客"
+                data-url-ja="#access" data-url-en="#access" data-url-fr="#access" data-url-zh="#access">
+                ブログ
+                </a>
+            </li>
+            <li><a href="#access"
+                class="nav-link"
+                data-ja="Acorn Club" data-en="Acorn Club" data-fr="Acorn Club" data-zh="Acorn Club"
+                data-url-ja="#access" data-url-en="#access" data-url-fr="#access" data-url-zh="#access">
+                Acorn Club
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
 
     <!-- section1 -->
     <div class="section sec-profile">
@@ -498,16 +696,6 @@ function switchLanguage(lang) {
                 
                 <p class="insta-card-text">
                     <strong>DivaClarice321</strong> Dream and shine Brighter !
-                    <html lang="en">
-                    <head>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Document</title>
-                    </head>
-                    <body>
-                        
-                    </body>
-                    </html>
                 </p>
             </a>
 
@@ -562,204 +750,12 @@ function switchLanguage(lang) {
         </div><!-- /.insta-cards-scroll -->
         
 
-<style>
-
-.x-cards-scroll {
-    display: flex;
-    gap: 16px;
-    overflow-x: auto;          
-    scroll-snap-type: x mandatory; 
-    padding: 10px 4px 20px 4px;
-    width: 100%;
-    box-sizing: border-box;
-    
-    scrollbar-width: thin;
-}
-.x-cards-scroll::-webkit-scrollbar {
-    height: 6px;
-}
-.x-cards-scroll::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.1);
-    border-radius: 3px;
-}
-
-.x-card {
-    flex: 0 0 85%;         
-    max-width: 360px;
-    scroll-snap-align: center;
-    background-color: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(8px);
-    border-radius: 20px;
-    padding: 16px;
-    text-align: left;
-    text-decoration: none;
-    color: #333;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s;
-    box-sizing: border-box;
-}
-.x-card:hover {
-    transform: translateY(-3px);
-}
-.x-card-header {
-    display: flex;
-    align-items: center;
-    position: relative;
-    margin-bottom: 10px;
-}
-
-.x-card-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.08); 
-    
-    object-fit: cover; 
-  
-    object-position: center; 
-}
-
-.insta-card-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%; 
-    margin-right: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    object-fit: cover; 
-   
-    object-position: 10% 90%; 
-}
-
-.x-card-user {
-    display: flex;
-    flex-direction: column;
-}
-.x-card-name {
-    font-weight: bold;
-    font-size: 14px;
-}
-.x-card-handle {
-    color: #666;
-    font-size: 12px;
-}
-.x-logo {
-    position: absolute;
-    right: 0;
-    top: 2px;
-    font-size: 16px;
-    color: #444;
-}
-.x-card-text {
-    font-size: 13px;
-    line-height: 1.5;
-    margin: 0 0 10px 0;
-}
-
-.x-card-media, 
-.insta-card-media {
-    border-radius: 12px;
-    overflow: hidden;
-    width: 100%;
-  
-    height: 300px; 
-    background-color: rgba(0, 0, 0, 0.03); 
-}
-
-.x-card-media img, 
-.insta-card-media img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: 50% 50%; 
-}
-
-</style>
 
     </div>
 </div>
 
-
-    <style>
-
-
-.insta-cards-scroll {
-    display: flex;
-    gap: 16px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding: 10px 4px 20px 4px;
-    width: 100%;
-    box-sizing: border-box;
-    scrollbar-width: thin; 
-}
-.insta-cards-scroll::-webkit-scrollbar {
-    display: none; 
-}
-
-.insta-card {
-    flex: 0 0 85%;            
-    max-width: 360px;
-    scroll-snap-align: center;
-    background-color: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(8px);
-    border-radius: 20px;
-    padding: 14px;
-    text-align: left;
-    text-decoration: none;
-    color: #333;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-    transition: transform 0.3s;
-    box-sizing: border-box;
-}
-.insta-card:hover {
-    transform: translateY(-3px);
-}
-.insta-card-header {
-    display: flex;
-    align-items: center;
-    position: relative;
-    margin-bottom: 10px;
-}
-.insta-card-user {
-    display: flex;
-    flex-direction: column;
-}
-.insta-card-name {
-    font-weight: bold;
-    font-size: 13px;
-}
-.insta-card-location {
-    color: #666;
-    font-size: 11px;
-    margin-top: 1px;
-}
-.insta-icon {
-    position: absolute;
-    right: 0;
-    top: 5px;
-    font-size: 14px;
-}
-.insta-card-actions {
-    display: flex;
-    gap: 12px;
-    margin: 10px 0 6px 0;
-    font-size: 16px;
-}
-.insta-card-text {
-    font-size: 12px;
-    line-height: 1.5;
-    margin: 0;
-    word-break: break-all;
-}
-.insta-card-text strong {
-    margin-right: 4px;
-}
-    </style>
 
     </div>
 </div>
 </body>
 </html>
-
-//sync

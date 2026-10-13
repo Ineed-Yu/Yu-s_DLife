@@ -1,51 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-
-<body>
-<!-- ハンバーガーメニューのボタン -->
-<div class="hamburger-menu">
-    <input type="checkbox" id="menu-btn-check">
-    <label for="menu-btn-check" class="menu-btn"><span></span></label>
-    
-    <!-- メニューの中身 -->
-    <div class="menu-content">
-        <ul>
-            <li><a href="index.html"
-                class="nav-link"
-                data-ja="ホーム" data-en="Home" data-fr="Accueil" data-zh="首页"
-                data-url-ja="index.html" data-url-en="index.html" data-url-fr="index.html" data-url-zh="index.html">
-                ホーム
-                </a>
-            </li>
-
-            <li><a href="pins.html"
-                class="nav-link"
-                data-ja="ピンバッジ" data-en="Pin Badges" data-fr="Badges" data-zh="徽章"
-                data-url-ja="pins.html" data-url-en="pins.html" data-url-fr="pins.html" data-url-zh="pins.html">
-                ピンバッジ
-                </a>
-            </li>
-
-            <li><a href="#access"
-                class="nav-link"
-                data-ja="ブログ" data-en="Blog" data-fr="Blog" data-zh="博客"
-                data-url-ja="#access" data-url-en="access" data-url-fr="#access" data-url-zh="#access">
-                ブログ
-                </a>
-            </li>
-            <li><a href="#access"
-                class="nav-link"
-                data-ja="Acorn Clib" data-en="Acorn Clib" data-fr="Acorn Club" data-zh="Acorn Club"
-                data-url-ja="#access" data-url-en="access" data-url-fr="#access" data-url-zh="#access">
-                Acorn Club
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
-</body>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pin Badges Detail</title>
 <style>
     /* ボタンの配置と見た目 */
 .menu-btn {
@@ -104,9 +62,6 @@
 }
 </style>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pin Badges Detail</title>
     <style>
         .detail-container { padding: 20px; max-width: 600px; margin: 0 auto; }
         .back-link { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #007bff; }
@@ -118,6 +73,49 @@
     </style>
 </head>
 <body>
+<!-- ハンバーガーメニューのボタン -->
+<div class="hamburger-menu">
+    <input type="checkbox" id="menu-btn-check">
+    <label for="menu-btn-check" class="menu-btn"><span></span></label>
+    
+    <!-- メニューの中身 -->
+    <div class="menu-content">
+        <ul>
+            <li><a href="/index.html"
+                class="nav-link"
+                data-ja="ホーム" data-en="Home" data-fr="Accueil" data-zh="首页"
+                data-url-ja="/index.html" data-url-en="/index.html" data-url-fr="/index.html" data-url-zh="/index.html">
+                ホーム
+                </a>
+            </li>
+
+            <li><a href="/pins/pins.html"
+                class="nav-link"
+                data-ja="ピンバッジ" data-en="Pin Badges" data-fr="Badges" data-zh="徽章"
+                data-url-ja="/pins/pins.html" data-url-en="/pins/pins.html" data-url-fr="/pins/pins.html" data-url-zh="/pins/pins.html">
+                ピンバッジ
+                </a>
+            </li>
+
+            <li><a href="#access"
+                class="nav-link"
+                data-ja="ブログ" data-en="Blog" data-fr="Blog" data-zh="博客"
+                data-url-ja="#access" data-url-en="#access" data-url-fr="#access" data-url-zh="#access">
+                ブログ
+                </a>
+            </li>
+            <li><a href="#access"
+                class="nav-link"
+                data-ja="Acorn Club" data-en="Acorn Club" data-fr="Acorn Club" data-zh="Acorn Club"
+                data-url-ja="#access" data-url-en="#access" data-url-fr="#access" data-url-zh="#access">
+                Acorn Club
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
 
     <div class="detail-container">
         <!-- 戻るボタンも言語切り替えに対応 -->
@@ -131,76 +129,84 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-    // 1. ブラウザの記憶から言語を読み込む（なければ 'ja'）
-    const currentLang = localStorage.getItem('selectedLanguage') || 'ja';
-
-    // 2. ページ全体の文字を記憶された言語に一括書き換え
-    document.querySelectorAll(`[data-${currentLang}]`).forEach(el => {
-        el.innerText = el.getAttribute(`data-${currentLang}`);
-    });
-
-    // 3. ページ全体のリンク（URL）も記憶された言語に一括書き換え
-    document.querySelectorAll('.nav-link').forEach(link => {
-        const targetUrl = link.getAttribute(`data-url-${currentLang}`);
-        if (targetUrl) {
-            link.href = targetUrl;
+        // 保存された言語を安全に読み込む（読めない環境では 'ja'）
+        function getSavedLanguage() {
+            try {
+                return localStorage.getItem('selectedLanguage') || 'ja';
+            } catch (e) {
+                return 'ja';
+            }
         }
-    });
-    
-    // (この後ろに、前回の fetch('data.json') などの続きの処理を書きます)
-});
-        // 1. URLから「?id=0001」の「0001」の部分を取り出す
-        const urlParams = new URLSearchParams(window.location.search);
-        const pinId = urlParams.get('id');
-        
-        // ★ブラウザの記憶から言語を取得
-        const currentLang = localStorage.getItem('selectedLanguage') || 'ja';
 
-        // 表示言語の切り替え
-        document.querySelectorAll('[data-' + currentLang + ']').forEach(el => {
-            el.innerText = el.getAttribute('data-' + currentLang);
-        });
+        // 文字をHTMLとして解釈させないための変換（URLなどから来た値を安全に表示する）
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>"']/g, ch => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[ch]));
+        }
 
-        // 各言語のテーブル項目名（ヘッダー）
-        const labels = {
-            ja: { year: "リリース", char: "キャラクター", size: "エディションサイズ", memo: "メモ" },
-            en: { year: "Release Year", char: "Character", size: "Edition Size", memo: "Memo" },
-            fr: { year: "Année de sortie", char: "Personnage", size: "Taille de l'édition", memo: "Mémo" },
-            zh: { year: "发售年份", char: "角色", size: "限量大小", memo: "备注" }
-        };
+        document.addEventListener("DOMContentLoaded", () => {
+            // 1. ブラウザの記憶から言語を読み込む（なければ 'ja'）
+            const currentLang = getSavedLanguage();
 
-        fetch('data.json')
-            .then(response => response.json())
-            .then(data => {
-                const pin = data.find(item => item.Id == pinId);
-                const content = document.getElementById('detail-content');
+            // 2. ページ全体の文字を記憶された言語に一括書き換え
+            document.querySelectorAll(`[data-${currentLang}]`).forEach(el => {
+                el.innerText = el.getAttribute(`data-${currentLang}`);
+            });
 
-                if (pin) {
-                    const pinData = pin[currentLang] || pin['ja']; // データがなければ日本語で補完
-                    const label = labels[currentLang] || labels['ja'];
-
-                    content.innerHTML = `
-                        <img src="${pin.image}" alt="${pinData.name}">
-                        <h2>${pinData.name}</h2>
-                        <table class="info-table">
-                            <tr><th>${label.year}</th><td>${pinData.ReleaseYear || '-'}</td></tr>
-                            <tr><th>${label.char}</th><td>${pinData.Character || '-'}</td></tr>
-                            <tr><th>${label.size}</th><td>${pinData.Editionsize || '-'}</td></tr>
-                            <tr><th>${label.memo}</th><td>${pinData.Memo || '-'}</td></tr>
-                        </table>
-                    `;
-                } else {
-                  // IDが一致するデータが見つからなかった場合
-                    content.innerHTML = `
-                        <p style="color:red; font-weight:bold;">
-                            ピンバッジのデータが見つかりませんでした。<br>
-                            (探したID: ${pinId})
-                        </p>
-                    `;
+            // 3. ページ全体のリンク（URL）も記憶された言語に一括書き換え
+            document.querySelectorAll('.nav-link').forEach(link => {
+                const targetUrl = link.getAttribute(`data-url-${currentLang}`);
+                if (targetUrl) {
+                    link.href = targetUrl;
                 }
-            })
-            .catch(error => console.error('データの読み込みに失敗しました:', error));
+            });
+
+            // 4. URLから「?id=0001」の「0001」の部分を取り出す
+            const pinId = new URLSearchParams(window.location.search).get('id');
+
+            // 各言語のテーブル項目名（ヘッダー）
+            const labels = {
+                ja: { year: "リリース", char: "キャラクター", size: "エディションサイズ", memo: "メモ" },
+                en: { year: "Release Year", char: "Character", size: "Edition Size", memo: "Memo" },
+                fr: { year: "Année de sortie", char: "Personnage", size: "Taille de l'édition", memo: "Mémo" },
+                zh: { year: "发售年份", char: "角色", size: "限量大小", memo: "备注" }
+            };
+
+            fetch('data.json')
+                .then(response => response.json())
+                .then(data => {
+                    const pin = data.find(item => item.Id == pinId);
+                    const content = document.getElementById('detail-content');
+
+                    if (pin) {
+                        // data.json の項目（Name, Image など大文字）を基本にし、
+                        // 言語別データ（例: pin.en）があればその項目だけ上書きする
+                        const pinData = Object.assign({}, pin, pin[currentLang] || {});
+                        const label = labels[currentLang] || labels['ja'];
+
+                        content.innerHTML = `
+                            <img src="${escapeHTML(pin.Image)}" alt="${escapeHTML(pinData.Name)}">
+                            <h2>${escapeHTML(pinData.Name)}</h2>
+                            <table class="info-table">
+                                <tr><th>${label.year}</th><td>${escapeHTML(pinData.ReleaseYear || '-')}</td></tr>
+                                <tr><th>${label.char}</th><td>${escapeHTML(pinData.Character || '-')}</td></tr>
+                                <tr><th>${label.size}</th><td>${escapeHTML(pinData.Editionsize || '-')}</td></tr>
+                                <tr><th>${label.memo}</th><td>${escapeHTML(pinData.Memo || '-')}</td></tr>
+                            </table>
+                        `;
+                    } else {
+                        // IDが一致するデータが見つからなかった場合
+                        content.innerHTML = `
+                            <p style="color:red; font-weight:bold;">
+                                ピンバッジのデータが見つかりませんでした。<br>
+                                (探したID: ${escapeHTML(pinId)})
+                            </p>
+                        `;
+                    }
+                })
+                .catch(error => console.error('データの読み込みに失敗しました:', error));
+        });
     </script>
 </body>
 </html>
