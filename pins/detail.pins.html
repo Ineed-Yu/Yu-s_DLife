@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pin Badges Detail</title>
+    <meta name="description" content="Yuのピンバッジコレクションをコルクボード風に並べたページ。1つずつの詳細も見られます。">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <style>
     /* ボタンの配置と見た目 */
 .menu-btn {
@@ -145,6 +149,21 @@
             }[ch]));
         }
 
+
+        // data.json の元画像パス（例: /images/_DSC1106.JPG）から、
+        // tools/optimize_images.py が作った軽量版（例: /images/opt/DSC1106-480.webp）のパスを作る
+        function optimizedImage(path, width) {
+            const m = String(path || '').match(/^(.*\/)?images\/([^/]+)\.(jpe?g|png)$/i);
+            if (!m) return path;
+            return `${m[1] || ''}images/opt/${m[2].replace(/^_+/, '')}-${width}.webp`;
+        }
+
+        // 軽量版がまだ無い場合は、元画像を表示する
+        function setImageWithFallback(img, original, width) {
+            img.onerror = () => { img.onerror = null; img.src = original; };
+            img.src = optimizedImage(original, width);
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
             // 1. ブラウザの記憶から言語を読み込む（なければ 'ja'）
             const currentLang = getSavedLanguage();
@@ -186,7 +205,7 @@
                         const label = labels[currentLang] || labels['ja'];
 
                         content.innerHTML = `
-                            <img src="${escapeHTML(pin.Image)}" alt="${escapeHTML(pinData.Name)}">
+                            <img alt="${escapeHTML(pinData.Name)}">
                             <h2>${escapeHTML(pinData.Name)}</h2>
                             <table class="info-table">
                                 <tr><th>${label.year}</th><td>${escapeHTML(pinData.ReleaseYear || '-')}</td></tr>
@@ -195,6 +214,7 @@
                                 <tr><th>${label.memo}</th><td>${escapeHTML(pinData.Memo || '-')}</td></tr>
                             </table>
                         `;
+                        setImageWithFallback(content.querySelector('img'), pin.Image, 960);
                     } else {
                         // IDが一致するデータが見つからなかった場合
                         content.innerHTML = `
