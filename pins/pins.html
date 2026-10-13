@@ -1,50 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-
-<body>
-<!-- ハンバーガーメニューのボタン -->
-<div class="hamburger-menu">
-    <input type="checkbox" id="menu-btn-check">
-    <label for="menu-btn-check" class="menu-btn"><span></span></label>
-    
-    <!-- メニューの中身 -->
-    <div class="menu-content">
-        <ul>
-            <li><a href="index.html"
-                class="nav-link"
-                data-ja="ホーム" data-en="Home" data-fr="Accueil" data-zh="首页"
-                data-url-ja="index.html" data-url-en="index.html" data-url-fr="index.html" data-url-zh="index.html">
-                ホーム
-                </a>
-            </li>
-
-            <li><a href="pins.html"
-                class="nav-link"
-                data-ja="ピンボード" data-en="Pin Badges" data-fr="Badges" data-zh="徽章"
-                data-url-ja="pins.html" data-url-en="pins.html" data-url-fr="pins.html" data-url-zh="pins.html">
-                ピンバッジ
-                </a>
-            </li>
-
-            <li><a href="#access"
-                class="nav-link"
-                data-ja="ブログ" data-en="Blog" data-fr="Blog" data-zh="博客"
-                data-url-ja="#access" data-url-en="access" data-url-fr="#access" data-url-zh="#access">
-                ブログ
-                </a>
-            </li>
-            <li><a href="#access"
-                class="nav-link"
-                data-ja="Acorn Clib" data-en="Acorn Clib" data-fr="Acorn Club" data-zh="Acorn Club"
-                data-url-ja="#access" data-url-en="access" data-url-fr="#access" data-url-zh="#access">
-                Acorn Club
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
-</body>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pin Badges</title>
 
 <style>
     /* ボタンの配置と見た目 */
@@ -104,9 +63,6 @@
 }
 </style>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pin Badges</title>
     <style>
         .pins-container {
             display: grid;
@@ -126,83 +82,6 @@
         .pins-item:hover { transform: translateY(-5px); }
         .pins-item img { width: 100%; height: auto; border-radius: 4px; }
     </style>
-</head>
-<body>
-    <a href="/index.html" class="back-link" data-ja="← ホームに戻る" data-en="← Back to Home" data-fr="← Retour à l'accueil" data-zh="← 返回首页">
-            ← ホームに戻る
-     </a>
-    <!-- 書き方に合わせて、data-属性でタイトルを用意 -->
-    <h1 data-ja="ピンボード" data-en="Pin Badge Collection" data-fr="Collection de Badges" data-zh="徽章收藏">
-        ピンバッジ コレクション
-    </h1>
-
-    <div id="pins" class="pins-container">
-        <!-- ここにJavaScriptで自動的にバッジが追加されます -->
-    </div>
-
-    <script>
-        // ページが読み込まれたら実行
-document.addEventListener("DOMContentLoaded", () => {
-    // 1. ブラウザの記憶から言語を読み込む（なければ 'ja'）
-    const currentLang = localStorage.getItem('selectedLanguage') || 'ja';
-
-    // 2. ページ全体の文字を記憶された言語に一括書き換え
-    document.querySelectorAll(`[data-${currentLang}]`).forEach(el => {
-        el.innerText = el.getAttribute(`data-${currentLang}`);
-    });
-
-    // 3. ページ全体のリンク（URL）も記憶された言語に一括書き換え
-    document.querySelectorAll('.nav-link').forEach(link => {
-        const targetUrl = link.getAttribute(`data-url-${currentLang}`);
-        if (targetUrl) {
-            link.href = targetUrl;
-        }
-    });
-
-});
-
-
-      // 1. ブラウザが記憶している言語を読み込む（なければ 'ja' をデフォルトにする）
-      const currentLang = localStorage.getItem('selectedLanguage') || 'ja';
-
-      // 2. タイトルなどのHTMLテキストを現在の言語に書き換える
-      document.querySelectorAll('[data-' + currentLang + ']').forEach(el => {
-          el.innerText = el.getAttribute('data-' + currentLang);
-      });
-
-      // 3. JSONファイルを読み込んでギャラリーを生成
-      fetch('data.json')
-        .then(response => response.json())
-        .then(data => {
-          const pinsContainer = document.getElementById('pins');
-
-          if (!pinsContainer){
-            console,error("エラー: id='pins'のタグが見つかりません。");
-            return;
-          }
-          
-          data.forEach(pin => {
-            const item = document.createElement('a');
-            item.className = 'pins-item';
-            
-            // 次のページへはシンプルに遷移（URLパラメータは不要！）
-            item.href = `detail.pins.html?id=${pin.Id}`; 
-            
-            // 現在の言語に応じたデータを取得
-            // (fr)や(zh)のデータがJSONに無ければ日本語
-            const pinData = pin[currentLang] || pin['ja'];
-            
-            item.innerHTML = `
-              <img src="${pin.Image}" alt="${pinData.Name}">
-              <p>${pinData.Name}</p>
-            `;
-            pinsContainer.appendChild(item);
-          });
-        })
-        .catch(error => console.error('データの読み込みに失敗しました:', error));
-    </script>
-</body>
-
 
 <style>
     /* 1. ページ全体の背景（部屋の壁紙のようなイメージ） */
@@ -231,10 +110,10 @@ h1 {
     width: 100%;
     max-width: 1000px; /* PCでの最大幅 */
     min-height: 80vh;   /* 画面の高さに合わせる */
-    
+
     /* コルクボードの背景（CSSのグラデーション機能でコルクっぽい質感を表現） */
     background-color: #cca473;
-    background-image: 
+    background-image:
         radial-gradient(rgba(0,0,0,0.08) 15%, transparent 16%),
         radial-gradient(rgba(0,0,0,0.08) 15%, transparent 16%);
     background-size: 4px 4px;
@@ -244,9 +123,9 @@ h1 {
     border: 16px solid #5c3a21; /* 外枠の太い木 */
     outline: 4px solid #3d2411; /* 内枠の濃い木 */
     border-radius: 4px;
-    
+
     /* ボードが壁に掛かっているようなリアルな影 */
-    box-shadow: 
+    box-shadow:
         inset 0 10px 20px rgba(0,0,0,0.3), /* ボード内側の影 */
         0 15px 30px rgba(0,0,0,0.3);      /* ボード外側の影 */
 
@@ -273,12 +152,12 @@ h1 {
     width: 100%;
     height: auto;
     max-width: 110px; /* ピンバッジが大きくなりすぎないように制限 */
-    
+
     /* 背景を透明にしたピンバッジ画像に、斜め下のリアルな影をつける */
     filter: drop-shadow(8px 12px 6px rgba(0, 0, 0, 0.4));
-    
+
     /* ほんの少しだけピンを傾けることで、手作業で刺したようなリアルさを演出 */
-    transform: rotate(-5deg); 
+    transform: rotate(-5deg);
     transition: filter 0.2s ease, transform 0.2s ease;
 }
 
@@ -326,49 +205,125 @@ h1 {
     }
 }
 </style>
+</head>
+<body>
+<!-- ハンバーガーメニューのボタン -->
+<div class="hamburger-menu">
+    <input type="checkbox" id="menu-btn-check">
+    <label for="menu-btn-check" class="menu-btn"><span></span></label>
+
+    <!-- メニューの中身 -->
+    <div class="menu-content">
+        <ul>
+            <li><a href="/index.html"
+                class="nav-link"
+                data-ja="ホーム" data-en="Home" data-fr="Accueil" data-zh="首页"
+                data-url-ja="/index.html" data-url-en="/index.html" data-url-fr="/index.html" data-url-zh="/index.html">
+                ホーム
+                </a>
+            </li>
+
+            <li><a href="/pins/pins.html"
+                class="nav-link"
+                data-ja="ピンボード" data-en="Pin Badges" data-fr="Badges" data-zh="徽章"
+                data-url-ja="/pins/pins.html" data-url-en="/pins/pins.html" data-url-fr="/pins/pins.html" data-url-zh="/pins/pins.html">
+                ピンバッジ
+                </a>
+            </li>
+
+            <li><a href="#access"
+                class="nav-link"
+                data-ja="ブログ" data-en="Blog" data-fr="Blog" data-zh="博客"
+                data-url-ja="#access" data-url-en="#access" data-url-fr="#access" data-url-zh="#access">
+                ブログ
+                </a>
+            </li>
+            <li><a href="#access"
+                class="nav-link"
+                data-ja="Acorn Club" data-en="Acorn Club" data-fr="Acorn Club" data-zh="Acorn Club"
+                data-url-ja="#access" data-url-en="#access" data-url-fr="#access" data-url-zh="#access">
+                Acorn Club
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+    <a href="/index.html" class="back-link" data-ja="← ホームに戻る" data-en="← Back to Home" data-fr="← Retour à l'accueil" data-zh="← 返回首页">
+            ← ホームに戻る
+     </a>
+    <!-- 書き方に合わせて、data-属性でタイトルを用意 -->
+    <h1 data-ja="ピンボード" data-en="Pin Badge Collection" data-fr="Collection de Badges" data-zh="徽章收藏">
+        ピンバッジ コレクション
+    </h1>
+
+    <div id="pins" class="pins-container">
+        <!-- ここにJavaScriptで自動的にバッジが追加されます -->
+    </div>
 
 <script>
+  // 保存された言語を安全に読み込む（読めない環境では 'ja'）
+  function getSavedLanguage() {
+      try {
+          return localStorage.getItem('selectedLanguage') || 'ja';
+      } catch (e) {
+          return 'ja';
+      }
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
       // 1. ブラウザが記憶している言語を読み込む
-      const currentLang = localStorage.getItem('selectedLanguage') || 'ja';
+      const currentLang = getSavedLanguage();
 
       // 2. ページ全体の data-属性がついたテキスト（タイトルなど）を現在の言語に書き換える
       document.querySelectorAll(`[data-${currentLang}]`).forEach(el => {
           el.innerText = el.getAttribute(`data-${currentLang}`);
       });
 
-      // 3. JSONファイルを読み込む
+      // 3. ページ全体のリンク（URL）も記憶された言語に一括書き換え
+      document.querySelectorAll('.nav-link').forEach(link => {
+          const targetUrl = link.getAttribute(`data-url-${currentLang}`);
+          if (targetUrl) {
+              link.href = targetUrl;
+          }
+      });
+
+      // 4. JSONファイルを読み込む
       fetch('data.json')
         .then(response => response.json())
         .then(data => {
           const pinsContainer = document.getElementById('pins');
-          
-          if (!pinsContainer) return;
+
+          if (!pinsContainer) {
+            console.error("エラー: id='pins'のタグが見つかりません。");
+            return;
+          }
 
           data.forEach(pin => {
             const item = document.createElement('a');
             item.className = 'pins-item';
-            
-            // 「Id」を使って、詳細ページ（detail.pins.html）のリンクを作る
-            item.href = `detail.pins.html?id=${pin.Id}`; 
-            
-            // ★大文字の「Image」と「Name」を確実に受け取る
-            const pinImage = pin.Image;
-            const pinName = pin.Name;
-            
-            // バッジ名多言語化（JSON内に ja や en を用意)
-            // pin[currentLang] があればそれを使い、無ければ直下の pinName を使う安全な設計にしています
-            const displayName = (pin[currentLang] && pin[currentLang].Name) ? pin[currentLang].Name : pinName;
 
-            item.innerHTML = `
-              <img src="${pinImage}" alt="${displayName}">
-              <p>${displayName}</p>
-            `;
+            // 「Id」を使って、詳細ページ（detail.pins.html）のリンクを作る
+            item.href = `detail.pins.html?id=${encodeURIComponent(pin.Id)}`;
+
+            // ★大文字の「Image」と「Name」を確実に受け取る
+            // バッジ名多言語化（JSON内に ja や en を用意)
+            // pin[currentLang] があればそれを使い、無ければ直下の Name を使う安全な設計にしています
+            const displayName = (pin[currentLang] && pin[currentLang].Name) ? pin[currentLang].Name : pin.Name;
+
+            // 文字や画像パスはHTMLとして解釈させず、そのまま安全に入れる
+            const img = document.createElement('img');
+            img.src = pin.Image;
+            img.alt = displayName;
+            const label = document.createElement('p');
+            label.textContent = displayName;
+
+            item.append(img, label);
             pinsContainer.appendChild(item);
           });
         })
         .catch(error => console.error('データの読み込みに失敗しました:', error));
   });
 </script>
-
+</body>
 </html>

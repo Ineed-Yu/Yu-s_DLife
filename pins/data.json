@@ -5,7 +5,7 @@
     "ReleaseYear": "20xx年",
     "Character": "???",
     "Editionsize": "OE",
-    "Image": "images/_DSC1106.JPG",
+    "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
   },
  
@@ -15,7 +15,7 @@
     "ReleaseYear": "20xx年",
     "Character": "???",
     "Editionsize": "OE",
-    "Image": "images/_DSC1106.JPG",
+    "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
   },
 
@@ -25,7 +25,7 @@
     "ReleaseYear": "20xx年",
     "Character": "???",
     "Editionsize": "OE",
-    "Image": "images/_DSC1106.JPG",
+    "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
   },
 
@@ -35,7 +35,7 @@
     "ReleaseYear": "20xx年",
     "Character": "???",
     "Editionsize": "OE",
-    "Image": "images/_DSC1106.JPG",
+    "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
   },
 
@@ -45,7 +45,7 @@
     "ReleaseYear": "20xx年",
     "Character": "???",
     "Editionsize": "OE",
-    "Image": "images/_DSC1106.JPG",
+    "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
   },
 
@@ -55,7 +55,7 @@
     "ReleaseYear": "20xx年",
     "Character": "???",
     "Editionsize": "OE",
-    "Image": "images/_DSC1106.JPG",
+    "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
   },
 
@@ -65,7 +65,7 @@
     "ReleaseYear": "20xx年",
     "Character": "???",
     "Editionsize": "OE",
-    "Image": "images/_DSC1106.JPG",
+    "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
   },
 
@@ -75,25 +75,25 @@
     "ReleaseYear": "20xx年",
     "Character": "???",
     "Editionsize": "OE",
-    "Image": "images/_DSC1106.JPG",
+    "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
-  }
+  },
   {
     "Id": "0009",
     "Name": "pins_0009",
     "ReleaseYear": "20xx年",
     "Character": "???",
     "Editionsize": "OE",
-    "Image": "images/_DSC1106.JPG",
+    "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
-  }
+  },
   {
     "Id": "0010",
     "Name": "pins_0010",
     "ReleaseYear": "20xx年",
     "Character": "???",
     "Editionsize": "OE",
-    "Image": "images/_DSC1106.JPG",
+    "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
   }
 
