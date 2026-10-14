@@ -84,28 +84,8 @@
 }
 </style>
 
-    <style>
-        .pins-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-        .pins-item {
-            text-decoration: none;
-            color: #333;
-            text-align: center;
-            border: 1px solid #eee;
-            padding: 10px;
-            border-radius: 8px;
-            transition: transform 0.2s;
-        }
-        .pins-item:hover { transform: translateY(-5px); }
-        .pins-item img { width: 100%; height: auto; border-radius: 4px; }
-    </style>
-
 <style>
-    /* 1. ページ全体の背景（部屋の壁紙のようなイメージ） */
+/* 1. ページ全体の背景（部屋の壁紙のようなイメージ） */
 body {
     margin: 0;
     padding: 20px;
@@ -114,10 +94,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-/* ページ全体の高さを画面いっぱいにして、フッターを一番下に置く */
-body {
+    /* ページ全体の高さを画面いっぱいにして、フッターを一番下に置く */
     box-sizing: border-box;
     min-height: 100vh;
     --page-pad: 20px;
@@ -138,64 +115,95 @@ h1 {
     text-align: center;
 }
 
-/* 2. 画面サイズに合わせて自動調整されるピンボード（額縁） */
+/* 2. 木の額縁（ウォールナット）
+   左右は縦の木目、上下は横の木目の板を、四隅で斜めに突き合わせた（留め継ぎの）額縁にする。
+   素材画像は tools/make_textures.py で作成。 */
+.board-frame {
+    --frame: 22px;                       /* 額縁の太さ */
+    position: relative;
+    box-sizing: border-box;
+    width: fit-content;                  /* 中のピンの点数に合わせて大きさが決まる */
+    max-width: min(100%, 1000px);        /* PCでの最大幅 */
+    padding: var(--frame);
+    margin-bottom: 48px;                 /* フッターとの間隔 */
+    border-radius: 3px;
+    /* 左右の板：縦の木目＋光の当たり方（左が明るく、右が暗い） */
+    background:
+        linear-gradient(90deg,
+            rgba(255, 236, 210, 0.16) 0, rgba(255, 236, 210, 0) var(--frame),
+            rgba(0, 0, 0, 0) calc(100% - var(--frame)), rgba(0, 0, 0, 0.28) 100%),
+        url("/assets/textures/wood-v.webp") center / 256px auto,
+        #4f2f1a;
+    /* 壁に掛かっている影 */
+    box-shadow:
+        0 1px 0 1px rgba(30, 15, 5, 0.6),
+        0 6px 10px rgba(40, 22, 8, 0.28),
+        0 22px 40px -10px rgba(40, 22, 8, 0.45);
+}
+
+/* 上下の板（横の木目）。台形に切り抜いて、四隅を斜めに合わせる */
+.board-frame::before,
+.board-frame::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: var(--frame);
+    pointer-events: none;
+}
+.board-frame::before {
+    top: 0;
+    border-radius: 3px 3px 0 0;
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--frame)) 100%, var(--frame) 100%);
+    background:
+        linear-gradient(rgba(255, 240, 220, 0.24), rgba(255, 240, 220, 0.04)),
+        url("/assets/textures/wood-h.webp") center / auto 256px,
+        #5a361e;
+}
+.board-frame::after {
+    bottom: 0;
+    border-radius: 0 0 3px 3px;
+    clip-path: polygon(var(--frame) 0, calc(100% - var(--frame)) 0, 100% 100%, 0 100%);
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.32)),
+        url("/assets/textures/wood-h.webp") center / auto 256px,
+        #4a2b17;
+}
+
+/* 3. コルクボード本体 */
 .pins-container {
     box-sizing: border-box;
-    /* 登録されているピンの点数に合わせて、ボードの大きさが自動で決まる */
-    width: fit-content;
-    max-width: min(100%, 1000px); /* PCでの最大幅 */
+    position: relative;
+    z-index: 1;                           /* 上下の板の影の上にピンを出す */
     --pin-size: 130px; /* ピン1つ分の幅 */
     --pin-cols: 5;     /* 列数（JavaScriptが点数と画面幅から自動計算して上書き） */
 
-    /* コルクボードの背景（CSSのグラデーション機能でコルクっぽい質感を表現） */
-    background-color: #cca473;
-    background-image:
-        radial-gradient(rgba(0,0,0,0.08) 15%, transparent 16%),
-        radial-gradient(rgba(0,0,0,0.08) 15%, transparent 16%);
-    background-size: 4px 4px;
-    background-position: 0 0, 2px 2px;
-
-    /* 🌲 木のフレーム（額縁）を2重のボーダーと影で表現 */
-    border: 16px solid #5c3a21; /* 外枠の太い木 */
-    outline: 4px solid #3d2411; /* 内枠の濃い木 */
-    border-radius: 4px;
-
-    /* ボードが壁に掛かっているようなリアルな影 */
+    /* コルクの質感（細かい粒・色むら）＋ふちがわずかに暗い */
+    background:
+        radial-gradient(ellipse at 50% 40%, rgba(0, 0, 0, 0) 55%, rgba(70, 38, 12, 0.22) 100%),
+        url("/assets/textures/cork.webp") 0 0 / 256px 256px,
+        #b98a58;
+    /* 額縁の内側の段差と、額縁がコルクに落とす影 */
     box-shadow:
-        inset 0 10px 20px rgba(0,0,0,0.3), /* ボード内側の影 */
-        0 15px 30px rgba(0,0,0,0.3);      /* ボード外側の影 */
+        0 0 0 2px #2c170a,
+        inset 0 0 0 1px rgba(0, 0, 0, 0.35),
+        inset 3px 5px 10px rgba(40, 20, 5, 0.45),
+        inset -1px -1px 4px rgba(40, 20, 5, 0.25);
 
-    /* ピンバッジを並べる設定（レスポンシブ対応グリッド） */
+    /* ピンバッジを並べる設定（点数と画面幅に合わせて列数が変わる） */
     display: grid;
-    grid-template-columns: repeat(var(--pin-cols), var(--pin-size)); /* 点数と画面幅に合わせて列数が変わる */
-    gap: 20px; /* ピン同士の間隔 */
-    padding: 20px; /* 額縁とピンの間の余白 */
-    margin-bottom: 48px; /* フッターとの間隔 */
+    grid-template-columns: repeat(var(--pin-cols), var(--pin-size));
+    gap: 28px 20px; /* ピン同士の間隔（縦・横） */
+    padding: 32px 26px; /* 額縁とピンの間の余白 */
 }
 
-/* ピンが0点の時も、空のボードとして見えるようにする */
-/* ピンが0点の時のお知らせ（準備中） */
-.pins-empty {
-    grid-column: 1 / -1;
-    align-self: center;
-    margin: 0;
-    color: #4a3319;
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-}
-.pins-empty[hidden] {
-    display: none;
-}
-
-.pins-container.is-empty {
-    width: 100%;
-    grid-template-columns: 1fr; /* 0点の時は列数の計算をしないので1列にする */
-    min-height: 200px;
-}
-
-/* 3. コルクボードに刺さっているピンバッジ1つの枠 */
+/* 4. コルクボードに刺さっているピンバッジ1つ
+   --rot（傾き）と --dx / --dy（少しのずれ）は、ピンごとに JavaScript が Id から決める。
+   同じピンは毎回同じ角度で表示される。 */
 .pins-item {
+    --rot: 0deg;
+    --dx: 0px;
+    --dy: 0px;
     text-decoration: none;
     display: flex;
     flex-direction: column;
@@ -203,41 +211,96 @@ h1 {
     justify-content: center;
     position: relative;
     cursor: pointer;
+    transform: translate(var(--dx), var(--dy));
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* 4. ピンバッジ画像（ボードに直接刺さっているように見せる魔法） */
+/* ピンバッジ本体：コルクに密着した濃い影＋少し離れた柔らかい影で「刺さって浮いている」厚みを出す。
+   背景を透明にした（切り抜いた）ピン画像だと、影がピンの形どおりに落ちて一番リアルになる。 */
 .pins-item img {
     width: 100%;
     height: auto;
     max-width: 110px; /* ピンバッジが大きくなりすぎないように制限 */
-
-    /* 背景を透明にしたピンバッジ画像に、斜め下のリアルな影をつける */
-    filter: drop-shadow(8px 12px 6px rgba(0, 0, 0, 0.4));
-
-    /* ほんの少しだけピンを傾けることで、手作業で刺したようなリアルさを演出 */
-    transform: rotate(-5deg);
-    transition: filter 0.2s ease, transform 0.2s ease;
+    transform: rotate(var(--rot));
+    filter:
+        drop-shadow(0 1px 0.6px rgba(35, 16, 4, 0.6))
+        drop-shadow(2px 5px 4px rgba(35, 16, 4, 0.32));
+    transition: transform 0.25s ease, filter 0.25s ease;
 }
 
-/* 5. バッジの名前（コレクションのラベル風） */
+/* 触れたとき：ピンを少し引き抜いたように浮き上がる */
+.pins-item:hover img,
+.pins-item:focus-visible img {
+    transform: translateY(-4px) rotate(var(--rot)) scale(1.05);
+    filter:
+        drop-shadow(0 2px 1px rgba(35, 16, 4, 0.45))
+        drop-shadow(5px 14px 10px rgba(35, 16, 4, 0.3));
+}
+.pins-item:focus-visible {
+    outline: 2px solid #fff6e0;
+    outline-offset: 6px;
+    border-radius: 6px;
+}
+
+/* 5. バッジの名前：コルクに添えた小さな紙のラベル */
 .pins-item p {
-    margin: 8px 0 0 0;
-    font-size: 11px;
+    margin: 10px 0 0 0;
+    max-width: 100%;
+    font-size: 10.5px;
     font-weight: bold;
-    color: #fff;
-    background-color: rgba(61, 36, 17, 0.75); /* 木の色 */
+    color: #4a3319;
+    background-color: #f4ecdc;
     padding: 3px 8px;
-    border-radius: 10px;
+    border-radius: 1px;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 1px 2px rgba(35, 16, 4, 0.35);
+    transform: rotate(calc(var(--rot) * -0.3));
     word-break: break-all; /* 文字が枠からはみ出さないように */
 }
 
-/* タップした時のアクション */
-.pins-item:hover img {
-    /* タップ時のアクション/位置を少しずらす */
-    filter: drop-shadow(3px 4px 2px rgba(170, 56, 56, 0.5));
-    transform: translate(3px, 4px) rotate(0deg);
+/* 6. ピンが0点の時：押しピンで留めたメモ（準備中） */
+.pins-empty {
+    grid-column: 1 / -1;
+    justify-self: center;
+    align-self: center;
+    position: relative;
+    margin: 0;
+    padding: 26px 26px 20px;
+    max-width: 240px;
+    background: #fbf6ea;
+    color: #4a3319;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1.6;
+    text-align: center;
+    transform: rotate(-2.5deg);
+    box-shadow:
+        0 1px 1px rgba(35, 16, 4, 0.35),
+        2px 8px 10px -4px rgba(35, 16, 4, 0.4);
+}
+/* 押しピンの頭（赤いプラスチック） */
+.pins-empty::before {
+    content: "";
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    width: 14px;
+    height: 14px;
+    margin-left: -7px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ff8a7a 0, #d8362a 45%, #8f1d14 100%);
+    box-shadow: 1px 3px 3px rgba(35, 16, 4, 0.45);
+}
+.pins-empty[hidden] {
+    display: none;
+}
+
+.board-frame.is-empty {
+    width: 100%;
+}
+.pins-container.is-empty {
+    grid-template-columns: 1fr; /* 0点の時は列数の計算をしないので1列にする */
+    min-height: 220px;
 }
 
 /* 画面幅の自動調整 */
@@ -250,10 +313,12 @@ h1 {
     h1 {
         margin-bottom: 60px;
     }
+    .board-frame {
+        --frame: 14px; /* 額縁を少し細くして画面を広く使う */
+    }
     .pins-container {
-        border: 10px solid #5c3a21; /* 額縁を少し細くして画面を広く使う */
-        padding: 20px; /* 余白を狭くする */
-        gap: 20px;
+        padding: 24px 16px;
+        gap: 22px 14px;
         --pin-size: 90px; /* スマホでのピン1つ分の幅 */
     }
     .pins-item img {
@@ -262,6 +327,13 @@ h1 {
     .pins-item p {
         font-size: 10px;
         padding: 2px 6px;
+    }
+}
+
+/* 動きを減らす設定の人には、浮き上がりのアニメーションをしない */
+@media (prefers-reduced-motion: reduce) {
+    .pins-item img {
+        transition: none;
     }
 }
 </style>
@@ -319,10 +391,12 @@ h1 {
         ピンボード
     </h1>
 
-    <div id="pins" class="pins-container">
-        <!-- ここにJavaScriptで自動的にバッジが追加されます -->
-        <p id="pins-empty" class="pins-empty" hidden
-           data-ja="ピンバッジは準備中です" data-en="Pin badges are coming soon." data-fr="Les pin's arrivent bientôt." data-zh="徽章正在准备中。">ピンバッジは準備中です</p>
+    <div class="board-frame" id="pin-board">
+        <div id="pins" class="pins-container">
+            <!-- ここにJavaScriptで自動的にバッジが追加されます -->
+            <p id="pins-empty" class="pins-empty" hidden
+               data-ja="ピンバッジは準備中です" data-en="Pin badges are coming soon." data-fr="Les pin's arrivent bientôt." data-zh="徽章正在准备中。">ピンバッジは準備中です</p>
+        </div>
     </div>
 
     <!-- partial:footer -->
@@ -361,8 +435,10 @@ h1 {
   function layoutPinBoard() {
       const board = document.getElementById('pins');
       if (!board) return;
+      const frameEl = document.getElementById('pin-board');
       const count = board.querySelectorAll('.pins-item').length;
       board.classList.toggle('is-empty', count === 0);
+      if (frameEl) frameEl.classList.toggle('is-empty', count === 0);
       const emptyMessage = document.getElementById('pins-empty');
       if (emptyMessage) emptyMessage.hidden = count !== 0;
       if (count === 0) return;
@@ -370,7 +446,9 @@ h1 {
       const style = getComputedStyle(board);
       const pinSize = parseFloat(style.getPropertyValue('--pin-size')) || 130;
       const gap = parseFloat(style.columnGap) || 20;
-      const frame = (parseFloat(style.borderLeftWidth) + parseFloat(style.paddingLeft)) * 2;
+      const frameStyle = frameEl ? getComputedStyle(frameEl) : null;
+      const frame = (parseFloat(style.borderLeftWidth) + parseFloat(style.paddingLeft)) * 2
+          + (frameStyle ? parseFloat(frameStyle.paddingLeft) * 2 : 0);
       const bodyStyle = getComputedStyle(document.body);
       const available = Math.min(1000,
           document.body.clientWidth - parseFloat(bodyStyle.paddingLeft) - parseFloat(bodyStyle.paddingRight));
@@ -381,6 +459,27 @@ h1 {
       board.style.setProperty('--pin-cols', cols);
   }
   window.addEventListener('resize', layoutPinBoard);
+
+  // ピンごとの「刺さり方」（傾き・少しのずれ）を Id から決める。
+  // 乱数ではなく Id から計算するので、同じピンはいつ見ても同じ角度・位置になる。
+  function pinPose(id) {
+      let h = 2166136261;
+      for (const ch of String(id)) {
+          h ^= ch.codePointAt(0);
+          h = Math.imul(h, 16777619);
+      }
+      const next = () => {
+          h = Math.imul(h ^ (h >>> 15), 2246822507);
+          h = Math.imul(h ^ (h >>> 13), 3266489909);
+          h ^= h >>> 16;
+          return (h >>> 0) / 4294967296; // 0〜1
+      };
+      return {
+          rot: (next() * 2 - 1) * 9,   // -9〜+9度
+          dx: (next() * 2 - 1) * 6,    // 左右に ±6px
+          dy: (next() * 2 - 1) * 6     // 上下に ±6px
+      };
+  }
 
   // data.json の元画像パス（例: /images/_DSC1106.JPG）から、
   // tools/optimize_images.py が作った軽量版（例: /images/opt/DSC1106-480.webp）のパスを作る
@@ -431,6 +530,11 @@ h1 {
 
             // 「Id」を使って、詳細ページ（detail.pins.html）のリンクを作る
             item.href = `detail.pins.html?id=${encodeURIComponent(pin.Id)}`;
+
+            const pose = pinPose(pin.Id);
+            item.style.setProperty('--rot', pose.rot.toFixed(1) + 'deg');
+            item.style.setProperty('--dx', pose.dx.toFixed(1) + 'px');
+            item.style.setProperty('--dy', pose.dy.toFixed(1) + 'px');
 
             // ★大文字の「Image」と「Name」を確実に受け取る
             // バッジ名多言語化（JSON内に ja や en を用意)
