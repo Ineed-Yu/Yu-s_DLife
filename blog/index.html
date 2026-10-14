@@ -108,76 +108,7 @@
 }
 </style>
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            color: #333;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background-image: url("/images/opt/back-1600.webp");
-            background-size: cover;
-            background-position: 50% 88%;
-            background-attachment: fixed;
-            background-color: #eae3d2;
-        }
-
-        .soon-wrapper {
-            flex: 1;
-            width: 100%;
-            max-width: 580px;
-            margin: 0 auto;
-            padding: 60px 20px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-
-        .soon-card {
-            background-color: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(8px);
-            border-radius: 20px;
-            padding: 36px 24px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        .soon-label {
-            display: inline-block;
-            font-size: 12px;
-            font-weight: bold;
-            letter-spacing: 0.1em;
-            color: #fff;
-            background-color: #333;
-            padding: 4px 14px;
-            border-radius: 20px;
-            margin-bottom: 16px;
-        }
-
-        .soon-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 0 0 16px 0;
-        }
-
-        .soon-text {
-            font-size: 14px;
-            line-height: 1.8;
-            margin: 0;
-            white-space: pre-line;
-        }
-
-        .soon-note {
-            font-size: 11px;
-            line-height: 1.6;
-            color: #777;
-            margin: 24px 0 0 0;
-        }
-
-        .site-footer {
-            margin-top: 0;
-        }
-    </style>
+    <link rel="stylesheet" href="/assets/blog.css">
 </head>
 <body>
 
@@ -237,18 +168,28 @@
        data-ja="← ホームに戻る" data-en="← Back to Home" data-fr="← Retour à l'accueil" data-zh="← 返回首页">← ホームに戻る</a>
     <!-- /partial:home-button -->
 
-    <!-- ブログの受け皿（収益化サイトとして別ドメインで制作予定。公開後はここから案内する） -->
-    <main class="soon-wrapper">
-        <div class="soon-card">
-            <span class="soon-label"
-                  data-ja="準備中" data-en="Coming Soon" data-fr="Bientôt" data-zh="准备中">準備中</span>
-            <h1 class="soon-title">Blog</h1>
-            <p class="soon-text"
-               data-ja="旅とカメラ、パークでの体験をお届けするブログを準備しています。&#10;公開まで、もう少しお待ちください。"
-               data-en="A blog about travel, photography and park experiences is on its way.&#10;Please stay tuned."
-               data-fr="Un blog sur les voyages, la photo et les parcs est en préparation.&#10;Restez connectés."
-               data-zh="关于旅行、摄影与乐园体验的博客正在准备中。&#10;敬请期待。">旅とカメラ、パークでの体験をお届けするブログを準備しています。&#10;公開まで、もう少しお待ちください。</p>
-        </div>
+    <!-- ブログ：ライトボックスに置いた 35mm フィルム。記事データは /blog/posts.json（"Draft": true は表示しない）
+         収益化サイトは別ドメインで制作予定。現行ドメインには広告・アフィリエイトを置かない -->
+    <main class="film">
+        <header class="film-leader">
+            <span class="edge-print" aria-hidden="true">YU'S DLIFE</span>
+            <h1>Blog</h1>
+            <p data-ja="旅とカメラの記録" data-en="Notes on travel and photography" data-fr="Carnet de voyages et de photographie" data-zh="旅行与摄影的记录">旅とカメラの記録</p>
+        </header>
+        <ol class="film-frames" id="film-frames">
+            <!-- 記事がまだない時：何も写っていないコマ -->
+            <li id="film-empty">
+                <span class="edge-print frame-number" aria-hidden="true"><span>0</span></span>
+                <div class="frame is-unexposed">
+                    <p class="soon"
+                       data-ja="最初の記事を準備しています。&#10;公開まで、もう少しお待ちください。"
+                       data-en="The first story is being developed.&#10;Please stay tuned."
+                       data-fr="Le premier article est en cours de développement.&#10;Restez connectés."
+                       data-zh="第一篇文章正在准备中。&#10;敬请期待。">最初の記事を準備しています。&#10;公開まで、もう少しお待ちください。</p>
+                </div>
+            </li>
+            <!-- ここに JavaScript（/assets/blog.js）が記事のコマを追加します -->
+        </ol>
     </main>
 
     <!-- partial:footer -->
@@ -272,56 +213,6 @@
     </footer>
     <!-- /partial:footer -->
 
-<script>
-// 表示できる言語（これ以外の値は日本語として扱う）
-const SUPPORTED_LANGS = ['ja', 'en', 'fr', 'zh'];
-
-function normalizeLanguage(lang) {
-    return SUPPORTED_LANGS.includes(lang) ? lang : 'ja';
-}
-
-function getSavedLanguage() {
-    try {
-        return normalizeLanguage(localStorage.getItem('selectedLanguage'));
-    } catch (e) {
-        return 'ja';
-    }
-}
-
-function switchLanguage(lang) {
-    lang = normalizeLanguage(lang);
-
-    // 1.言語をブラウザに記憶
-    try {
-        localStorage.setItem('selectedLanguage', lang);
-    } catch (e) {}
-
-    // 2.data-言語属性のテキストを書き換え（文字として入れる。改行は CSS の pre-line で表示）
-    document.querySelectorAll('[data-ja]').forEach(el => {
-        el.textContent = el.getAttribute('data-' + lang) || el.getAttribute('data-ja');
-    });
-
-    // 3.data-言語属性のurlを書き換え
-    document.querySelectorAll('.nav-link').forEach(link => {
-        const targetUrl = link.getAttribute(`data-url-${lang}`);
-        if (targetUrl) link.href = targetUrl;
-    });
-
-    // 4.言語ボタンのui
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.lang === lang);
-    });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    // 言語ボタン
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.addEventListener('click', () => switchLanguage(btn.dataset.lang));
-    });
-    // 5.ページを開いた時に、前回選んだ言語を反映
-    const savedLang = getSavedLanguage();
-    if (savedLang !== 'ja') switchLanguage(savedLang);
-});
-</script>
+<script src="/assets/blog.js"></script>
 </body>
 </html>
