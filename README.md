@@ -23,6 +23,30 @@ PR を作ると、軽量版の作り忘れや位置情報入りの写真がな�
 
 **最初のピンを公開するとき**は、`pins/pins.html` の `<meta name="robots" content="noindex">` の行を削除し、`sitemap.xml` にピンボードの URL を戻してください（準備中の間は検索結果に出さない設定にしています）。
 
+## ブログ記事を追加するとき
+記事は `blog/posts.json` に1件ずつ書きます。一覧（`/blog/`）では日付の新しい順にフィルムのコマとして並び、コマをタップすると記事ページ（`/blog/post.html?id=記事のId`）が開きます。
+
+```json
+[
+  {
+    "Id": "2026-10-20-morning-light",
+    "Draft": true,
+    "Date": "2026-10-20",
+    "Image": "/images/写真のファイル名.JPG",
+    "Title": "記事のタイトル",
+    "Body": ["1段落目の文章", "2段落目の文章"],
+    "en": { "Title": "English title", "Body": ["..."] }
+  }
+]
+```
+- `Id` は記事ページの URL になります（半角英数字とハイフン推奨。公開後は変えない）
+- `"Draft": true` の記事は表示されません。公開するときは `false` にします
+- `Image` は元写真のパスを書けば、ページ側で自動的に軽量版（`images/opt/`）を使います
+- `en` / `fr` / `zh` を書くと、その言語に切り替えたときに置き換わります（無ければ日本語）
+- 本文は文字として表示されます（HTML のタグは使えません）
+- **ブログを公開するとき**は、`blog/index.html` と `blog/post.html` の `<meta name="robots" content="noindex">` を削除してください
+- 現行ドメインには広告・アフィリエイトリンクを置かないルールです（収益化は別ドメインで行う予定）
+
 ## フッター・「ホームに戻る」ボタン（全ページ共通の部品）を変えるとき
 1. `tools/partials/footer.html`（フッター）または `tools/partials/home-button.html`（右上のボタン）を編集する
 2. 次を実行して全ページへ反映する

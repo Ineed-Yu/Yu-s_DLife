@@ -1,0 +1,328 @@
+/* ブログ：ライトボックスに置いた 35mm フィルムのデザイン
+   一覧（/blog/）と記事ページ（/blog/post.html）で共通に使う。 */
+
+:root {
+    --lightbox: #eef1f1;        /* ライトボックスの光る台 */
+    --film: #1c1916;            /* フィルムの地（わずかに茶色みのある黒） */
+    --film-unexposed: #2b2723;  /* 何も写っていないコマ */
+    --perf: #fbfbf7;            /* 送り穴から透ける光 */
+    --edge-print: #e8a93a;      /* フィルムの縁に印字された番号の色 */
+    --date-stamp: #ff8a2a;      /* カメラの日付写し込みの色 */
+    --grease: #d8322a;          /* 写真選びに使う赤い色鉛筆 */
+    --rail: 40px;               /* 左右の縁（送り穴の列）の幅 */
+    --gutter: calc(var(--rail) * 10 / 36); /* 送り穴とコマの間のすき間（縁の印字が入る） */
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: #22201d;
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", "Helvetica Neue", Arial, sans-serif;
+    /* 中央ほど明るい、光る台 */
+    background:
+        radial-gradient(ellipse 70% 60% at 50% 35%, #fbfcfb 0, rgba(251, 252, 251, 0) 100%),
+        var(--lightbox);
+    background-attachment: fixed;
+}
+
+/* ---------- フィルム本体 ---------- */
+.film {
+    position: relative;
+    box-sizing: border-box;
+    width: min(100%, 600px);
+    margin: 24px auto 0;
+    padding: 0 var(--rail);
+    background: var(--film);
+    box-shadow: 0 10px 28px rgba(28, 25, 22, 0.28), 0 1px 3px rgba(28, 25, 22, 0.35);
+}
+
+/* 左右の送り穴（縦にずっと続く） */
+.film::before,
+.film::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: var(--rail);
+    background: url("/assets/film-perf.svg") 50% 0 / var(--rail) auto repeat-y;
+    pointer-events: none;
+}
+.film::before { left: 0; }
+.film::after { right: 0; }
+
+/* フィルムの始まり（リーダー部分）：ページの見出し */
+.film-leader {
+    position: relative;
+    padding: 56px 8px 40px;
+    color: #f4f1ea;
+    text-align: center;
+}
+.film-leader h1 {
+    margin: 0;
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+}
+.film-leader p {
+    margin: 12px 0 0;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #b9b2a6;
+}
+/* 縁の印字（フィルム名）：左の縁、送り穴とコマの間 */
+.film-leader .edge-print {
+    top: 24px;
+    left: calc(-1 * var(--gutter));
+}
+
+/* ---------- コマ ---------- */
+.film-frames {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 28px;
+}
+
+.film-frames > li {
+    position: relative;
+    padding: 14px 0;
+}
+
+/* 縁に印字されたコマ番号（右の縁） */
+/* 縁の印字：送り穴とコマの間の細いすき間に、縦書きで入れる */
+.edge-print {
+    position: absolute;
+    width: var(--gutter);
+    display: flex;
+    justify-content: center;
+    writing-mode: vertical-rl;
+    color: var(--edge-print);
+    font-family: "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+}
+.frame-number {
+    top: 18px;
+    right: calc(-1 * var(--gutter));
+}
+
+/* コマ（記事へのリンク） */
+.frame {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    border-radius: 4px;
+    background: var(--film-unexposed);
+    color: #fff;
+    text-decoration: none;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+.frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: filter 0.3s ease;
+}
+
+/* コマの下の帯：タイトルと日付 */
+.frame-caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px 11px;
+    background: rgba(18, 16, 14, 0.62);
+    backdrop-filter: blur(3px);
+}
+.frame-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.45;
+    text-wrap: pretty;
+}
+
+/* フィルムカメラの日付写し込み風（例: '26 10 14） */
+.date-stamp {
+    flex: none;
+    color: var(--date-stamp);
+    font-family: "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+    text-shadow: 0 0 6px rgba(255, 138, 42, 0.65);
+}
+
+/* 選んだコマに、赤い色鉛筆で印をつける */
+/* コマを少しはみ出して囲む（写真選びで、フィルムの上から色鉛筆で印をつけるように） */
+.grease-mark {
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    left: -8px;
+    right: -8px;
+    width: calc(100% + 16px);
+    height: calc(100% - 12px);
+    overflow: visible;
+    pointer-events: none;
+}
+.grease-mark path {
+    fill: none;
+    stroke: var(--grease);
+    /* コマの縦横比に合わせて引き伸ばすので、縦線と横線で太さが少し変わる（手描きらしさになる） */
+    stroke-width: 0.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    opacity: 0.92;
+    transition: stroke-dashoffset 0.45s ease-out;
+}
+.frame:hover + .grease-mark path,
+.frame:focus-visible + .grease-mark path {
+    stroke-dashoffset: 0;
+}
+.frame:hover img,
+.frame:focus-visible img {
+    filter: brightness(1.08);
+}
+
+/* 記事がまだない時：何も写っていないコマ */
+.frame.is-unexposed {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    box-sizing: border-box;
+    background:
+        radial-gradient(ellipse at 50% 45%, #36312c 0, var(--film-unexposed) 70%);
+    cursor: default;
+    text-align: center;
+}
+.frame.is-unexposed .soon {
+    margin: 0;
+    color: #e9e4da;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.9;
+    white-space: pre-line;
+}
+
+/* ---------- 記事ページ ---------- */
+.film.is-single {
+    margin-top: 24px;
+}
+.film.is-single .film-frames {
+    padding: 16px 0;
+}
+.film.is-single .frame {
+    cursor: default;
+}
+
+.article {
+    box-sizing: border-box;
+    width: min(100%, 640px);
+    margin: 0 auto;
+    padding: 36px 24px 8px;
+}
+.article-title {
+    margin: 0 0 10px;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.45;
+    text-wrap: pretty;
+}
+.article-date {
+    display: block;
+    margin-bottom: 28px;
+    color: #8a8378;
+    font-size: 13px;
+}
+.article-body p {
+    margin: 0 0 1.4em;
+    font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+    font-size: 16.5px;
+    line-height: 2;
+    letter-spacing: 0.02em;
+}
+.article-back {
+    display: inline-block;
+    margin: 12px 0 0;
+    color: #22201d;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(34, 32, 29, 0.35);
+    padding-bottom: 2px;
+}
+.article-back:hover {
+    border-bottom-color: #22201d;
+}
+.article-missing {
+    margin: 0 0 16px;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+/* フッターはフィルムから少し離す */
+.site-footer {
+    margin-top: 56px;
+}
+
+/* ---------- スマホ ---------- */
+@media (max-width: 600px) {
+    :root {
+        --rail: 26px;
+    }
+    .film {
+        margin-top: 8px;
+    }
+    .film-leader {
+        padding: 44px 4px 30px;
+    }
+    .film-leader h1 {
+        font-size: 32px;
+    }
+    .film-frames > li {
+        padding: 10px 0;
+    }
+    .frame-caption {
+        padding: 9px 10px 8px;
+    }
+    .frame-title {
+        font-size: 14px;
+    }
+    .date-stamp {
+        font-size: 12px;
+    }
+    .edge-print {
+        font-size: 7px;
+    }
+    .article {
+        padding: 28px 18px 8px;
+    }
+    .article-title {
+        font-size: 22px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .grease-mark path,
+    .frame img {
+        transition: none;
+    }
+}
