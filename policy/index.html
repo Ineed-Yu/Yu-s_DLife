@@ -177,6 +177,34 @@
         .site-footer {
             margin-top: 0;
         }
+
+        /* ポリシー本文：読みやすいよう左揃え */
+        .policy-card {
+            text-align: left;
+        }
+        .policy-card .soon-title {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .policy-section {
+            margin: 0 0 22px;
+        }
+        .policy-section h2 {
+            margin: 0 0 8px;
+            font-size: 15px;
+            font-weight: bold;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(51, 51, 51, 0.18);
+        }
+        .policy-section p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.9;
+        }
+        .policy-pending {
+            margin-top: 28px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -237,17 +265,39 @@
        data-ja="← ホームに戻る" data-en="← Back to Home" data-fr="← Retour à l'accueil" data-zh="← 返回首页">← ホームに戻る</a>
     <!-- /partial:home-button -->
 
-    <!-- プライバシーポリシーの受け皿（本文は法務の文案 legal/review-current-site-2026-10-13.md A-5・G 節をもとに、管理者の承認後に作成） -->
+    <!-- プライバシーポリシー。いまは「このサイトについて」「写真について」のみ掲載（2026-10-14 管理者指示でフッターの注記を移設）。
+         その他の本文（取得する情報・お問い合わせ等）は法務の文案 legal/review-current-site-2026-10-13.md A-5・G 節をもとに、管理者の承認後に追加 -->
     <main class="soon-wrapper">
-        <div class="soon-card">
-            <span class="soon-label"
-                  data-ja="準備中" data-en="Coming Soon" data-fr="Bientôt" data-zh="准备中">準備中</span>
+        <div class="soon-card policy-card">
             <h1 class="soon-title" data-ja="プライバシーポリシー" data-en="Privacy Policy" data-fr="Politique de confidentialité" data-zh="隐私政策">プライバシーポリシー</h1>
-            <p class="soon-text"
-               data-ja="プライバシーポリシーのページを準備しています。&#10;公開まで、もう少しお待ちください。"
-               data-en="Our privacy policy page is on its way.&#10;Please stay tuned."
-               data-fr="La page de politique de confidentialité est en préparation.&#10;Restez connectés."
-               data-zh="隐私政策页面正在准备中。&#10;敬请期待。">プライバシーポリシーのページを準備しています。&#10;公開まで、もう少しお待ちください。</p>
+
+            <section class="policy-section">
+                <h2 data-ja="このサイトについて" data-en="About this site" data-fr="À propos de ce site" data-zh="关于本网站">このサイトについて</h2>
+                <p
+                  data-ja="当サイトは、個人が運営する非公式・非営利のファンページです。ウォルト・ディズニー・カンパニー、株式会社オリエンタルランド、その他各ディズニーパークの運営会社とは一切関係がなく、承認・後援を受けたものではありません。キャラクター等に関する権利は各権利者に帰属します。"
+                  data-en="This site is an unofficial, non-commercial fan page run by an individual. It is not affiliated with, endorsed by, or sponsored by The Walt Disney Company, Oriental Land Co., Ltd., or any operator of the Disney parks. All characters and related rights belong to their respective owners."
+                  data-fr="Ce site est une page de fans non officielle et non commerciale, gérée par un particulier. Il n'est ni affilié à, ni approuvé ou parrainé par The Walt Disney Company, Oriental Land Co., Ltd. ou tout autre exploitant des parcs Disney. Les personnages et droits associés appartiennent à leurs propriétaires respectifs."
+                  data-zh="本网站是由个人运营的非官方、非营利粉丝页面，与华特迪士尼公司、株式会社东方乐园（Oriental Land Co., Ltd.）及其他迪士尼乐园运营公司均无任何关联，亦未获得其认可或赞助。角色及相关权利归各自权利人所有。">当サイトは、個人が運営する非公式・非営利のファンページです。ウォルト・ディズニー・カンパニー、株式会社オリエンタルランド、その他各ディズニーパークの運営会社とは一切関係がなく、承認・後援を受けたものではありません。キャラクター等に関する権利は各権利者に帰属します。</p>
+            </section>
+
+            <section class="policy-section">
+                <h2 data-ja="写真について" data-en="Photos" data-fr="Photos" data-zh="关于照片">写真について</h2>
+                <p
+                  data-ja="掲載写真は運営者が撮影したものです。無断転載はご遠慮ください。"
+                  data-en="Photos were taken by the site owner. Please do not reuse them without permission."
+                  data-fr="Les photos ont été prises par l'auteur du site. Merci de ne pas les réutiliser sans autorisation."
+                  data-zh="网站照片均由运营者拍摄，未经许可请勿转载。">掲載写真は運営者が撮影したものです。無断転載はご遠慮ください。</p>
+            </section>
+
+            <div class="policy-pending">
+                <span class="soon-label"
+                      data-ja="準備中" data-en="Coming Soon" data-fr="Bientôt" data-zh="准备中">準備中</span>
+                <p class="soon-text"
+                   data-ja="その他の内容は準備中です。"
+                   data-en="The rest of this policy is on its way."
+                   data-fr="Le reste de cette politique est en préparation."
+                   data-zh="其他内容正在准备中。">その他の内容は準備中です。</p>
+            </div>
         </div>
     </main>
 
@@ -262,11 +312,6 @@
                 <li><a href="/contact/"
                        data-ja="コンタクト" data-en="Contact" data-fr="Contact" data-zh="联系方式">コンタクト</a></li>
             </ul>
-            <p class="site-footer-note"
-               data-ja="当サイトは、個人が運営する非公式・非営利のファンページです。ウォルト・ディズニー・カンパニー、株式会社オリエンタルランド、その他各ディズニーパークの運営会社とは一切関係がなく、承認・後援を受けたものではありません。キャラクター等に関する権利は各権利者に帰属します。掲載写真は運営者が撮影したものです。無断転載はご遠慮ください。"
-               data-en="This site is an unofficial, non-commercial fan page run by an individual. It is not affiliated with, endorsed by, or sponsored by The Walt Disney Company, Oriental Land Co., Ltd., or any operator of the Disney parks. All characters and related rights belong to their respective owners. Photos were taken by the site owner. Please do not reuse them without permission."
-               data-fr="Ce site est une page de fans non officielle et non commerciale, gérée par un particulier. Il n'est ni affilié à, ni approuvé ou parrainé par The Walt Disney Company, Oriental Land Co., Ltd. ou tout autre exploitant des parcs Disney. Les personnages et droits associés appartiennent à leurs propriétaires respectifs. Les photos ont été prises par l'auteur du site. Merci de ne pas les réutiliser sans autorisation."
-               data-zh="本网站是由个人运营的非官方、非营利粉丝页面，与华特迪士尼公司、株式会社东方乐园（Oriental Land Co., Ltd.）及其他迪士尼乐园运营公司均无任何关联，亦未获得其认可或赞助。角色及相关权利归各自权利人所有。网站照片均由运营者拍摄，未经许可请勿转载。">当サイトは、個人が運営する非公式・非営利のファンページです。ウォルト・ディズニー・カンパニー、株式会社オリエンタルランド、その他各ディズニーパークの運営会社とは一切関係がなく、承認・後援を受けたものではありません。キャラクター等に関する権利は各権利者に帰属します。掲載写真は運営者が撮影したものです。無断転載はご遠慮ください。</p>
             <p class="site-footer-copy">© 2026 Yu's DLife</p>
         </div>
     </footer>
