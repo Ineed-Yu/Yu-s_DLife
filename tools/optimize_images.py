@@ -10,16 +10,19 @@ images/ にある写真（JPG / PNG）から、表示サイズ別の軽量版を
 
 - 数字は横幅(px)。元画像より大きくはしません（小さい写真はそのままの大きさ）。
 - 撮影日時・機種・位置情報などのメタデータはすべて取り除きます。
+  代わりに、撮影者名と著作権表記だけを情報欄に入れ、見えない透かしを入れます（tools/provenance.py）。
 - カメラの向き情報（縦撮り）を反映してから保存するので、見た目の向きは元と同じです。
 - 作成済みで元画像が更新されていないものはスキップします。
 - 元の写真（JPG）に位置情報が入っていたら、画質を変えずに位置情報だけを削除します。
+- 元の写真（JPG / PNG）の情報欄に、撮影者名と著作権表記を画質を変えずに追記します
+  （撮影日時・機種・シリアル番号は撮影者の証拠として残します）。
 
 使い方:
   python3 tools/optimize_images.py           # 足りない軽量版を作る
-  python3 tools/optimize_images.py --check   # 作り忘れ・位置情報入りの写真がないか確認だけする
+  python3 tools/optimize_images.py --check   # 作り忘れ・位置情報入りの写真・撮影者情報や透かしの入れ忘れがないか確認だけする
                                              # （問題があれば終了コード 1。GitHub の自動チェックで使用）
 
-必要なもの: Python 3.9 以上、Pillow（pip install Pillow）
+必要なもの: Python 3.9 以上、Pillow と numpy（pip install Pillow numpy）
 """
 from __future__ import annotations
 
@@ -30,6 +33,8 @@ import sys
 from pathlib import Path
 
 from PIL import Image, ImageOps
+
+import provenance as pv  # 撮影者の証拠（情報欄・見えない透かし）。同じ tools/ フォルダにある
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC_DIR = ROOT / "images"
@@ -99,13 +104,22 @@ def strip_gps_jpeg(path: Path) -> bool:
     return changed
 
 
+def has_credit(path: Path) -> bool:
+    try:
+        return pv.read_credit(path)[0] == pv.CREATOR
+    except Exception:
+        return False
+
+
 def is_stale(src: Path, dst: Path) -> bool:
-    return not dst.exists() or dst.stat().st_mtime < src.stat().st_mtime
+    # 無い・元写真より古い・撮影者情報が入っていない（透かし導入前に作った）ものは作り直す
+    return not dst.exists() or dst.stat().st_mtime < src.stat().st_mtime or not has_credit(dst)
 
 
 def build(src: Path) -> list[Path]:
     made = []
     with Image.open(src) as im:
+        year = pv.capture_year(im)
         im = ImageOps.exif_transpose(im)  # 縦撮りの向きを反映
         if im.mode not in ("RGB", "RGBA"):
             im = im.convert("RGBA" if "A" in im.getbands() else "RGB")
@@ -116,8 +130,11 @@ def build(src: Path) -> list[Path]:
             target_w = min(w, im.width)
             target_h = round(im.height * target_w / im.width)
             resized = im if target_w == im.width else im.resize((target_w, target_h), Image.LANCZOS)
-            # exif などは渡さない → メタデータなしで保存される
-            resized.save(dst, "WEBP", quality=QUALITY, method=6)
+            # 見えない透かしを入れ、情報欄には撮影者名と著作権表記だけを入れる
+            # （元写真の撮影日時・機種・位置情報などは渡さないので残らない）
+            marked = pv.embed_watermark(resized)
+            marked.save(dst, "WEBP", quality=QUALITY, method=6,
+                        exif=pv.exif_bytes(year), xmp=pv.xmp_bytes(year))
             made.append(dst)
     return made
 
@@ -141,7 +158,21 @@ def main() -> int:
         if args.check:
             if missing:
                 problems.append(f"軽量版が未作成です: {rel}（python3 tools/optimize_images.py を実行してください）")
+            if not has_credit(src):
+                problems.append(f"元写真に撮影者情報がありません: {rel}（python3 tools/optimize_images.py で追記できます）")
+            for w in WIDTHS:
+                dst = out_name(src, w)
+                if not dst.exists():
+                    continue
+                if not has_credit(dst):
+                    problems.append(f"軽量版に撮影者情報がありません: {dst.relative_to(ROOT)}")
+                with Image.open(dst) as im:
+                    z = pv.detect_watermark(im)
+                if z < pv.DETECT_THRESHOLD:
+                    problems.append(f"軽量版の見えない透かしが確認できません（強さ {z:.1f}）: {dst.relative_to(ROOT)}")
             continue
+        if pv.tag_original(src):
+            print(f"撮影者情報を追記: {rel}")
         made = build(src)
         if made:
             print(f"作成: {rel} → {', '.join(p.name for p in made)}")
