@@ -1,0 +1,27 @@
+# 共通部品チェック
+# HTML や共通部品（tools/partials/）を変更した PR で、
+# フッター・ホームボタンが全ページに最新の内容で入っているかを確認します（確認だけで、公開には影響しません）。
+# 問題があれば PR に赤い × が付きます。直し方: python3 tools/apply_partials.py を実行してコミット。
+name: 共通部品チェック
+
+on:
+  pull_request:
+    paths:
+      - "**.html"
+      - "tools/partials/**"
+      - "tools/apply_partials.py"
+      - ".github/workflows/site-check.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: フッター・ホームボタンの反映確認
+        run: python3 tools/apply_partials.py --check

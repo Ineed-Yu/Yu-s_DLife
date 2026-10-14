@@ -1,0 +1,98 @@
+/* 全ページ共通の部品（ホームに戻るボタン・フッター）
+   各ページの <head> で <link rel="stylesheet" href="/assets/common.css"> として読み込む。
+   部品の HTML は tools/partials/ にあり、tools/apply_partials.py で各ページへ反映する。 */
+
+/* ---------- 右上に固定する「ホームに戻る」ボタン ----------
+   メニューボタン（右上の丸いボタン、幅60px）の左隣に並べる。
+   メニューを開いたときはメニューの下に隠れるよう、z-index はメニュー（80）より小さくする。 */
+.home-fab {
+    position: fixed;
+    top: 30px;
+    right: 92px;
+    z-index: 70;
+    display: inline-flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 18px;
+    box-sizing: border-box;
+    background-color: rgba(255, 255, 255, 0.92);
+    color: #333;
+    text-decoration: none;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.home-fab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.16);
+    background-color: #fff;
+}
+
+/* スマホでは言語切替と重ならないよう、メニューボタンの真下に置く */
+@media (max-width: 600px) {
+    .home-fab {
+        top: 90px;
+        right: 20px;
+        height: 36px;
+        padding: 0 14px;
+        font-size: 13px;
+    }
+}
+
+/* ---------- 共通フッター ---------- */
+.site-footer {
+    box-sizing: border-box;
+    width: 100%;
+    margin-top: 48px;
+    padding: 28px 20px 24px;
+    background-color: rgba(34, 34, 34, 0.94);
+    color: #ddd;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    text-align: center;
+}
+
+.site-footer-inner {
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.site-footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 24px;
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+}
+
+.site-footer-links a {
+    color: #fff;
+    font-size: 13px;
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    padding-bottom: 2px;
+}
+
+.site-footer-links a:hover {
+    border-bottom-color: #fff;
+}
+
+.site-footer-note {
+    margin: 0 0 12px;
+    font-size: 11px;
+    line-height: 1.7;
+    color: #c8c8c8;
+}
+
+.site-footer-copy {
+    margin: 0;
+    font-size: 11px;
+    color: #aaa;
+}

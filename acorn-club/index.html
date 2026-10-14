@@ -9,6 +9,7 @@
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <link rel="stylesheet" href="/assets/common.css">
 
 <style>
 .lang-switch-wrapper {
@@ -114,6 +115,8 @@
             font-family: 'Helvetica Neue', Arial, sans-serif;
             color: #333;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             background-image: url("/images/opt/clarice.shn.dlr.001-1600.webp");
             background-size: cover;
             background-position: 60% 30%;
@@ -122,6 +125,8 @@
         }
 
         .soon-wrapper {
+            flex: 1;
+            width: 100%;
             max-width: 580px;
             margin: 0 auto;
             padding: 60px 20px;
@@ -158,47 +163,32 @@
         .soon-text {
             font-size: 14px;
             line-height: 1.8;
-            margin: 0 0 24px 0;
+            margin: 0;
+            white-space: pre-line;
         }
 
         .soon-note {
             font-size: 11px;
             line-height: 1.6;
             color: #777;
-            margin: 0 0 24px 0;
+            margin: 24px 0 0 0;
         }
 
-        .soon-back {
-            display: inline-block;
-            background-color: rgba(255, 255, 255, 0.92);
-            color: #333;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 14px;
-            padding: 12px 24px;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-        }
-
-        .soon-back:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.12);
+        .site-footer {
+            margin-top: 0;
         }
     </style>
 </head>
 <body>
 
-<lang-switch>
 <div class="lang-switch-wrapper">
     <div class="lang-switch-box">
-        <button onclick="switchLanguage('ja')" id="btn-ja" class="lang-btn active">JP</button>
-        <button onclick="switchLanguage('en')" id="btn-en" class="lang-btn">EN</button>
-        <button onclick="switchLanguage('fr')" id="btn-fr" class="lang-btn">FR</button>
-        <button onclick="switchLanguage('zh')" id="btn-zh" class="lang-btn">ZH</button>
+        <button type="button" id="btn-ja" class="lang-btn active" data-lang="ja">JP</button>
+        <button type="button" id="btn-en" class="lang-btn" data-lang="en">EN</button>
+        <button type="button" id="btn-fr" class="lang-btn" data-lang="fr">FR</button>
+        <button type="button" id="btn-zh" class="lang-btn" data-lang="zh">ZH</button>
     </div>
 </div>
-</lang-switch>
 
 <!-- ハンバーガーメニューのボタン -->
 <div class="hamburger-menu">
@@ -242,6 +232,11 @@
     </div>
 </div>
 
+    <!-- partial:home-button -->
+    <a href="/index.html" class="home-fab"
+       data-ja="← ホームに戻る" data-en="← Back to Home" data-fr="← Retour à l'accueil" data-zh="← 返回首页">← ホームに戻る</a>
+    <!-- /partial:home-button -->
+
     <!-- Acorn Club の受け皿（クラリスにまつわる非公式・非収益のファンページ／wiki として制作予定） -->
     <main class="soon-wrapper">
         <div class="soon-card">
@@ -249,39 +244,66 @@
                   data-ja="準備中" data-en="Coming Soon" data-fr="Bientôt" data-zh="准备中">準備中</span>
             <h1 class="soon-title">Acorn Club</h1>
             <p class="soon-text"
-               data-ja="クラリスが大好きな人のための、非公式ファンページを準備しています。<br>公開まで、もう少しお待ちください。"
-               data-en="An unofficial fan page for everyone who loves Clarice is in the works.<br>Please stay tuned."
-               data-fr="Une page de fans non officielle pour tous ceux qui aiment Clarice est en préparation.<br>Restez connectés."
-               data-zh="为喜爱Clarice的大家准备的非官方粉丝页面正在制作中。<br>敬请期待。">クラリスが大好きな人のための、非公式ファンページを準備しています。<br>公開まで、もう少しお待ちください。</p>
+               data-ja="クラリスが大好きな人のための、非公式ファンページを準備しています。&#10;公開まで、もう少しお待ちください。"
+               data-en="An unofficial fan page for everyone who loves Clarice is in the works.&#10;Please stay tuned."
+               data-fr="Une page de fans non officielle pour tous ceux qui aiment Clarice est en préparation.&#10;Restez connectés."
+               data-zh="为喜爱Clarice的大家准备的非官方粉丝页面正在制作中。&#10;敬请期待。">クラリスが大好きな人のための、非公式ファンページを準備しています。&#10;公開まで、もう少しお待ちください。</p>
             <p class="soon-note"
                data-ja="※ 個人による非公式・非営利のファンページです。ウォルト・ディズニー・カンパニーおよび関連会社とは一切関係ありません。"
                data-en="* This is an unofficial, non-commercial fan page made by an individual. It is not affiliated with The Walt Disney Company or its affiliates."
                data-fr="* Page de fans non officielle et non commerciale, réalisée par un particulier. Sans lien avec The Walt Disney Company ni ses filiales."
                data-zh="※ 本页面为个人制作的非官方、非营利粉丝页面，与华特迪士尼公司及其关联公司无任何关系。">※ 個人による非公式・非営利のファンページです。ウォルト・ディズニー・カンパニーおよび関連会社とは一切関係ありません。</p>
-
-            <a href="/index.html" class="soon-back"
-               data-ja="← ホームに戻る" data-en="← Back to Home" data-fr="← Retour à l'accueil" data-zh="← 返回首页">← ホームに戻る</a>
         </div>
     </main>
 
+    <!-- partial:footer -->
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <ul class="site-footer-links">
+                <li><a href="/about/"
+                       data-ja="運営者情報" data-en="About" data-fr="À propos" data-zh="运营者信息">運営者情報</a></li>
+                <li><a href="/policy/"
+                       data-ja="プライバシーポリシー" data-en="Privacy Policy" data-fr="Politique de confidentialité" data-zh="隐私政策">プライバシーポリシー</a></li>
+                <li><a href="/contact/"
+                       data-ja="コンタクト" data-en="Contact" data-fr="Contact" data-zh="联系方式">コンタクト</a></li>
+            </ul>
+            <p class="site-footer-note"
+               data-ja="当サイトは、個人が運営する非公式・非営利のファンページです。ウォルト・ディズニー・カンパニー、株式会社オリエンタルランド、その他各ディズニーパークの運営会社とは一切関係がなく、承認・後援を受けたものではありません。キャラクター等に関する権利は各権利者に帰属します。掲載写真は運営者が撮影したものです。無断転載はご遠慮ください。"
+               data-en="This site is an unofficial, non-commercial fan page run by an individual. It is not affiliated with, endorsed by, or sponsored by The Walt Disney Company, Oriental Land Co., Ltd., or any operator of the Disney parks. All characters and related rights belong to their respective owners. Photos were taken by the site owner. Please do not reuse them without permission."
+               data-fr="Ce site est une page de fans non officielle et non commerciale, gérée par un particulier. Il n'est ni affilié à, ni approuvé ou parrainé par The Walt Disney Company, Oriental Land Co., Ltd. ou tout autre exploitant des parcs Disney. Les personnages et droits associés appartiennent à leurs propriétaires respectifs. Les photos ont été prises par l'auteur du site. Merci de ne pas les réutiliser sans autorisation."
+               data-zh="本网站是由个人运营的非官方、非营利粉丝页面，与华特迪士尼公司、株式会社东方乐园（Oriental Land Co., Ltd.）及其他迪士尼乐园运营公司均无任何关联，亦未获得其认可或赞助。角色及相关权利归各自权利人所有。网站照片均由运营者拍摄，未经许可请勿转载。">当サイトは、個人が運営する非公式・非営利のファンページです。ウォルト・ディズニー・カンパニー、株式会社オリエンタルランド、その他各ディズニーパークの運営会社とは一切関係がなく、承認・後援を受けたものではありません。キャラクター等に関する権利は各権利者に帰属します。掲載写真は運営者が撮影したものです。無断転載はご遠慮ください。</p>
+            <p class="site-footer-copy">© 2026 Yu's DLife</p>
+        </div>
+    </footer>
+    <!-- /partial:footer -->
+
 <script>
+// 表示できる言語（これ以外の値は日本語として扱う）
+const SUPPORTED_LANGS = ['ja', 'en', 'fr', 'zh'];
+
+function normalizeLanguage(lang) {
+    return SUPPORTED_LANGS.includes(lang) ? lang : 'ja';
+}
+
 function getSavedLanguage() {
     try {
-        return localStorage.getItem('selectedLanguage') || 'ja';
+        return normalizeLanguage(localStorage.getItem('selectedLanguage'));
     } catch (e) {
         return 'ja';
     }
 }
 
 function switchLanguage(lang) {
+    lang = normalizeLanguage(lang);
+
     // 1.言語をブラウザに記憶
     try {
         localStorage.setItem('selectedLanguage', lang);
     } catch (e) {}
 
-    // 2.data-言語属性のテキストを書き換え（無い言語は日本語）
+    // 2.data-言語属性のテキストを書き換え（文字として入れる。改行は CSS の pre-line で表示）
     document.querySelectorAll('[data-ja]').forEach(el => {
-        el.innerHTML = el.getAttribute('data-' + lang) || el.getAttribute('data-ja');
+        el.textContent = el.getAttribute('data-' + lang) || el.getAttribute('data-ja');
     });
 
     // 3.data-言語属性のurlを書き換え
@@ -291,17 +313,19 @@ function switchLanguage(lang) {
     });
 
     // 4.言語ボタンのui
-    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-    const activeBtn = document.getElementById('btn-' + lang);
-    if (activeBtn) activeBtn.classList.add('active');
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
 }
 
-// 5.ページを開いた時に、前回選んだ言語を反映
 document.addEventListener('DOMContentLoaded', () => {
+    // 言語ボタン
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchLanguage(btn.dataset.lang));
+    });
+    // 5.ページを開いた時に、前回選んだ言語を反映
     const savedLang = getSavedLanguage();
-    if (savedLang !== 'ja' && document.getElementById('btn-' + savedLang)) {
-        switchLanguage(savedLang);
-    }
+    if (savedLang !== 'ja') switchLanguage(savedLang);
 });
 </script>
 </body>

@@ -1,6 +1,7 @@
 [
   {
     "Id": "0001",
+    "Draft": true,
     "Name": "pins_0001",
     "ReleaseYear": "20xx年",
     "Character": "???",
@@ -8,9 +9,9 @@
     "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
   },
- 
   {
     "Id": "0002",
+    "Draft": true,
     "Name": "pins_0002",
     "ReleaseYear": "20xx年",
     "Character": "???",
@@ -18,9 +19,9 @@
     "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
   },
-
- {
+  {
     "Id": "0003",
+    "Draft": true,
     "Name": "pins_0003",
     "ReleaseYear": "20xx年",
     "Character": "???",
@@ -28,9 +29,9 @@
     "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
   },
-
-   {
+  {
     "Id": "0004",
+    "Draft": true,
     "Name": "pins_0004",
     "ReleaseYear": "20xx年",
     "Character": "???",
@@ -38,9 +39,9 @@
     "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
   },
-
-   {
+  {
     "Id": "0005",
+    "Draft": true,
     "Name": "pins_0005",
     "ReleaseYear": "20xx年",
     "Character": "???",
@@ -48,9 +49,9 @@
     "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
   },
-
-   {
+  {
     "Id": "0006",
+    "Draft": true,
     "Name": "pins_0006",
     "ReleaseYear": "20xx年",
     "Character": "???",
@@ -58,9 +59,9 @@
     "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
   },
-
-   {
+  {
     "Id": "0007",
+    "Draft": true,
     "Name": "pins_0007",
     "ReleaseYear": "20xx年",
     "Character": "???",
@@ -68,9 +69,9 @@
     "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
   },
-
- {
+  {
     "Id": "0008",
+    "Draft": true,
     "Name": "pins_0008",
     "ReleaseYear": "20xx年",
     "Character": "???",
@@ -80,6 +81,7 @@
   },
   {
     "Id": "0009",
+    "Draft": true,
     "Name": "pins_0009",
     "ReleaseYear": "20xx年",
     "Character": "???",
@@ -89,6 +91,7 @@
   },
   {
     "Id": "0010",
+    "Draft": true,
     "Name": "pins_0010",
     "ReleaseYear": "20xx年",
     "Character": "???",
@@ -96,5 +99,4 @@
     "Image": "/images/_DSC1106.JPG",
     "Memo": "???"
   }
-
 ]
