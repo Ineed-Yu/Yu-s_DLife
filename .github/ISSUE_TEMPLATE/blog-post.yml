@@ -1,0 +1,107 @@
+# ブログの入稿フォーム
+# GitHub の「Issues」→「New issue」→「ブログ記事を入稿する」から使います。
+# 送信すると自動で原稿ファイルが作られ、記事ページが組み立てられ、公開（または予約・下書き保存）されます。
+# 送信した時点で、管理者が公開を承認したものとみなします（2026-10-14 管理者決定）。
+# 仕組み: .github/workflows/blog-intake.yml → tools/blog_intake.py → tools/build_blog.py
+name: ブログ記事を入稿する
+description: 文章・写真・URL を入れて送信すると、ブログ記事が自動で作られて公開されます
+title: "[ブログ] "
+labels: ["blog-post"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        入力するのは **文字・写真・URL だけ** です。デザイン（フィルム風の見た目）は全記事共通で、自動で整います。
+        送信後、数分で結果がこのページのコメントに届きます。**送信後に内容を直したいときは、このページの「…」→「Edit」で直して保存**すれば、記事も自動で更新されます。
+
+  - type: input
+    id: title
+    attributes:
+      label: タイトル
+      placeholder: 例）朝いちばんの光を、50mm だけで追いかける
+    validations:
+      required: true
+
+  - type: dropdown
+    id: publish
+    attributes:
+      label: 公開のしかた
+      options:
+        - すぐに公開する
+        - 日時を指定して公開する（予約投稿）
+        - 下書きとして保存する（公開しない）
+      default: 0
+    validations:
+      required: true
+
+  - type: input
+    id: datetime
+    attributes:
+      label: 公開日時（日本時間）
+      description: |
+        「予約投稿」のときは必須です。この日時になると自動で公開されます（1時間ごとに確認するので、最大1時間ほど遅れることがあります）。
+        「すぐに公開」のときは、記事に表示する投稿日時を変えたい場合だけ入力してください（空欄なら送信した時刻）。
+      placeholder: 2026-10-20 18:00
+
+  - type: textarea
+    id: cover
+    attributes:
+      label: 見出し画像
+      description: フィルムのコマ（一覧）と記事の一番上に出る写真を **1枚** ドラッグ＆ドロップしてください。空欄なら本文の1枚目を使います。JPG・PNG に対応しています。
+
+  - type: textarea
+    id: body
+    attributes:
+      label: 本文
+      description: |
+        書き方（これ以外の装飾は使えません。見た目は自動で整います）
+        - 段落は空行で区切る
+        - `## ` で見出し、`### ` で小見出し（見出しが2つ以上あると目次が自動で付きます）
+        - 写真はドラッグ＆ドロップ（文章の途中のどこにでも入れられます）
+        - **URL だけを1行に書くと、リンクのカードになります**
+        - `> ` で引用、`- ` で箇条書き、`**太字**`、`[文字](URL)` でリンク
+      placeholder: |
+        朝6時、まだ人の少ない港へ。今日は 50mm 1本だけ。
+
+        ## 光が横から来る時間
+
+        （ここに写真をドラッグ＆ドロップ）
+
+        建物の影が道に長く伸びて……
+    validations:
+      required: true
+
+  - type: input
+    id: summary
+    attributes:
+      label: ひとこと説明（任意）
+      description: 一覧や SNS で共有されたときに出る短い説明です。空欄なら本文の冒頭を使います。
+
+  - type: input
+    id: tags
+    attributes:
+      label: タグ（任意）
+      description: カンマ区切りで入力します。
+      placeholder: カメラ, 街歩き
+
+  - type: input
+    id: slug
+    attributes:
+      label: 記事の URL 名（任意）
+      description: 半角の英小文字・数字・ハイフンだけ。例）morning-light → https://divaclarice321.com/blog/morning-light/ 。空欄なら自動で決まります。公開後は変えないでください。
+      placeholder: morning-light
+
+  - type: checkboxes
+    id: options
+    attributes:
+      label: その他
+      options:
+        - label: AI の支援を受けて作成した（記事の末尾に「AI の支援を受けて作成し、運営者が確認しています」と表示します）
+
+  - type: checkboxes
+    id: approval
+    attributes:
+      label: 入稿の確認
+      options:
+        - label: この内容で入稿します。送信した時点で、公開（予約・下書きの場合はその設定）を承認します。
+          required: true

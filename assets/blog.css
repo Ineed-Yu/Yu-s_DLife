@@ -278,6 +278,157 @@ body {
     line-height: 1.8;
 }
 
+/* ---------- 記事本文（tools/build_blog.py が原稿から作る要素） ---------- */
+.article-body h2 {
+    margin: 2.2em 0 0.8em;
+    padding-top: 0.2em;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.5;
+    scroll-margin-top: 90px;
+}
+.article-body h3 {
+    margin: 1.8em 0 0.6em;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+.article-body ul,
+.article-body ol {
+    margin: 0 0 1.4em;
+    padding-left: 1.4em;
+    font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+    font-size: 16.5px;
+    line-height: 2;
+}
+.article-body blockquote {
+    margin: 0 0 1.4em;
+    padding: 2px 0 2px 16px;
+    border-left: 3px solid var(--film);
+    color: #555048;
+}
+.article-body blockquote p {
+    margin: 0;
+}
+.article-body hr {
+    margin: 2.4em auto;
+    width: 40%;
+    border: 0;
+    border-top: 1px solid rgba(34, 32, 29, 0.25);
+}
+.article-body a {
+    color: inherit;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+}
+
+/* 本文の写真：フィルムのコマと同じく、黒い縁に入れる */
+.article-figure {
+    margin: 2em 0;
+    padding: 10px;
+    background: var(--film);
+    border-radius: 3px;
+}
+.article-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 2px;
+}
+.article-figure figcaption {
+    margin-top: 8px;
+    color: #c9c2b6;
+    font-size: 12.5px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* URL だけの行：リンクのカード */
+.link-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0 0 1.4em;
+    padding: 14px 16px;
+    background: #fff;
+    border: 1px solid rgba(34, 32, 29, 0.15);
+    border-left: 4px solid var(--edge-print);
+    border-radius: 4px;
+    color: #22201d;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(28, 25, 22, 0.06);
+}
+.link-card:hover,
+.link-card:focus-visible {
+    border-color: rgba(34, 32, 29, 0.35);
+    border-left-color: var(--grease);
+}
+.link-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+.link-card-site {
+    color: #8a8378;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+/* 目次（見出しが2つ以上あるとき自動で付く） */
+.article-toc {
+    margin: 0 0 28px;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(34, 32, 29, 0.12);
+    border-radius: 4px;
+}
+.article-toc-title {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #8a8378;
+}
+.article-toc ol {
+    margin: 0;
+    padding-left: 1.3em;
+    font-size: 14px;
+    line-height: 1.9;
+}
+.article-toc a {
+    color: #22201d;
+    text-decoration: none;
+}
+.article-toc a:hover {
+    text-decoration: underline;
+}
+
+/* タグと注記 */
+.article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 28px 0 0;
+    padding: 0;
+    list-style: none;
+}
+.article-tags li {
+    padding: 3px 10px;
+    border-radius: 12px;
+    background: rgba(28, 25, 22, 0.08);
+    color: #4a453e;
+    font-size: 12px;
+}
+.article-note {
+    margin: 18px 0 0;
+    color: #8a8378;
+    font-size: 12.5px;
+    line-height: 1.7;
+}
+.article-back {
+    margin-top: 28px;
+}
+
 /* フッターはフィルムから少し離す */
 .site-footer {
     margin-top: 56px;

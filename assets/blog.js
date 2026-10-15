@@ -1,5 +1,5 @@
-// ブログ（フィルム風デザイン）の表示処理。一覧 /blog/ と記事ページ /blog/post.html で共通。
-// 記事データは /blog/posts.json。"Draft": true の記事は表示しない。
+// ブログ（フィルム風デザイン）の表示処理。一覧 /blog/ と、記事ページ /blog/<URL名>/ の言語切替で使う。
+// 一覧のデータは /blog/posts.json（tools/build_blog.py が原稿から自動で作る。公開中の記事だけが入る）。
 // 文字はすべて textContent で入れ、HTML として解釈させない（記事データに < > などが入っても安全）。
 (function () {
     'use strict';
@@ -109,17 +109,27 @@
         return edge;
     }
 
-    function buildFrame(post, n, asLink) {
+    // 記事ページの URL（/blog/ で始まる同じサイト内の URL だけを使う）
+    function postUrl(post) {
+        const url = String(post.Url || '');
+        return /^\/blog\/[a-z0-9-]+\/$/.test(url) ? url : `/blog/${encodeURIComponent(post.Id)}/`;
+    }
+
+    function buildFrame(post, n) {
         const p = localized(post);
         const li = document.createElement('li');
         li.appendChild(frameNumber(n));
 
-        const frame = el(asLink ? 'a' : 'div', 'frame');
-        if (asLink) frame.href = `/blog/post.html?id=${encodeURIComponent(post.Id)}`;
-        frame.appendChild(makeImage(p.Image, asLink ? 960 : 1600, ''));
+        const frame = el('a', 'frame');
+        frame.href = postUrl(post);
+        if (p.Image) {
+            frame.appendChild(makeImage(p.Image, 960, ''));
+        } else {
+            frame.classList.add('is-unexposed');  // 写真の無い記事は、何も写っていないコマ
+        }
 
         const caption = el('div', 'frame-caption');
-        caption.appendChild(el(asLink ? 'h2' : 'p', 'frame-title', p.Title || ''));
+        caption.appendChild(el('h2', 'frame-title', p.Title || ''));
         const stamp = el('time', 'date-stamp', dateStamp(p.Date));
         if (p.Date) stamp.dateTime = p.Date;
         caption.appendChild(stamp);
@@ -127,7 +137,7 @@
 
         li.appendChild(frame);
         // 色鉛筆の印はコマの外側（フィルムの縁）に描くので、コマの隣に置く
-        if (asLink) li.appendChild(greaseMark());
+        li.appendChild(greaseMark());
         return li;
     }
 
@@ -139,7 +149,8 @@
         loadPosts().then(posts => {
             list.querySelectorAll('li[data-post]').forEach(li => li.remove());
             posts.forEach((post, i) => {
-                const li = buildFrame(post, i + 1, true);
+                // コマ番号は古い記事から 1, 2, 3 …（新しい記事が増えても番号が変わらない）
+                const li = buildFrame(post, post.Number || posts.length - i);
                 li.dataset.post = post.Id;
                 list.appendChild(li);
             });
@@ -150,44 +161,6 @@
         });
     }
 
-    // ---------- 記事ページ ----------
-    function renderPost() {
-        const holder = document.getElementById('post');
-        if (!holder) return;
-        const id = new URLSearchParams(location.search).get('id');
-        const missing = document.getElementById('post-missing');
-        const strip = document.getElementById('post-strip');
-        loadPosts().then(posts => {
-            const index = posts.findIndex(p => p.Id === id);
-            const frames = document.getElementById('film-frames');
-            frames.textContent = '';
-            holder.textContent = '';
-            if (index < 0) {
-                missing.hidden = false;
-                strip.hidden = true;
-                return;
-            }
-            missing.hidden = true;
-            strip.hidden = false;
-            const post = posts[index];
-            const p = localized(post);
-            frames.appendChild(buildFrame(post, index + 1, false));
-
-            holder.appendChild(el('h1', 'article-title', p.Title || ''));
-            const date = el('time', 'article-date', String(p.Date || '').replace(/-/g, '.'));
-            if (p.Date) date.dateTime = p.Date;
-            holder.appendChild(date);
-            const body = el('div', 'article-body');
-            (Array.isArray(p.Body) ? p.Body : [p.Body || '']).forEach(text => body.appendChild(el('p', '', text)));
-            holder.appendChild(body);
-            document.title = `${p.Title || 'Blog'} | Yu's DLife`;
-        }).catch(err => {
-            console.error('記事データの読み込みに失敗しました:', err);
-            missing.hidden = false;
-            strip.hidden = true;
-        });
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.addEventListener('click', () => switchLanguage(btn.dataset.lang));
@@ -195,10 +168,8 @@
         currentLang = getSavedLanguage();
         if (currentLang !== 'ja') switchLanguage(currentLang);
         renderList();
-        renderPost();
     });
     document.addEventListener('site:languagechange', () => {
         renderList();
-        renderPost();
     });
 })();

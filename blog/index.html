@@ -3,9 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 準備中の間は検索結果に出さない（公開時にこの行を削除） -->
+    <!-- blog:robots -->
+    <!-- 公開中の記事がまだ無い間は検索結果に出さない（tools/build_blog.py が自動で切り替える） -->
     <meta name="robots" content="noindex">
+    <!-- /blog:robots -->
+    <!-- blog:head -->
     <title>Blog | Yu's DLife</title>
+    <meta name="description" content="旅とカメラの記録。Yu's DLife のブログ。">
+    <!-- /blog:head -->
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -168,7 +173,8 @@
        data-ja="← ホームに戻る" data-en="← Back to Home" data-fr="← Retour à l'accueil" data-zh="← 返回首页">← ホームに戻る</a>
     <!-- /partial:home-button -->
 
-    <!-- ブログ：ライトボックスに置いた 35mm フィルム。記事データは /blog/posts.json（"Draft": true は表示しない）
+    <!-- blog:main -->
+    <!-- ブログ：ライトボックスに置いた 35mm フィルム。記事データは /blog/posts.json（tools/build_blog.py が原稿 content/blog/ から自動で作成）
          収益化サイトは別ドメインで制作予定。現行ドメインには広告・アフィリエイトを置かない -->
     <main class="film">
         <header class="film-leader">
@@ -191,6 +197,7 @@
             <!-- ここに JavaScript（/assets/blog.js）が記事のコマを追加します -->
         </ol>
     </main>
+    <!-- /blog:main -->
 
     <!-- partial:footer -->
     <footer class="site-footer">
