@@ -1,0 +1,100 @@
+# ブログの入稿
+# 入稿フォーム（Issues →「ブログ記事を入稿する」）が送信・編集されたときに動きます。
+#   1. フォームの内容から原稿ファイル（content/blog/<URL名>/index.md）を作り、添付写真を images/ に保存
+#   2. 写真の軽量版・撮影者情報・透かし・指紋の記録を作成
+#   3. 記事ページ・一覧・RSS・サイトマップを組み立て
+#   4. main に保存してサイトを更新し、結果を入稿ページにコメント
+# 送信した時点で管理者の承認とみなします（2026-10-14 管理者決定）。
+# 動くのは「リポジトリの持ち主本人」が送信・編集したときだけです。
+name: ブログの入稿
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+permissions:
+  contents: write
+  issues: write
+  pages: write
+
+# 入稿と予約公開が同時に main を書き換えないよう、1つずつ順番に動かす
+concurrency:
+  group: blog-publish
+  cancel-in-progress: false
+
+jobs:
+  intake:
+    if: >-
+      startsWith(github.event.issue.title, '[ブログ]') &&
+      github.event.sender.login == github.repository_owner &&
+      github.event.issue.user.login == github.repository_owner
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ISSUE: ${{ github.event.issue.number }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install "Pillow>=10" numpy
+
+      # Issue の本文はシェルに埋め込まず、イベントのファイル（$GITHUB_EVENT_PATH）から Python で読む
+      - name: 原稿ファイルと写真を作成
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 tools/blog_intake.py "$GITHUB_EVENT_PATH" > "$RUNNER_TEMP/result.json"
+
+      - name: 写真の軽量版・撮影者情報・透かし・指紋の記録
+        run: |
+          python3 tools/optimize_images.py
+          python3 tools/provenance.py manifest
+
+      - name: 記事ページ・一覧・RSS・サイトマップを組み立て
+        run: |
+          python3 tools/build_blog.py
+          python3 tools/apply_partials.py
+
+      - name: main に保存
+        id: push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A content blog images provenance sitemap.xml
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -q -m "blog: 入稿 #${ISSUE} を反映"
+          for i in 1 2 3; do
+            git pull -q --rebase origin main && git push -q origin HEAD:main && break
+            sleep 5
+          done
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      # bot による push ではサイトの再構築が始まらないことがあるため、明示的に依頼する
+      - name: サイトの再構築を依頼
+        if: steps.push.outputs.changed == 'true'
+        run: gh api -X POST "repos/${GITHUB_REPOSITORY}/pages/builds" --silent || echo "::warning::再構築の依頼に失敗しました。数分後に反映されない場合は Settings → Pages を確認してください。"
+
+      - name: 結果を入稿ページにコメント
+        if: always()
+        run: |
+          if [ -s "$RUNNER_TEMP/result.json" ] && ! grep -q '"skipped"' "$RUNNER_TEMP/result.json"; then
+            python3 tools/blog_intake.py comment "$RUNNER_TEMP/result.json" > "$RUNNER_TEMP/comment.md"
+          else
+            : > "$RUNNER_TEMP/comment.md"
+          fi
+          if [ "${{ job.status }}" != "success" ]; then
+            printf '⚠️ **自動処理の途中でエラーが起きました。** 記事は反映されていない可能性があります。\n\n詳細: %s/%s/actions/runs/%s\n' \
+              "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" > "$RUNNER_TEMP/comment.md"
+          fi
+          if [ -s "$RUNNER_TEMP/comment.md" ]; then
+            gh issue comment "$ISSUE" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/comment.md"
+          fi
+          # 公開済みになったら入稿ページを閉じる（予約・下書き・エラーのときは開いたまま）
+          if [ "${{ job.status }}" = "success" ] && python3 -c 'import json,sys; r=json.load(open(sys.argv[1])); sys.exit(0 if r.get("status")=="published" and not r.get("errors") else 1)' "$RUNNER_TEMP/result.json" 2>/dev/null; then
+            gh issue close "$ISSUE" --repo "$GITHUB_REPOSITORY" --reason completed || true
+          fi
