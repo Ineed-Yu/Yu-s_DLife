@@ -1,6 +1,9 @@
-// ブログ（フィルム風デザイン）の表示処理。一覧 /blog/ と、記事ページ /blog/<URL名>/ の言語切替で使う。
+// ブログ（フィルム風デザイン）の表示処理。一覧と記事ページの両方で使う。
+// 言語ごとに URL が分かれている：日本語 /blog/…、英語 /en/blog/…、フランス語 /fr/blog/…、中国語 /zh/blog/…
+//   言語ボタンを押すと、その言語版のページ（<link rel="alternate" hreflang> に書かれた URL）へ移動する。
+//   その言語版が無い記事では、日本語の本文のまま画面の文字だけ切り替え「日本語のみ」と表示する。
 // 一覧のデータは /blog/posts.json、ジャンルは /blog/genres.json（どちらも tools/build_blog.py が原稿から自動で作る）。
-// 一覧は ?genre=ジャンルid / ?tag=タグ で絞り込める。記事ページは翻訳があれば言語ボタンで本文を差し替える。
+// 一覧は ?genre=ジャンルid / ?tag=タグ で絞り込める。
 // 文字はすべて textContent で入れ、HTML として解釈させない（記事データに < > などが入っても安全）。
 (function () {
     'use strict';
@@ -20,13 +23,59 @@
         }
     }
 
-    let currentLang = 'ja';
+    function saveLanguage(lang) {
+        try {
+            localStorage.setItem('selectedLanguage', lang);
+        } catch (e) {}
+    }
+
+    // このページの言語（<html lang="en"> など）
+    const PAGE_LANG = normalizeLanguage(String(document.documentElement.lang || 'ja').slice(0, 2));
+    let currentLang = PAGE_LANG;
+
+    // 一覧ページかどうか（一覧は全言語に必ずある）
+    const IS_LIST = !!document.getElementById('film-frames');
+    function listUrl(lang) {
+        return lang === 'ja' ? '/blog/' : `/${lang}/blog/`;
+    }
+
+    // 各言語版の URL（記事ページは <link rel="alternate" hreflang>、一覧は決まった URL）
+    function alternateUrl(lang) {
+        if (lang === PAGE_LANG) return location.pathname;
+        if (IS_LIST) return listUrl(lang);
+        const code = lang === 'zh' ? 'zh-Hans' : lang;
+        const link = document.querySelector(`link[rel="alternate"][hreflang="${code}"]`);
+        if (!link) return null;
+        // 移動先はこのサイト内のブログの URL の形に限る（パスだけを使うので、確認用の環境でも同じように動く）
+        try {
+            const path = new URL(link.href, location.href).pathname;
+            return /^\/(?:(?:en|fr|zh)\/)?blog\/[a-z0-9-]+\/$/.test(path) ? path : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function goTo(path) {
+        if (path && path !== location.pathname) location.assign(path + location.search);
+    }
+
+    // 言語ボタン：その言語版へ移動。無ければ日本語版のまま表示の言語だけ切り替える
+    function chooseLanguage(lang) {
+        lang = normalizeLanguage(lang);
+        saveLanguage(lang);
+        const target = alternateUrl(lang);
+        if (target) {
+            if (target === location.pathname) switchLanguage(lang);
+            else goTo(target);
+        } else if (PAGE_LANG === 'ja') {
+            switchLanguage(lang);
+        } else {
+            goTo(alternateUrl('ja'));  // 日本語版へ（そこで選んだ言語の表示になる）
+        }
+    }
 
     function switchLanguage(lang) {
         currentLang = normalizeLanguage(lang);
-        try {
-            localStorage.setItem('selectedLanguage', currentLang);
-        } catch (e) {}
         applyArticleLanguage(currentLang);
         document.querySelectorAll('[data-ja]').forEach(el => {
             el.textContent = el.getAttribute('data-' + currentLang) || el.getAttribute('data-ja');
@@ -41,25 +90,10 @@
         document.dispatchEvent(new CustomEvent('site:languagechange'));
     }
 
-    // ---------- 記事ページ：翻訳した本文への差し替え ----------
-    // 翻訳はページ内の <template data-lang="en"> などに入っている（tools/build_blog.py が作る）。
-    // 文字列を HTML として解釈せず、テンプレートの中身（要素）を複製して入れ替える。
-    let jaBody = null;
+    // ---------- 記事ページ：その言語版が無いときの注記 ----------
     function applyArticleLanguage(lang) {
-        const article = document.querySelector('.article[data-translations]');
-        const holder = article && article.querySelector('.article-i18n');
-        if (!holder) return;
-        if (!jaBody) jaBody = Array.from(holder.childNodes, n => n.cloneNode(true));
-        const available = (article.dataset.translations || '').split(/\s+/).filter(Boolean);
-        const tpl = lang !== 'ja' && available.includes(lang)
-            ? article.querySelector(`template[data-lang="${lang}"]`) : null;
-        const nodes = tpl ? Array.from(tpl.content.cloneNode(true).childNodes) : jaBody.map(n => n.cloneNode(true));
-        holder.replaceChildren(...nodes);
-        holder.lang = tpl ? (lang === 'zh' ? 'zh-Hans' : lang) : 'ja';
-        const mt = article.querySelector('.article-mt');
-        const jaOnly = article.querySelector('.article-ja-only');
-        if (mt) mt.hidden = !tpl;
-        if (jaOnly) jaOnly.hidden = !(lang !== 'ja' && !tpl);
+        const jaOnly = document.querySelector('.article-ja-only');
+        if (jaOnly) jaOnly.hidden = !(PAGE_LANG === 'ja' && lang !== 'ja');
     }
 
     // ---------- 記事データ ----------
@@ -87,9 +121,14 @@
         return postsCache;
     }
 
-    // 言語別の項目（例: post.en.Title）があれば、その項目だけ上書きする
+    // その言語の項目（例: post.en.Title・post.en.Url）で上書きする。一覧はページの言語で表示する
     function localized(post) {
-        return Object.assign({}, post, post[currentLang] || {});
+        return Object.assign({}, post, post[PAGE_LANG] || {});
+    }
+
+    // このページの言語で読める記事（日本語の一覧は全記事、他の言語は翻訳がある記事だけ）
+    function availableHere(post) {
+        return PAGE_LANG === 'ja' || !!post[PAGE_LANG];
     }
 
     // data.json の元画像パスから、tools/optimize_images.py が作った軽量版のパスを作る（ピンボードと同じ規則）
@@ -143,10 +182,10 @@
         return edge;
     }
 
-    // 記事ページの URL（/blog/ で始まる同じサイト内の URL だけを使う）
+    // 記事ページの URL（/blog/… または /en/blog/… など、同じサイト内の決まった形の URL だけを使う）
     function postUrl(post) {
         const url = String(post.Url || '');
-        return /^\/blog\/[a-z0-9-]+\/$/.test(url) ? url : `/blog/${encodeURIComponent(post.Id)}/`;
+        return /^\/(?:(?:en|fr|zh)\/)?blog\/[a-z0-9-]+\/$/.test(url) ? url : `/blog/${encodeURIComponent(post.Id)}/`;
     }
 
     function buildFrame(post, n) {
@@ -155,7 +194,7 @@
         li.appendChild(frameNumber(n));
 
         const frame = el('a', 'frame');
-        frame.href = postUrl(post);
+        frame.href = postUrl(p);
         if (p.Image) {
             frame.appendChild(makeImage(p.Image, 960, ''));
         } else {
@@ -248,14 +287,15 @@
         const empty = document.getElementById('film-empty');
         const noMatch = document.getElementById('film-nomatch');
         if (!list) return;
-        Promise.all([loadPosts(), loadGenres()]).then(([posts, genres]) => {
+        Promise.all([loadPosts(), loadGenres()]).then(([all, genres]) => {
+            const posts = all.filter(availableHere);
             const f = currentFilter();
             renderFilter(genres, posts, f);
             const shown = posts.filter(p => matches(p, f));
             list.querySelectorAll('li[data-post]').forEach(li => li.remove());
             shown.forEach(post => {
                 // コマ番号は古い記事から 1, 2, 3 …（絞り込んでも、新しい記事が増えても番号は変わらない）
-                const li = buildFrame(post, post.Number || posts.length - posts.indexOf(post));
+                const li = buildFrame(post, post.Number || all.length - all.indexOf(post));
                 li.dataset.post = post.Id;
                 list.appendChild(li);
             });
@@ -267,12 +307,35 @@
         });
     }
 
+    // サイト内から来たときは、前に選んだ言語の版へ移動する（検索結果などサイト外から来たときは、そのページの言語を優先）
+    function fromThisSite() {
+        try {
+            return !!document.referrer && new URL(document.referrer).origin === location.origin;
+        } catch (e) {
+            return false;
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.addEventListener('click', () => switchLanguage(btn.dataset.lang));
+            btn.addEventListener('click', () => chooseLanguage(btn.dataset.lang));
         });
-        currentLang = getSavedLanguage();
-        if (currentLang !== 'ja') switchLanguage(currentLang);
+        const saved = getSavedLanguage();
+        if (fromThisSite() && saved !== PAGE_LANG) {
+            const target = alternateUrl(saved);
+            if (target && target !== location.pathname) {
+                location.replace(target + location.search);
+                return;
+            }
+            // その言語版が無い：日本語版なら表示の言語だけ切り替える
+            if (PAGE_LANG === 'ja') {
+                switchLanguage(saved);
+                renderList();
+                return;
+            }
+        }
+        saveLanguage(PAGE_LANG);
+        if (PAGE_LANG !== 'ja') switchLanguage(PAGE_LANG);
         renderList();
     });
     document.addEventListener('site:languagechange', () => {

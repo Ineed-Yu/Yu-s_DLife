@@ -67,15 +67,15 @@ jobs:
 
       - name: 記事ページ・一覧・RSS・サイトマップを組み立て
         run: |
-          python3 tools/build_blog.py
           python3 tools/apply_partials.py
+          python3 tools/build_blog.py
 
       - name: main に保存
         id: push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A content blog images provenance sitemap.xml
+          git add -A content blog en fr zh images provenance sitemap.xml
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
