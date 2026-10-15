@@ -1,7 +1,8 @@
 # 画像チェック
-# 写真を追加・変更した PR で、次の2点を自動確認します（確認だけで、サイトの公開には影響しません）。
+# 写真を追加・変更した PR で、次の点を自動確認します（確認だけで、サイトの公開には影響しません）。
 #   1. 軽量版（images/opt/）の作り忘れがないか
 #   2. 位置情報（GPS）入りの写真が含まれていないか
+#   3. 元写真・軽量版に撮影者情報が入っているか、軽量版に見えない透かしが入っているか
 # 問題があれば PR に赤い × が付きます。直し方: python3 tools/optimize_images.py を実行してコミット。
 name: 画像チェック
 
@@ -10,6 +11,7 @@ on:
     paths:
       - "images/**"
       - "tools/optimize_images.py"
+      - "tools/provenance.py"
       - ".github/workflows/image-check.yml"
   push:
     branches: [main]
@@ -27,6 +29,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install "Pillow>=10"
-      - name: 軽量版と位置情報の確認
+      - run: pip install "Pillow>=10" numpy
+      - name: 軽量版・位置情報・撮影者情報・透かしの確認
         run: python3 tools/optimize_images.py --check
