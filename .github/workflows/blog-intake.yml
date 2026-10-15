@@ -1,9 +1,10 @@
 # ブログの入稿
 # 入稿フォーム（Issues →「ブログ記事を入稿する」）が送信・編集されたときに動きます。
 #   1. フォームの内容から原稿ファイル（content/blog/<URL名>/index.md）を作り、添付写真を images/ に保存
-#   2. 写真の軽量版・撮影者情報・透かし・指紋の記録を作成
-#   3. 記事ページ・一覧・RSS・サイトマップを組み立て
-#   4. main に保存してサイトを更新し、結果を入稿ページにコメント
+#   2. 英語・フランス語・中国語に自動翻訳（Claude API。キーは Secrets の ANTHROPIC_API_KEY。未設定なら日本語のみ）
+#   3. 写真の軽量版・撮影者情報・透かし・指紋の記録を作成
+#   4. 記事ページ・一覧・RSS・サイトマップを組み立て
+#   5. main に保存してサイトを更新し、結果を入稿ページにコメント
 # 送信した時点で管理者の承認とみなします（2026-10-14 管理者決定）。
 # 動くのは「リポジトリの持ち主本人」が送信・編集したときだけです。
 name: ブログの入稿
@@ -47,6 +48,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 tools/blog_intake.py "$GITHUB_EVENT_PATH" > "$RUNNER_TEMP/result.json"
 
+      # 翻訳に失敗しても公開は止めない（その言語では日本語を表示し、結果をコメントで知らせる）
+      - name: 自動翻訳（英語・フランス語・中国語）
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          BLOG_TRANSLATE_MODEL: ${{ vars.BLOG_TRANSLATE_MODEL }}
+        run: |
+          # この入稿の記事だけを翻訳する（他の記事の翻訳し直しで費用がかからないように）
+          SLUG=$(python3 -c 'import json,sys; r=json.load(open(sys.argv[1])); print(r.get("slug","") if r.get("status") in ("published","scheduled") and not r.get("errors") else "")' "$RUNNER_TEMP/result.json")
+          if [ -n "$SLUG" ]; then
+            python3 tools/translate_blog.py --slug "$SLUG" --summary "$RUNNER_TEMP/translate.txt"
+          fi
+
       - name: 写真の軽量版・撮影者情報・透かし・指紋の記録
         run: |
           python3 tools/optimize_images.py
@@ -84,6 +97,9 @@ jobs:
         run: |
           if [ -s "$RUNNER_TEMP/result.json" ] && ! grep -q '"skipped"' "$RUNNER_TEMP/result.json"; then
             python3 tools/blog_intake.py comment "$RUNNER_TEMP/result.json" > "$RUNNER_TEMP/comment.md"
+            if [ -s "$RUNNER_TEMP/translate.txt" ]; then
+              { echo; cat "$RUNNER_TEMP/translate.txt"; } >> "$RUNNER_TEMP/comment.md"
+            fi
           else
             : > "$RUNNER_TEMP/comment.md"
           fi

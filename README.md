@@ -65,7 +65,20 @@ PR を作ると、軽量版の作り忘れ・位置情報入りの写真・撮�
 - 写真は GitHub に添付したものだけを使います（JPG・PNG。iPhone の HEIC は「設定 → カメラ → フォーマット → 互換性優先」で JPG に）。位置情報は自動で削除され、撮影者情報・透かしが自動で入ります
 - 原稿は `content/blog/<URL名>/index.md`、組み立て結果は `blog/<URL名>/index.html`・`blog/posts.json`・`blog/feed.xml`・`sitemap.xml`（**手で編集しない**。直すときは入稿ページを Edit）
 - 記事が1件も公開されていない間、一覧ページは検索結果に出ない設定（noindex）のままです。最初の記事が公開されると自動で外れます
-- 仕組み: `.github/workflows/blog-intake.yml`（入稿）・`blog-publish.yml`（予約公開・毎時）→ `tools/blog_intake.py` → `tools/build_blog.py`
+- 仕組み: `.github/workflows/blog-intake.yml`（入稿）・`blog-publish.yml`（予約公開・毎時）→ `tools/blog_intake.py` → `tools/translate_blog.py`（翻訳）→ `tools/build_blog.py`
+
+### ジャンル・タグ
+- **ジャンル**はフォームの一覧から選びます（複数可）。一覧ページ上部のボタンで絞り込めます（`/blog/?genre=tdl` のように URL でも可）。記事がまだ無いジャンルのボタンは出ません
+- **ジャンルを増やす・名前を変える**ときは `content/blog/genres.json` を編集して `python3 tools/build_blog.py` を実行し、PR にします（フォームの選択肢と一覧の絞り込みボタンが自動で更新されます）。`id` は URL に使うので、一度使ったら変えないでください
+- **タグ**は自由入力（カンマ区切り）。記事の下に表示され、押すと同じタグの記事だけが一覧に出ます（`/blog/?tag=クラリス`）
+
+### 自動翻訳（英語・フランス語・中国語）
+- 「公開」「予約」で入稿すると、Claude API で記事（タイトル・説明・タグ・本文）を自動翻訳し、言語ボタン（EN / FR / ZH）で切り替わります。翻訳した記事には「AI による自動翻訳です。日本語が原文です」と表示します
+- 翻訳結果は `content/blog/<URL名>/index.en.md` などに保存。原稿を直すと次の入稿・編集のときに翻訳し直し、それまではその言語でも日本語を表示します
+- 写真・URL・見出しの数が原文と合わない翻訳は保存しません（その言語は「日本語のみ」と表示）。入稿ページを Edit でそのまま保存し直すと、もう一度翻訳します
+- **準備**: Claude API のキーを、リポジトリの Settings → Secrets and variables → Actions → **New repository secret** に `ANTHROPIC_API_KEY` という名前で登録します。未登録の間は翻訳せず、日本語だけを表示します
+- 使うモデルを変えるときは、同じ画面の Variables に `BLOG_TRANSLATE_MODEL` を登録します（未登録なら `tools/translate_blog.py` の既定値）
+- 下書きは翻訳しません（費用がかからないように）
 
 **注意**
 - 動くのはリポジトリの持ち主本人が送信・編集したときだけです

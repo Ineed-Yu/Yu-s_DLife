@@ -77,12 +77,31 @@ body:
       label: ひとこと説明（任意）
       description: 一覧や SNS で共有されたときに出る短い説明です。空欄なら本文の冒頭を使います。
 
+  - type: dropdown
+    id: genre
+    attributes:
+      label: ジャンル
+      description: 一覧ページの絞り込みに使います（複数選べます）。ジャンルを増やすときは content/blog/genres.json に追加します。
+      multiple: true
+      options:
+        # genres:start（tools/build_blog.py が content/blog/genres.json から自動で書き換えます。直接編集しない）
+        - "レビュー"
+        - "TDR（東京ディズニーリゾート）"
+        - "TDL（東京ディズニーランド）"
+        - "TDS（東京ディズニーシー）"
+        - "HKDL（香港ディズニーランド）"
+        - "SHDL（上海ディズニーランド）"
+        - "DLR（カリフォルニア ディズニーランド・リゾート）"
+        - "WDW（ウォルト・ディズニー・ワールド）"
+        - "DLP（ディズニーランド・パリ）"
+        # genres:end
+
   - type: input
     id: tags
     attributes:
       label: タグ（任意）
-      description: カンマ区切りで入力します。
-      placeholder: カメラ, 街歩き
+      description: ジャンルより細かい目印です。カンマ区切りで入力します。記事の下に表示され、押すと同じタグの記事だけが一覧に出ます。
+      placeholder: クラリス, フォトスポット
 
   - type: input
     id: slug

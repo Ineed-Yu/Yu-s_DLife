@@ -11,6 +11,9 @@
   scheduled（予約）は日時が来たら公開、draft（下書き）は公開しません。
 - 記事ページのメニュー・言語切替などは blog/index.html から流用するので、一覧と常に同じになります。
 - URL だけの行はリンクのカードになります（リンク先のタイトルを取得して原稿フォルダの cards.json に保存）。
+- ジャンルは content/blog/genres.json で管理します。入稿フォームの選択肢もここから自動で書き換えます。
+- 翻訳（tools/translate_blog.py が作る index.en.md など）があれば、記事ページに入れて言語ボタンで切り替えます。
+  原稿を直した後の古い翻訳は使わず、新しい翻訳ができるまでは日本語を表示します。
 
 使い方:
   python3 tools/build_blog.py            # 組み立て（公開中の記事に変化があればファイルを書き換える）
@@ -20,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import html
 import json
 import re
@@ -33,7 +37,10 @@ CONTENT_DIR = ROOT / "content" / "blog"
 BLOG_DIR = ROOT / "blog"
 SITE = "https://divaclarice321.com"
 JST = dt.timezone(dt.timedelta(hours=9))
-RESERVED = {"posts.json", "feed.xml", "index.html"}
+RESERVED = {"posts.json", "feed.xml", "index.html", "genres.json"}
+GENRES_FILE = CONTENT_DIR / "genres.json"
+FORM_FILE = ROOT / ".github" / "ISSUE_TEMPLATE" / "blog-post.yml"
+LANGS = ("en", "fr", "zh")  # 翻訳する言語（日本語が原文）
 
 esc = lambda s: html.escape(str(s), quote=True)  # noqa: E731
 
@@ -64,7 +71,82 @@ def read_post(path: Path) -> dict:
         meta["date_obj"] = meta["date_obj"].replace(tzinfo=JST)
     meta.setdefault("status", "draft")
     meta.setdefault("tags", [])
+    meta.setdefault("genres", [])
     return meta
+
+
+def source_hash(post: dict) -> str:
+    """翻訳の対象（タイトル・説明・タグ・本文）の指紋。原稿を直すと変わり、古い翻訳を使わなくなる。"""
+    data = json.dumps([post.get("title", ""), post.get("summary", ""), post.get("tags") or [], post["body"].strip()],
+                      ensure_ascii=False)
+    return hashlib.sha256(data.encode("utf-8")).hexdigest()[:16]
+
+
+def read_translation(post: dict, lang: str) -> dict | None:
+    """原稿と指紋が一致する翻訳だけを返す（無い・古い場合は None）。"""
+    path = post["dir"] / f"index.{lang}.md"
+    if not path.exists():
+        return None
+    text = path.read_text(encoding="utf-8")
+    m = re.match(r"^---\n(.*?)\n---\n(.*)$", text, re.S)
+    if not m:
+        return None
+    meta: dict = {}
+    for line in m.group(1).splitlines():
+        if line.lstrip().startswith("#"):
+            continue
+        key, _, value = line.partition(":")
+        try:
+            meta[key.strip()] = json.loads(value.strip())
+        except (json.JSONDecodeError, ValueError):
+            meta[key.strip()] = value.strip()
+    if meta.get("source_hash") != source_hash(post):
+        return None
+    tags = meta.get("tags") if isinstance(meta.get("tags"), list) else []
+    if len(tags) != len(post.get("tags") or []):
+        tags = list(post.get("tags") or [])
+    return {**post, "title": str(meta.get("title") or post["title"]), "summary": str(meta.get("summary") or ""),
+            "tags": [str(t) for t in tags], "body": m.group(2), "lang": lang}
+
+
+# ======================================================================
+# ジャンル
+# ======================================================================
+def load_genres() -> list[dict]:
+    if not GENRES_FILE.exists():
+        return []
+    genres = json.loads(GENRES_FILE.read_text(encoding="utf-8")).get("genres", [])
+    ids = [g["id"] for g in genres]
+    for g in genres:
+        if not re.match(r"^[a-z0-9-]{1,30}$", g["id"]):
+            raise ValueError(f"genres.json: id「{g['id']}」は半角の英小文字・数字・ハイフンにしてください")
+        if not g.get("label", {}).get("ja") or not g.get("name", {}).get("ja"):
+            raise ValueError(f"genres.json: 「{g['id']}」の label.ja と name.ja は必須です")
+    if len(ids) != len(set(ids)):
+        raise ValueError("genres.json: id が重複しています")
+    return genres
+
+
+def genre_option(g: dict) -> str:
+    """入稿フォームの選択肢の文字（例: TDL（東京ディズニーランド））。"""
+    label, name = g["label"]["ja"], g["name"]["ja"]
+    return label if label == name else f"{label}（{name}）"
+
+
+def g_text(g: dict, field: str, lang: str) -> str:
+    return g[field].get(lang) or g[field]["ja"]
+
+
+def sync_form(form_text: str, genres: list[dict]) -> str:
+    """入稿フォームの「ジャンル」の選択肢を genres.json に合わせる。"""
+    pat = re.compile(r"(?P<indent>[ \t]*)# genres:start(?P<note>[^\n]*)\n.*?(?P=indent)# genres:end", re.S)
+    m = pat.search(form_text)
+    if not m:
+        raise ValueError("入稿フォームに「# genres:start」の目印がありません")
+    ind = m.group("indent")
+    lines = [f"{ind}# genres:start{m.group('note')}"] + [f"{ind}- {json.dumps(genre_option(g), ensure_ascii=False)}" for g in genres] \
+        + [f"{ind}# genres:end"]
+    return form_text[:m.start()] + "\n".join(lines) + form_text[m.end():]
 
 
 def is_public(post: dict, now: dt.datetime) -> bool:
@@ -238,14 +320,31 @@ def replace_region(text: str, name: str, new: str) -> str:
     return pat.sub(lambda m: f"{m.group('indent')}<!-- blog:{name} -->\n{new}\n{m.group('indent')}<!-- /blog:{name} -->", text, count=1)
 
 
-def build_post_page(post: dict, number: int, index_html: str, cards: dict) -> str:
+def toc_block(toc: list[tuple[str, str]]) -> str:
+    if len(toc) < 2:
+        return ""
+    items = "".join(f'<li><a href="#{a}">{esc(t)}</a></li>' for a, t in toc)
+    return (f'<nav class="article-toc" aria-label="目次"><p class="article-toc-title" data-ja="目次" '
+            f'data-en="Contents" data-fr="Sommaire" data-zh="目录">目次</p><ol>{items}</ol></nav>')
+
+
+def i18n_attrs(values: dict[str, str]) -> str:
+    """{"ja": .., "en": ..} → data-ja=".." data-en=".."（言語ボタンで切り替わる文字）"""
+    return " ".join(f'data-{lang}="{esc(v)}"' for lang, v in values.items() if v)
+
+
+def build_post_page(post: dict, number: int, index_html: str, cards: dict,
+                    translations: dict[str, dict] | None = None, genres: list[dict] | None = None) -> str:
+    translations = translations or {}
+    genre_map = {g["id"]: g for g in genres or []}
     body_html, toc, images = render_body(post, cards)
+    titles = {"ja": post["title"], **{lang: t["title"] for lang, t in translations.items()}}
     cover = post.get("cover") or (images[0] if images else "")
     url = f"{SITE}/blog/{post['slug']}/"
     desc = summary_of(post)
     d = post["date_obj"]
     head = "\n".join([
-        f"    <title>{esc(post['title'])} | Yu's DLife</title>",
+        f"    <title {i18n_attrs({k: v + ' | Yu' + chr(39) + 's DLife' for k, v in titles.items()})}>{esc(post['title'])} | Yu's DLife</title>",
         f'    <meta name="description" content="{esc(desc)}">',
         f'    <link rel="canonical" href="{esc(url)}">',
         '    <meta property="og:type" content="article">',
@@ -259,13 +358,33 @@ def build_post_page(post: dict, number: int, index_html: str, cards: dict) -> st
         '    <meta name="twitter:card" content="summary_large_image">',
     ])
     frame_img = (f'<img src="{esc(opt_image(cover, 1600))}" alt="" decoding="async">' if cover else "")
-    toc_html = ""
-    if len(toc) >= 2:
-        items = "".join(f'<li><a href="#{a}">{esc(t)}</a></li>' for a, t in toc)
-        toc_html = (f'<nav class="article-toc" aria-label="目次"><p class="article-toc-title" data-ja="目次" '
-                    f'data-en="Contents" data-fr="Sommaire" data-zh="目录">目次</p><ol>{items}</ol></nav>')
-    tags = "".join(f"<li>{esc(t)}</li>" for t in post.get("tags") or [])
-    tags_html = f'<ul class="article-tags">{tags}</ul>' if tags else ""
+    toc_html = toc_block(toc)
+    # ジャンルとタグ（押すと一覧がその記事だけに絞り込まれる）
+    chips = []
+    for gid in post.get("genres") or []:
+        g = genre_map.get(gid)
+        if g:
+            labels = {lang: g_text(g, "label", lang) for lang in ("ja",) + LANGS}
+            chips.append(f'<li><a class="article-genre" href="/blog/?genre={esc(gid)}" title="{esc(g["name"]["ja"])}" '
+                         f'{i18n_attrs(labels)}>{esc(labels["ja"])}</a></li>')
+    for i, tag in enumerate(post.get("tags") or []):
+        labels = {"ja": "#" + tag, **{lang: "#" + t["tags"][i] for lang, t in translations.items()}}
+        chips.append(f'<li><a href="/blog/?tag={esc(urllib.parse.quote(tag))}" {i18n_attrs(labels)}>{esc(labels["ja"])}</a></li>')
+    tags_html = f'<ul class="article-tags">{"".join(chips)}</ul>' if chips else ""
+    # 翻訳した本文（言語ボタンで差し替える。<template> の中身は画面にも検索にも出ない）
+    templates = []
+    for lang, t in translations.items():
+        t_body, t_toc, _ = render_body(t, cards)
+        templates.append(f'            <template data-lang="{lang}">\n{toc_block(t_toc)}\n'
+                         f'<div class="article-body">\n{t_body}\n</div>\n            </template>')
+    mt_note = ('<p class="article-note article-mt" hidden data-ja="" '
+               'data-en="This article was translated from Japanese by AI (machine translation). The Japanese version is the original." '
+               'data-fr="Cet article a été traduit du japonais par une IA (traduction automatique). La version japonaise fait foi." '
+               'data-zh="本文由AI从日语自动翻译而来。以日语原文为准。"></p>'
+               '<p class="article-note article-ja-only" hidden data-ja="" '
+               'data-en="This article is currently available in Japanese only." '
+               'data-fr="Cet article n\'est pour l\'instant disponible qu\'en japonais." '
+               'data-zh="本文目前仅提供日语版本。"></p>')
     ai_html = ('<p class="article-note" data-ja="この記事は AI の支援を受けて作成し、運営者が内容を確認しています。" '
                'data-en="This article was written with AI assistance and reviewed by the site owner." '
                'data-fr="Cet article a été rédigé avec l\'aide d\'une IA et vérifié par l\'auteur du site." '
@@ -280,7 +399,7 @@ def build_post_page(post: dict, number: int, index_html: str, cards: dict) -> st
                     <div class="frame{'' if cover else ' is-unexposed'}">
                         {frame_img}
                         <div class="frame-caption">
-                            <p class="frame-title">{esc(post['title'])}</p>
+                            <p class="frame-title" {i18n_attrs(titles)}>{esc(post['title'])}</p>
                             <time class="date-stamp" datetime="{d.isoformat()}">{date_stamp(d)}</time>
                         </div>
                     </div>
@@ -288,13 +407,17 @@ def build_post_page(post: dict, number: int, index_html: str, cards: dict) -> st
             </ol>
         </div>
 
-        <article class="article">
-            <h1 class="article-title">{esc(post['title'])}</h1>
+        <article class="article" data-translations="{' '.join(translations)}">
+            <h1 class="article-title" {i18n_attrs(titles)}>{esc(post['title'])}</h1>
             <time class="article-date" datetime="{d.isoformat()}">{d:%Y.%m.%d}</time>
-            {toc_html}
-            <div class="article-body">
+            {mt_note}
+            <div class="article-i18n" lang="ja">
+{toc_html}
+<div class="article-body">
 {body_html}
+</div>
             </div>
+{chr(10).join(templates)}
             {tags_html}
             {ai_html}
             <a href="/blog/" class="article-back" data-ja="← ブログの一覧に戻る" data-en="← Back to the blog" data-fr="← Retour au blog" data-zh="← 返回博客列表">← ブログの一覧に戻る</a>
@@ -335,9 +458,19 @@ def build(now: dt.datetime, allow_fetch: bool) -> dict[Path, str | None]:
         posts.append(read_post(md))
     public = sorted([p for p in posts if is_public(p, now)], key=lambda p: p["date_obj"], reverse=True)
 
+    genres = load_genres()
+    known = {g["id"] for g in genres}
+    for p in posts:
+        unknown = [g for g in p.get("genres") or [] if g not in known]
+        if unknown:
+            raise ValueError(f"{p['slug']}: genres.json に無いジャンル {unknown} が指定されています")
+
     index_path = BLOG_DIR / "index.html"
     index_html = index_path.read_text(encoding="utf-8")
     out: dict[Path, str | None] = {}
+    if FORM_FILE.exists():
+        out[FORM_FILE] = sync_form(FORM_FILE.read_text(encoding="utf-8"), genres)
+    translations = {p["slug"]: {lang: t for lang in LANGS if (t := read_translation(p, lang))} for p in public}
 
     # 一覧ページ：公開記事が1本以上あれば検索に出す
     robots = ('    <!-- 公開中の記事がまだ無い間は検索結果に出さない（tools/build_blog.py が自動で切り替える） -->\n'
@@ -350,7 +483,8 @@ def build(now: dt.datetime, allow_fetch: bool) -> dict[Path, str | None]:
     wanted_dirs = set()
     for p in public:
         cards = load_cards(p, allow_fetch)
-        out[BLOG_DIR / p["slug"] / "index.html"] = build_post_page(p, numbers[p["slug"]], out[index_path], cards)
+        out[BLOG_DIR / p["slug"] / "index.html"] = build_post_page(p, numbers[p["slug"]], out[index_path], cards,
+                                                                   translations[p["slug"]], genres)
         wanted_dirs.add(p["slug"])
     # 公開をやめた記事・下書きに戻した記事のページは消す
     for d in BLOG_DIR.iterdir():
@@ -363,15 +497,26 @@ def build(now: dt.datetime, allow_fetch: bool) -> dict[Path, str | None]:
     for p in public:
         _, _, images = render_body(p, {})
         cover = p.get("cover") or (images[0] if images else "")
-        listing.append({
+        item = {
             "Id": p["slug"],
             "Date": p["date_obj"].isoformat(timespec="minutes"),
             "Title": p["title"],
             "Image": f"/images/{cover}" if cover else "",
             "Url": f"/blog/{p['slug']}/",
             "Number": numbers[p["slug"]],
-        })
+            "Genres": list(p.get("genres") or []),
+            "Tags": list(p.get("tags") or []),
+        }
+        for lang, t in translations[p["slug"]].items():
+            item[lang] = {"Title": t["title"], "Tags": t["tags"]}
+        listing.append(item)
     out[BLOG_DIR / "posts.json"] = json.dumps(listing, ensure_ascii=False, indent=2) + "\n"
+    # 一覧の絞り込みボタン用のジャンル一覧（記事数つき。0件のジャンルはボタンを出さない）
+    counts = {g["id"]: sum(g["id"] in (p.get("genres") or []) for p in public) for g in genres}
+    out[BLOG_DIR / "genres.json"] = json.dumps(
+        [{"Id": g["id"], "Count": counts[g["id"]],
+          **{lang: {"Label": g_text(g, "label", lang), "Name": g_text(g, "name", lang)} for lang in ("ja",) + LANGS}}
+         for g in genres], ensure_ascii=False, indent=2) + "\n"
     out[BLOG_DIR / "feed.xml"] = build_feed(public)
 
     # サイトマップ

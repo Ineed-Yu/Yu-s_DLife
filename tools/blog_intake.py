@@ -29,6 +29,9 @@ from pathlib import Path
 
 from PIL import Image
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_blog import genre_option, load_genres  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 CONTENT_DIR = ROOT / "content" / "blog"
 IMAGE_DIR = ROOT / "images"
@@ -46,6 +49,7 @@ FIELDS = {
     "見出し画像": "cover",
     "本文": "body",
     "ひとこと説明（任意）": "summary",
+    "ジャンル": "genre",
     "タグ（任意）": "tags",
     "記事の URL 名（任意）": "slug",
     "その他": "options",
@@ -251,6 +255,14 @@ def run(event: dict, token: str | None, now: dt.datetime | None = None, fetch=do
     body = form.get("body", "").strip()
     if not body:
         errors.append("本文が空です。")
+    # ジャンル（フォームの選択肢の文字 → genres.json の id）
+    options = {genre_option(g): g["id"] for g in load_genres()}
+    genres: list[str] = []
+    for chosen in [c.strip() for c in form.get("genre", "").split(", ") if c.strip() and c.strip() != "None"]:
+        if chosen in options:
+            genres.append(options[chosen])
+        else:
+            errors.append(f"ジャンル「{chosen}」は一覧（content/blog/genres.json）にありません。")
     if errors:
         return {"slug": slug, "status": "error", "errors": errors}
 
@@ -286,6 +298,7 @@ def run(event: dict, token: str | None, now: dt.datetime | None = None, fetch=do
         f"status: {status}",
         f"cover: {yaml_str(cover_name or '')}",
         f"summary: {yaml_str(form.get('summary', '').strip())}",
+        f"genres: {json.dumps(genres)}",
         f"tags: {json.dumps(tags, ensure_ascii=False)}",
         f"ai_assisted: {'true' if checked(form.get('options', '')) else 'false'}",
         f"source_issue: {number}",
