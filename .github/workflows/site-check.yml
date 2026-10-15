@@ -1,6 +1,6 @@
 # 共通部品チェック
-# HTML や共通部品（tools/partials/）を変更した PR で、
-# フッター・ホームボタンが全ページに最新の内容で入っているかを確認します（確認だけで、公開には影響しません）。
+# HTML や共通部品（tools/partials/）・ブログの原稿やジャンルを変更した PR で、
+# フッター・ホームボタンが全ページに最新の内容で入っているか、ブログの組み立て結果が最新かを確認します（確認だけで、公開には影響しません）。
 # 問題があれば PR に赤い × が付きます。直し方: python3 tools/apply_partials.py を実行してコミット。
 name: 共通部品チェック
 
@@ -10,6 +10,9 @@ on:
       - "**.html"
       - "tools/partials/**"
       - "tools/apply_partials.py"
+      - "tools/build_blog.py"
+      - "content/blog/**"
+      - ".github/ISSUE_TEMPLATE/blog-post.yml"
       - ".github/workflows/site-check.yml"
 
 permissions:
@@ -25,3 +28,6 @@ jobs:
           python-version: "3.12"
       - name: フッター・ホームボタンの反映確認
         run: python3 tools/apply_partials.py --check
+      # ジャンル一覧（content/blog/genres.json）を変えたのに、入稿フォームや一覧データに反映し忘れていないか
+      - name: ブログの組み立て結果の確認
+        run: python3 tools/build_blog.py --check
