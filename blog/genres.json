@@ -1,0 +1,182 @@
+[
+  {
+    "Id": "review",
+    "Count": 0,
+    "ja": {
+      "Label": "レビュー",
+      "Name": "レビュー"
+    },
+    "en": {
+      "Label": "Reviews",
+      "Name": "Reviews"
+    },
+    "fr": {
+      "Label": "Avis",
+      "Name": "Avis"
+    },
+    "zh": {
+      "Label": "评测",
+      "Name": "评测"
+    }
+  },
+  {
+    "Id": "tdr",
+    "Count": 0,
+    "ja": {
+      "Label": "TDR",
+      "Name": "東京ディズニーリゾート"
+    },
+    "en": {
+      "Label": "TDR",
+      "Name": "Tokyo Disney Resort"
+    },
+    "fr": {
+      "Label": "TDR",
+      "Name": "Tokyo Disney Resort"
+    },
+    "zh": {
+      "Label": "TDR",
+      "Name": "东京迪士尼度假区"
+    }
+  },
+  {
+    "Id": "tdl",
+    "Count": 0,
+    "ja": {
+      "Label": "TDL",
+      "Name": "東京ディズニーランド"
+    },
+    "en": {
+      "Label": "TDL",
+      "Name": "Tokyo Disneyland"
+    },
+    "fr": {
+      "Label": "TDL",
+      "Name": "Tokyo Disneyland"
+    },
+    "zh": {
+      "Label": "TDL",
+      "Name": "东京迪士尼乐园"
+    }
+  },
+  {
+    "Id": "tds",
+    "Count": 0,
+    "ja": {
+      "Label": "TDS",
+      "Name": "東京ディズニーシー"
+    },
+    "en": {
+      "Label": "TDS",
+      "Name": "Tokyo DisneySea"
+    },
+    "fr": {
+      "Label": "TDS",
+      "Name": "Tokyo DisneySea"
+    },
+    "zh": {
+      "Label": "TDS",
+      "Name": "东京迪士尼海洋"
+    }
+  },
+  {
+    "Id": "hkdl",
+    "Count": 0,
+    "ja": {
+      "Label": "HKDL",
+      "Name": "香港ディズニーランド"
+    },
+    "en": {
+      "Label": "HKDL",
+      "Name": "Hong Kong Disneyland"
+    },
+    "fr": {
+      "Label": "HKDL",
+      "Name": "Hong Kong Disneyland"
+    },
+    "zh": {
+      "Label": "HKDL",
+      "Name": "香港迪士尼乐园"
+    }
+  },
+  {
+    "Id": "shdl",
+    "Count": 0,
+    "ja": {
+      "Label": "SHDL",
+      "Name": "上海ディズニーランド"
+    },
+    "en": {
+      "Label": "SHDL",
+      "Name": "Shanghai Disneyland"
+    },
+    "fr": {
+      "Label": "SHDL",
+      "Name": "Shanghai Disneyland"
+    },
+    "zh": {
+      "Label": "SHDL",
+      "Name": "上海迪士尼乐园"
+    }
+  },
+  {
+    "Id": "dlr",
+    "Count": 0,
+    "ja": {
+      "Label": "DLR",
+      "Name": "カリフォルニア ディズニーランド・リゾート"
+    },
+    "en": {
+      "Label": "DLR",
+      "Name": "Disneyland Resort (California)"
+    },
+    "fr": {
+      "Label": "DLR",
+      "Name": "Disneyland Resort (Californie)"
+    },
+    "zh": {
+      "Label": "DLR",
+      "Name": "加州迪士尼乐园度假区"
+    }
+  },
+  {
+    "Id": "wdw",
+    "Count": 0,
+    "ja": {
+      "Label": "WDW",
+      "Name": "ウォルト・ディズニー・ワールド"
+    },
+    "en": {
+      "Label": "WDW",
+      "Name": "Walt Disney World"
+    },
+    "fr": {
+      "Label": "WDW",
+      "Name": "Walt Disney World"
+    },
+    "zh": {
+      "Label": "WDW",
+      "Name": "华特迪士尼世界度假区"
+    }
+  },
+  {
+    "Id": "dlp",
+    "Count": 0,
+    "ja": {
+      "Label": "DLP",
+      "Name": "ディズニーランド・パリ"
+    },
+    "en": {
+      "Label": "DLP",
+      "Name": "Disneyland Paris"
+    },
+    "fr": {
+      "Label": "DLP",
+      "Name": "Disneyland Paris"
+    },
+    "zh": {
+      "Label": "DLP",
+      "Name": "巴黎迪士尼乐园"
+    }
+  }
+]

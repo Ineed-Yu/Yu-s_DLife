@@ -29,6 +29,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PARTIALS_DIR = ROOT / "tools" / "partials"
 SKIP_DIRS = {".git", "node_modules", "tools", ".github"}
+# 言語ごとのブログ（/en/blog/ など）は tools/build_blog.py が /blog/index.html から訳文入りで作るので対象外
+# （共通部品を変えたら apply_partials.py → build_blog.py の順に実行する）
+LANG_DIRS = {"en", "fr", "zh"}
 
 # すべての公開ページに必ず入れる部品
 REQUIRED = {"footer"}
@@ -42,6 +45,7 @@ def pages() -> list[Path]:
     return sorted(
         p for p in ROOT.rglob("*.html")
         if not any(part in SKIP_DIRS for part in p.relative_to(ROOT).parts)
+        and p.relative_to(ROOT).parts[0] not in LANG_DIRS
     )
 
 
