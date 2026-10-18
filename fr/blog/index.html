@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- blog:robots -->
+    <!-- 公開中の記事がまだ無い間は検索結果に出さない（tools/build_blog.py が自動で切り替える） -->
+    <meta name="robots" content="noindex">
+    <!-- /blog:robots -->
+    <!-- blog:head -->
+    <title>Blog | Yu's DLife</title>
+    <meta name="description" content="Carnet sur les parcs Disney du monde entier, les voyages et la photographie. Le blog de Yu&#x27;s DLife.">
+    <!-- /blog:head -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <link rel="stylesheet" href="/assets/common.css">
+
+<style>
+.lang-switch-wrapper {
+    display: flex;
+    justify-content: 0%;
+    padding: 20px 0;
+    width: 100%;
+    position: relative;
+    z-index: 10;
+}
+
+.lang-switch-box {
+    display: flex;
+    background-color: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(8px);
+    padding: 4px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.lang-btn {
+    background: none;
+    border: none;
+    font-size: 12px;
+    font-weight: bold;
+    color: #777;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: all 0.5s ease;
+}
+
+.lang-btn.active {
+    background-color: #fff;
+    color: #222;                                 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+</style>
+
+<style>
+    /* ボタンの配置と見た目 */
+.menu-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    height: 60px;
+    width: 60px;
+    justify-content: center;
+    align-items: center;
+    z-index: 90;
+    background-color: #333;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.menu-btn span, .menu-btn span::before, .menu-btn span::after {
+    content: '';
+    display: block;
+    height: 3px;
+    width: 25px;
+    border-radius: 3px;
+    background-color: #fff;
+    position: absolute;
+}
+.menu-btn span::before { bottom: 8px; }
+.menu-btn span::after { top: 8px; }
+
+/* チェックボックスは隠す */
+#menu-btn-check { display: none; }
+
+/* チェックが入ったらメニューを表示 */
+#menu-btn-check:checked ~ .menu-content { right: 0; }
+
+/* メニューの画面 */
+.menu-content {
+    width: 300px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    right: -300px; /* 最初は画面の外に隠す */
+    z-index: 80;
+    background-color: #f4f4f4;
+    transition: all 0.5s;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    padding-top: 80px;
+}
+.menu-content ul { list-style: none; padding: 0; }
+.menu-content ul li a {
+    display: block;
+    width: 100%;
+    padding: 15px 20px;
+    color: #333;
+    text-decoration: none;
+    border-bottom: 1px solid #ddd;
+}
+</style>
+
+    <link rel="stylesheet" href="/assets/blog.css">
+</head>
+<body>
+
+<div class="lang-switch-wrapper">
+    <div class="lang-switch-box">
+        <button type="button" id="btn-ja" class="lang-btn" data-lang="ja">JP</button>
+        <button type="button" id="btn-en" class="lang-btn" data-lang="en">EN</button>
+        <button type="button" id="btn-fr" class="lang-btn active" data-lang="fr">FR</button>
+        <button type="button" id="btn-zh" class="lang-btn" data-lang="zh">ZH</button>
+    </div>
+</div>
+
+<!-- ハンバーガーメニューのボタン -->
+<div class="hamburger-menu">
+    <input type="checkbox" id="menu-btn-check">
+    <label for="menu-btn-check" class="menu-btn"><span></span></label>
+    
+    <!-- メニューの中身 -->
+    <div class="menu-content">
+        <ul>
+            <li><a href="/index.html"
+                class="nav-link"
+                data-ja="ホーム" data-en="Home" data-fr="Accueil" data-zh="首页"
+                data-url-ja="/index.html" data-url-en="/index.html" data-url-fr="/index.html" data-url-zh="/index.html">Accueil</a>
+            </li>
+
+            <li><a href="/pins/pins.html"
+                class="nav-link"
+                data-ja="ピンボード" data-en="Pin Badges" data-fr="Badges" data-zh="徽章"
+                data-url-ja="/pins/pins.html" data-url-en="/pins/pins.html" data-url-fr="/pins/pins.html" data-url-zh="/pins/pins.html">Badges</a>
+            </li>
+
+            <li><a href="/fr/blog/"
+                class="nav-link"
+                data-ja="ブログ" data-en="Blog" data-fr="Blog" data-zh="博客"
+                data-url-ja="/blog/" data-url-en="/en/blog/" data-url-fr="/fr/blog/" data-url-zh="/zh/blog/">Blog</a>
+            </li>
+            <li><a href="/acorn-club/"
+                class="nav-link"
+                data-ja="Acorn Club" data-en="Acorn Club" data-fr="Acorn Club" data-zh="Acorn Club"
+                data-url-ja="/acorn-club/" data-url-en="/acorn-club/" data-url-fr="/acorn-club/" data-url-zh="/acorn-club/">Acorn Club</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+    <!-- partial:home-button -->
+    <a href="/index.html" class="home-fab"
+       data-ja="← ホームに戻る" data-en="← Back to Home" data-fr="← Retour à l'accueil" data-zh="← 返回首页">← Retour à l'accueil</a>
+    <!-- /partial:home-button -->
+
+    <!-- blog:main -->
+    <!-- 自動で作成（tools/build_blog.py が /blog/index.html から fr 版を作る。直接編集しない）。ブログ：ライトボックスに置いた 35mm フィルム。記事データは /blog/posts.json（tools/build_blog.py が原稿 content/blog/ から自動で作成）
+         収益化サイトは別ドメインで制作予定。現行ドメインには広告・アフィリエイトを置かない -->
+    <main class="film">
+        <header class="film-leader">
+            <span class="edge-print" aria-hidden="true">YU'S DLIFE</span>
+            <h1>Blog</h1>
+            <p data-ja="旅とカメラの記録" data-en="Notes on travel and photography" data-fr="Carnet de voyages et de photographie" data-zh="旅行与摄影的记录">Carnet de voyages et de photographie</p>
+            <!-- ジャンルで絞り込むボタン（記事があるジャンルだけ、JavaScript が並べる） -->
+            <nav class="film-filter" id="film-filter" aria-label="ジャンルで絞り込む" hidden></nav>
+        </header>
+        <ol class="film-frames" id="film-frames">
+            <!-- 記事がまだない時：何も写っていないコマ -->
+            <li id="film-empty">
+                <span class="edge-print frame-number" aria-hidden="true"><span>0</span></span>
+                <div class="frame is-unexposed">
+                    <p class="soon"
+                       data-ja="最初の記事を準備しています。&#10;公開まで、もう少しお待ちください。"
+                       data-en="The first story is being developed.&#10;Please stay tuned."
+                       data-fr="Le premier article est en cours de développement.&#10;Restez connectés."
+                       data-zh="第一篇文章正在准备中。&#10;敬请期待。">Le premier article est en cours de développement.&#10;Restez connectés.</p>
+                </div>
+            </li>
+            <!-- 絞り込みに当てはまる記事が無い時 -->
+            <li id="film-nomatch" hidden>
+                <span class="edge-print frame-number" aria-hidden="true"><span>0</span></span>
+                <div class="frame is-unexposed">
+                    <p class="soon"
+                       data-ja="この絞り込みに当てはまる記事は、まだありません。"
+                       data-en="No stories match this filter yet."
+                       data-fr="Aucun article ne correspond encore à ce filtre."
+                       data-zh="暂时没有符合筛选条件的文章。">Aucun article ne correspond encore à ce filtre.</p>
+                </div>
+            </li>
+            <!-- ここに JavaScript（/assets/blog.js）が記事のコマを追加します -->
+        </ol>
+    </main>
+    <!-- /blog:main -->
+
+    <!-- partial:footer -->
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <ul class="site-footer-links">
+                <li><a href="/about/"
+                       data-ja="運営者情報" data-en="About" data-fr="À propos" data-zh="运营者信息">À propos</a></li>
+                <li><a href="/policy/"
+                       data-ja="プライバシーポリシー" data-en="Privacy Policy" data-fr="Politique de confidentialité" data-zh="隐私政策">Politique de confidentialité</a></li>
+                <li><a href="/contact/"
+                       data-ja="コンタクト" data-en="Contact" data-fr="Contact" data-zh="联系方式">Contact</a></li>
+            </ul>
+            <p class="site-footer-copy">© 2026 Yu's DLife</p>
+        </div>
+    </footer>
+    <!-- /partial:footer -->
+
+<script src="/assets/blog.js"></script>
+</body>
+</html>

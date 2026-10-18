@@ -1,0 +1,23 @@
+{
+  "_説明": "ブログのジャンル一覧。追加・変更したら python3 tools/build_blog.py を実行すると、入稿フォームの選択肢と一覧ページの絞り込みに反映されます。id は URL に使うので（/blog/?genre=tdl）、一度使ったら変えないでください。label は一覧に出る短い名前（無い言語は ja を使う）、name は正式名（フォームの選択肢と、マウスを重ねたときの説明に使う）。",
+  "genres": [
+    {"id": "review", "label": {"ja": "レビュー", "en": "Reviews", "fr": "Avis", "zh": "评测"},
+     "name": {"ja": "レビュー", "en": "Reviews", "fr": "Avis", "zh": "评测"}},
+    {"id": "tdr", "label": {"ja": "TDR"},
+     "name": {"ja": "東京ディズニーリゾート", "en": "Tokyo Disney Resort", "fr": "Tokyo Disney Resort", "zh": "东京迪士尼度假区"}},
+    {"id": "tdl", "label": {"ja": "TDL"},
+     "name": {"ja": "東京ディズニーランド", "en": "Tokyo Disneyland", "fr": "Tokyo Disneyland", "zh": "东京迪士尼乐园"}},
+    {"id": "tds", "label": {"ja": "TDS"},
+     "name": {"ja": "東京ディズニーシー", "en": "Tokyo DisneySea", "fr": "Tokyo DisneySea", "zh": "东京迪士尼海洋"}},
+    {"id": "hkdl", "label": {"ja": "HKDL"},
+     "name": {"ja": "香港ディズニーランド", "en": "Hong Kong Disneyland", "fr": "Hong Kong Disneyland", "zh": "香港迪士尼乐园"}},
+    {"id": "shdl", "label": {"ja": "SHDL"},
+     "name": {"ja": "上海ディズニーランド", "en": "Shanghai Disneyland", "fr": "Shanghai Disneyland", "zh": "上海迪士尼乐园"}},
+    {"id": "dlr", "label": {"ja": "DLR"},
+     "name": {"ja": "カリフォルニア ディズニーランド・リゾート", "en": "Disneyland Resort (California)", "fr": "Disneyland Resort (Californie)", "zh": "加州迪士尼乐园度假区"}},
+    {"id": "wdw", "label": {"ja": "WDW"},
+     "name": {"ja": "ウォルト・ディズニー・ワールド", "en": "Walt Disney World", "fr": "Walt Disney World", "zh": "华特迪士尼世界度假区"}},
+    {"id": "dlp", "label": {"ja": "DLP"},
+     "name": {"ja": "ディズニーランド・パリ", "en": "Disneyland Paris", "fr": "Disneyland Paris", "zh": "巴黎迪士尼乐园"}}
+  ]
+}

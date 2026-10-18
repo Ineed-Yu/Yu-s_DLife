@@ -9,7 +9,7 @@
     <!-- /blog:robots -->
     <!-- blog:head -->
     <title>Blog | Yu's DLife</title>
-    <meta name="description" content="旅とカメラの記録。Yu's DLife のブログ。">
+    <meta name="description" content="旅とカメラの記録。Yu&#x27;s DLife のブログ。">
     <!-- /blog:head -->
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
@@ -153,7 +153,7 @@
             <li><a href="/blog/"
                 class="nav-link"
                 data-ja="ブログ" data-en="Blog" data-fr="Blog" data-zh="博客"
-                data-url-ja="/blog/" data-url-en="/blog/" data-url-fr="/blog/" data-url-zh="/blog/">
+                data-url-ja="/blog/" data-url-en="/en/blog/" data-url-fr="/fr/blog/" data-url-zh="/zh/blog/">
                 ブログ
                 </a>
             </li>
@@ -181,6 +181,8 @@
             <span class="edge-print" aria-hidden="true">YU'S DLIFE</span>
             <h1>Blog</h1>
             <p data-ja="旅とカメラの記録" data-en="Notes on travel and photography" data-fr="Carnet de voyages et de photographie" data-zh="旅行与摄影的记录">旅とカメラの記録</p>
+            <!-- ジャンルで絞り込むボタン（記事があるジャンルだけ、JavaScript が並べる） -->
+            <nav class="film-filter" id="film-filter" aria-label="ジャンルで絞り込む" hidden></nav>
         </header>
         <ol class="film-frames" id="film-frames">
             <!-- 記事がまだない時：何も写っていないコマ -->
@@ -192,6 +194,17 @@
                        data-en="The first story is being developed.&#10;Please stay tuned."
                        data-fr="Le premier article est en cours de développement.&#10;Restez connectés."
                        data-zh="第一篇文章正在准备中。&#10;敬请期待。">最初の記事を準備しています。&#10;公開まで、もう少しお待ちください。</p>
+                </div>
+            </li>
+            <!-- 絞り込みに当てはまる記事が無い時 -->
+            <li id="film-nomatch" hidden>
+                <span class="edge-print frame-number" aria-hidden="true"><span>0</span></span>
+                <div class="frame is-unexposed">
+                    <p class="soon"
+                       data-ja="この絞り込みに当てはまる記事は、まだありません。"
+                       data-en="No stories match this filter yet."
+                       data-fr="Aucun article ne correspond encore à ce filtre."
+                       data-zh="暂时没有符合筛选条件的文章。">この絞り込みに当てはまる記事は、まだありません。</p>
                 </div>
             </li>
             <!-- ここに JavaScript（/assets/blog.js）が記事のコマを追加します -->

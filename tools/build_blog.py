@@ -2,8 +2,10 @@
 """ブログの記事ページを原稿から組み立てるスクリプト（記事ビルド）。
 
   content/blog/<URL名>/index.md   →  blog/<URL名>/index.html   … 記事ページ（固定のフィルム風テンプレート）
+  content/blog/<URL名>/index.en.md →  en/blog/<URL名>/index.html … 翻訳版の記事ページ（fr・zh も同じ）
                                    →  blog/posts.json            … 一覧（フィルムのコマ）のデータ
-                                   →  blog/feed.xml              … RSS
+                                   →  blog/feed.xml、en/blog/feed.xml … … RSS（言語ごと）
+                                   →  en/blog/index.html …       … 言語ごとの一覧ページ
                                    →  sitemap.xml                … 公開記事の URL を反映
 
 - 見た目は全記事共通。原稿に書けるのは文字・写真・URL だけで、HTML は文字として表示されます（安全対策）。
@@ -11,6 +13,11 @@
   scheduled（予約）は日時が来たら公開、draft（下書き）は公開しません。
 - 記事ページのメニュー・言語切替などは blog/index.html から流用するので、一覧と常に同じになります。
 - URL だけの行はリンクのカードになります（リンク先のタイトルを取得して原稿フォルダの cards.json に保存）。
+- ジャンルは content/blog/genres.json で管理します。入稿フォームの選択肢もここから自動で書き換えます。
+- 翻訳（tools/translate_blog.py が作る index.en.md など）があれば、言語ごとの URL に記事ページを作ります。
+    日本語 /blog/<URL名>/、英語 /en/blog/<URL名>/、フランス語 /fr/blog/<URL名>/、中国語 /zh/blog/<URL名>/
+  一覧・RSS も言語ごとに作り、検索エンジンには各言語版の関係（hreflang）とサイトマップで知らせます。
+  原稿を直した後の古い翻訳は使わず、新しい翻訳ができるまでその言語のページは作りません。
 
 使い方:
   python3 tools/build_blog.py            # 組み立て（公開中の記事に変化があればファイルを書き換える）
@@ -20,6 +27,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import html
 import json
 import re
@@ -33,7 +41,9 @@ CONTENT_DIR = ROOT / "content" / "blog"
 BLOG_DIR = ROOT / "blog"
 SITE = "https://divaclarice321.com"
 JST = dt.timezone(dt.timedelta(hours=9))
-RESERVED = {"posts.json", "feed.xml", "index.html"}
+GENRES_FILE = CONTENT_DIR / "genres.json"
+FORM_FILE = ROOT / ".github" / "ISSUE_TEMPLATE" / "blog-post.yml"
+LANGS = ("en", "fr", "zh")  # 翻訳する言語（日本語が原文）
 
 esc = lambda s: html.escape(str(s), quote=True)  # noqa: E731
 
@@ -64,7 +74,82 @@ def read_post(path: Path) -> dict:
         meta["date_obj"] = meta["date_obj"].replace(tzinfo=JST)
     meta.setdefault("status", "draft")
     meta.setdefault("tags", [])
+    meta.setdefault("genres", [])
     return meta
+
+
+def source_hash(post: dict) -> str:
+    """翻訳の対象（タイトル・説明・タグ・本文）の指紋。原稿を直すと変わり、古い翻訳を使わなくなる。"""
+    data = json.dumps([post.get("title", ""), post.get("summary", ""), post.get("tags") or [], post["body"].strip()],
+                      ensure_ascii=False)
+    return hashlib.sha256(data.encode("utf-8")).hexdigest()[:16]
+
+
+def read_translation(post: dict, lang: str) -> dict | None:
+    """原稿と指紋が一致する翻訳だけを返す（無い・古い場合は None）。"""
+    path = post["dir"] / f"index.{lang}.md"
+    if not path.exists():
+        return None
+    text = path.read_text(encoding="utf-8")
+    m = re.match(r"^---\n(.*?)\n---\n(.*)$", text, re.S)
+    if not m:
+        return None
+    meta: dict = {}
+    for line in m.group(1).splitlines():
+        if line.lstrip().startswith("#"):
+            continue
+        key, _, value = line.partition(":")
+        try:
+            meta[key.strip()] = json.loads(value.strip())
+        except (json.JSONDecodeError, ValueError):
+            meta[key.strip()] = value.strip()
+    if meta.get("source_hash") != source_hash(post):
+        return None
+    tags = meta.get("tags") if isinstance(meta.get("tags"), list) else []
+    if len(tags) != len(post.get("tags") or []):
+        tags = list(post.get("tags") or [])
+    return {**post, "title": str(meta.get("title") or post["title"]), "summary": str(meta.get("summary") or ""),
+            "tags": [str(t) for t in tags], "body": m.group(2), "lang": lang}
+
+
+# ======================================================================
+# ジャンル
+# ======================================================================
+def load_genres() -> list[dict]:
+    if not GENRES_FILE.exists():
+        return []
+    genres = json.loads(GENRES_FILE.read_text(encoding="utf-8")).get("genres", [])
+    ids = [g["id"] for g in genres]
+    for g in genres:
+        if not re.match(r"^[a-z0-9-]{1,30}$", g["id"]):
+            raise ValueError(f"genres.json: id「{g['id']}」は半角の英小文字・数字・ハイフンにしてください")
+        if not g.get("label", {}).get("ja") or not g.get("name", {}).get("ja"):
+            raise ValueError(f"genres.json: 「{g['id']}」の label.ja と name.ja は必須です")
+    if len(ids) != len(set(ids)):
+        raise ValueError("genres.json: id が重複しています")
+    return genres
+
+
+def genre_option(g: dict) -> str:
+    """入稿フォームの選択肢の文字（例: TDL（東京ディズニーランド））。"""
+    label, name = g["label"]["ja"], g["name"]["ja"]
+    return label if label == name else f"{label}（{name}）"
+
+
+def g_text(g: dict, field: str, lang: str) -> str:
+    return g[field].get(lang) or g[field]["ja"]
+
+
+def sync_form(form_text: str, genres: list[dict]) -> str:
+    """入稿フォームの「ジャンル」の選択肢を genres.json に合わせる。"""
+    pat = re.compile(r"(?P<indent>[ \t]*)# genres:start(?P<note>[^\n]*)\n.*?(?P=indent)# genres:end", re.S)
+    m = pat.search(form_text)
+    if not m:
+        raise ValueError("入稿フォームに「# genres:start」の目印がありません")
+    ind = m.group("indent")
+    lines = [f"{ind}# genres:start{m.group('note')}"] + [f"{ind}- {json.dumps(genre_option(g), ensure_ascii=False)}" for g in genres] \
+        + [f"{ind}# genres:end"]
+    return form_text[:m.start()] + "\n".join(lines) + form_text[m.end():]
 
 
 def is_public(post: dict, now: dt.datetime) -> bool:
@@ -238,40 +323,126 @@ def replace_region(text: str, name: str, new: str) -> str:
     return pat.sub(lambda m: f"{m.group('indent')}<!-- blog:{name} -->\n{new}\n{m.group('indent')}<!-- /blog:{name} -->", text, count=1)
 
 
-def build_post_page(post: dict, number: int, index_html: str, cards: dict) -> str:
+# ======================================================================
+# 言語ごとの URL・表記
+# ======================================================================
+HREFLANG = {"ja": "ja", "en": "en", "fr": "fr", "zh": "zh-Hans"}
+OG_LOCALE = {"ja": "ja_JP", "en": "en_US", "fr": "fr_FR", "zh": "zh_CN"}
+LIST_TEXT = {  # 一覧ページの名前と説明（検索結果・SNS 共有に出る）
+    "ja": ("Blog | Yu's DLife", "旅とカメラの記録。Yu's DLife のブログ。"),
+    "en": ("Blog | Yu's DLife", "Notes on Disney parks around the world, travel and photography. The blog of Yu's DLife."),
+    "fr": ("Blog | Yu's DLife", "Carnet sur les parcs Disney du monde entier, les voyages et la photographie. Le blog de Yu's DLife."),
+    "zh": ("博客 | Yu's DLife", "世界各地迪士尼乐园、旅行与摄影的记录。Yu's DLife 的博客。"),
+}
+FEED_DESC = {"ja": "旅とカメラの記録", "en": "Notes on travel and photography",
+             "fr": "Carnet de voyages et de photographie", "zh": "旅行与摄影的记录"}
+
+
+def lang_root(lang: str) -> Path:
+    return BLOG_DIR if lang == "ja" else ROOT / lang / "blog"
+
+
+def list_url(lang: str) -> str:
+    return "/blog/" if lang == "ja" else f"/{lang}/blog/"
+
+
+def post_url(slug: str, lang: str) -> str:
+    return f"{list_url(lang)}{slug}/"
+
+
+def alternate_links(paths: dict[str, str]) -> list[str]:
+    """同じ内容の各言語版を検索エンジンに知らせる（hreflang）。日本語版を既定（x-default）にする。"""
+    lines = [f'    <link rel="alternate" hreflang="{HREFLANG[lang]}" href="{SITE}{path}">' for lang, path in paths.items()]
+    if "ja" in paths and len(paths) > 1:
+        lines.append(f'    <link rel="alternate" hreflang="x-default" href="{SITE}{paths["ja"]}">')
+    return lines if len(paths) > 1 else []
+
+
+def localize_html(page: str, lang: str) -> str:
+    """日本語のページを、言語ボタンの訳（data-en など）を使って最初からその言語で書かれたページにする。
+    検索エンジンは JavaScript で切り替わる前の文字を読むため、言語ごとの URL では文字そのものを書き換えておく。"""
+    if lang == "ja":
+        return page
+    page = re.sub(r'<html lang="ja"', f'<html lang="{HREFLANG[lang]}"', page, count=1)
+    # 子要素を持たない要素の文字を data-<言語> の訳に置き換える
+    el = re.compile(rf'(<(?P<tag>[a-zA-Z0-9]+)\b[^<>]*?\bdata-{lang}="(?P<val>[^"]*)"[^<>]*>)[^<]*(</(?P=tag)>)')
+    page = el.sub(lambda m: m.group(1) + m.group("val") + m.group(4), page)
+    # メニューのリンク先（data-url-<言語>）
+    page = re.sub(rf'(<a\b[^<>]*?)\bhref="[^"]*"([^<>]*?\bdata-url-{lang}="(?P<u>[^"]*)")',
+                  lambda m: f'{m.group(1)}href="{m.group("u")}"{m.group(2)}', page)
+    page = re.sub(rf'(<a\b[^<>]*?\bdata-url-{lang}="(?P<u>[^"]*)"[^<>]*?)\bhref="[^"]*"',
+                  lambda m: f'{m.group(1)}href="{m.group("u")}"', page)
+    # 言語ボタンの選択状態
+    page = page.replace('class="lang-btn active" data-lang="ja"', 'class="lang-btn" data-lang="ja"')
+    page = page.replace(f'class="lang-btn" data-lang="{lang}"', f'class="lang-btn active" data-lang="{lang}"')
+    return page
+
+
+# ======================================================================
+# ページの組み立て
+# ======================================================================
+def toc_block(toc: list[tuple[str, str]]) -> str:
+    if len(toc) < 2:
+        return ""
+    items = "".join(f'<li><a href="#{a}">{esc(t)}</a></li>' for a, t in toc)
+    return (f'<nav class="article-toc" aria-label="目次"><p class="article-toc-title" data-ja="目次" '
+            f'data-en="Contents" data-fr="Sommaire" data-zh="目录">目次</p><ol>{items}</ol></nav>')
+
+
+MT_NOTE = ('<p class="article-note article-mt" data-ja="" '
+           'data-en="This article was translated from Japanese by AI (machine translation). The Japanese version is the original." '
+           'data-fr="Cet article a été traduit du japonais par une IA (traduction automatique). La version japonaise fait foi." '
+           'data-zh="本文由AI从日语自动翻译而来。以日语原文为准。"></p>')
+JA_ONLY_NOTE = ('<p class="article-note article-ja-only" hidden data-ja="" '
+                'data-en="This article is currently available in Japanese only." '
+                'data-fr="Cet article n\'est pour l\'instant disponible qu\'en japonais." '
+                'data-zh="本文目前仅提供日语版本。"></p>')
+AI_NOTE = ('<p class="article-note" data-ja="この記事は AI の支援を受けて作成し、運営者が内容を確認しています。" '
+           'data-en="This article was written with AI assistance and reviewed by the site owner." '
+           'data-fr="Cet article a été rédigé avec l\'aide d\'une IA et vérifié par l\'auteur du site." '
+           'data-zh="本文在AI辅助下撰写，并由运营者确认内容。">この記事は AI の支援を受けて作成し、運営者が内容を確認しています。</p>')
+
+
+def build_post_page(post: dict, lang: str, number: int, index_html: str, cards: dict,
+                    versions: dict[str, dict], genres: list[dict] | None = None) -> str:
+    """1つの言語版の記事ページ。post はその言語の内容（翻訳なら翻訳文）、versions は存在する全言語版。"""
+    genre_map = {g["id"]: g for g in genres or []}
+    ja = versions["ja"]
     body_html, toc, images = render_body(post, cards)
-    cover = post.get("cover") or (images[0] if images else "")
-    url = f"{SITE}/blog/{post['slug']}/"
+    cover = ja.get("cover") or (images[0] if images else "")
+    path = post_url(post["slug"], lang)
     desc = summary_of(post)
     d = post["date_obj"]
+    paths = {lg: post_url(post["slug"], lg) for lg in versions}
     head = "\n".join([
         f"    <title>{esc(post['title'])} | Yu's DLife</title>",
         f'    <meta name="description" content="{esc(desc)}">',
-        f'    <link rel="canonical" href="{esc(url)}">',
+        f'    <link rel="canonical" href="{SITE}{esc(path)}">',
+        *alternate_links(paths),
         '    <meta property="og:type" content="article">',
         "    <meta property=\"og:site_name\" content=\"Yu's DLife\">",
         f'    <meta property="og:title" content="{esc(post["title"])}">',
         f'    <meta property="og:description" content="{esc(desc)}">',
-        f'    <meta property="og:url" content="{esc(url)}">',
+        f'    <meta property="og:url" content="{SITE}{esc(path)}">',
         f'    <meta property="og:image" content="{esc(SITE + (opt_image(cover, 1600) if cover else "/assets/ogp.jpg"))}">',
-        '    <meta property="og:locale" content="ja_JP">',
+        f'    <meta property="og:locale" content="{OG_LOCALE[lang]}">',
+        *[f'    <meta property="og:locale:alternate" content="{OG_LOCALE[lg]}">' for lg in versions if lg != lang],
         f'    <meta property="article:published_time" content="{d.isoformat()}">',
         '    <meta name="twitter:card" content="summary_large_image">',
     ])
     frame_img = (f'<img src="{esc(opt_image(cover, 1600))}" alt="" decoding="async">' if cover else "")
-    toc_html = ""
-    if len(toc) >= 2:
-        items = "".join(f'<li><a href="#{a}">{esc(t)}</a></li>' for a, t in toc)
-        toc_html = (f'<nav class="article-toc" aria-label="目次"><p class="article-toc-title" data-ja="目次" '
-                    f'data-en="Contents" data-fr="Sommaire" data-zh="目录">目次</p><ol>{items}</ol></nav>')
-    tags = "".join(f"<li>{esc(t)}</li>" for t in post.get("tags") or [])
-    tags_html = f'<ul class="article-tags">{tags}</ul>' if tags else ""
-    ai_html = ('<p class="article-note" data-ja="この記事は AI の支援を受けて作成し、運営者が内容を確認しています。" '
-               'data-en="This article was written with AI assistance and reviewed by the site owner." '
-               'data-fr="Cet article a été rédigé avec l\'aide d\'une IA et vérifié par l\'auteur du site." '
-               'data-zh="本文在AI辅助下撰写，并由运营者确认内容。">この記事は AI の支援を受けて作成し、運営者が内容を確認しています。</p>'
-               if post.get("ai_assisted") is True else "")
-    main = f"""    <!-- 記事ページ（tools/build_blog.py が content/blog/{esc(post['slug'])}/index.md から自動で作成。直接編集しない） -->
+    # ジャンルとタグ（押すと、その言語の一覧がその記事だけに絞り込まれる）
+    chips = []
+    for gid in ja.get("genres") or []:
+        g = genre_map.get(gid)
+        if g:
+            chips.append(f'<li><a class="article-genre" href="{list_url(lang)}?genre={esc(gid)}" '
+                         f'title="{esc(g_text(g, "name", lang))}">{esc(g_text(g, "label", lang))}</a></li>')
+    for key, label in zip(ja.get("tags") or [], post.get("tags") or []):
+        chips.append(f'<li><a href="{list_url(lang)}?tag={esc(urllib.parse.quote(key))}">#{esc(label)}</a></li>')
+    tags_html = f'<ul class="article-tags">{"".join(chips)}</ul>' if chips else ""
+    note = MT_NOTE if lang != "ja" else JA_ONLY_NOTE
+    main = f"""    <!-- 記事ページ（tools/build_blog.py が content/blog/{esc(post['slug'])}/ の原稿から自動で作成。直接編集しない） -->
     <main>
         <div class="film is-single">
             <ol class="film-frames">
@@ -291,26 +462,43 @@ def build_post_page(post: dict, number: int, index_html: str, cards: dict) -> st
         <article class="article">
             <h1 class="article-title">{esc(post['title'])}</h1>
             <time class="article-date" datetime="{d.isoformat()}">{d:%Y.%m.%d}</time>
-            {toc_html}
+            {note}
+            {toc_block(toc)}
             <div class="article-body">
 {body_html}
             </div>
             {tags_html}
-            {ai_html}
-            <a href="/blog/" class="article-back" data-ja="← ブログの一覧に戻る" data-en="← Back to the blog" data-fr="← Retour au blog" data-zh="← 返回博客列表">← ブログの一覧に戻る</a>
+            {AI_NOTE if ja.get("ai_assisted") is True else ""}
+            <a href="{list_url(lang)}" class="article-back" data-ja="← ブログの一覧に戻る" data-en="← Back to the blog" data-fr="← Retour au blog" data-zh="← 返回博客列表">← ブログの一覧に戻る</a>
         </article>
     </main>"""
     before, after = page_parts(index_html)
     before = replace_region(before, "head", head)
-    page = before + main + after
-    # 記事ページの画像・リンクはサイト直下からの絶対パスなので、そのままで動く
-    return page
+    return localize_html(before + main + after, lang)
 
 
-def build_feed(posts: list[dict]) -> str:
+def build_list_page(index_html: str, lang: str, has_posts: bool, list_langs: list[str]) -> str:
+    """一覧ページ（/blog/、/en/blog/ など）。記事の並びは /assets/blog.js が posts.json から作る。"""
+    title, desc = LIST_TEXT[lang]
+    head = "\n".join([
+        f"    <title>{html.escape(title, quote=False)}</title>",
+        f'    <meta name="description" content="{esc(desc)}">',
+        *([f'    <link rel="canonical" href="{SITE}{list_url(lang)}">'] if has_posts else []),
+        *alternate_links({lg: list_url(lg) for lg in list_langs} if has_posts else {}),
+    ])
+    robots = ('    <!-- 公開中の記事がまだ無い間は検索結果に出さない（tools/build_blog.py が自動で切り替える） -->\n'
+              '    <meta name="robots" content="noindex">') if not has_posts else \
+        f'    <link rel="alternate" type="application/rss+xml" title="Yu\'s DLife Blog" href="{list_url(lang)}feed.xml">'
+    page = replace_region(replace_region(index_html, "head", head), "robots", robots)
+    if lang != "ja":
+        page = page.replace("<!-- ブログ：", f"<!-- 自動で作成（tools/build_blog.py が /blog/index.html から {lang} 版を作る。直接編集しない）。ブログ：", 1)
+    return localize_html(page, lang)
+
+
+def build_feed(items_: list[tuple[dict, str]], lang: str) -> str:
     items = []
-    for p in posts[:20]:
-        url = f"{SITE}/blog/{p['slug']}/"
+    for p, path in items_[:20]:
+        url = f"{SITE}{path}"
         items.append(
             "  <item>\n"
             f"    <title>{esc(p['title'])}</title>\n"
@@ -321,11 +509,18 @@ def build_feed(posts: list[dict]) -> str:
             "  </item>")
     return ('<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n<channel>\n'
             "  <title>Yu's DLife Blog</title>\n"
-            f"  <link>{SITE}/blog/</link>\n"
-            "  <description>旅とカメラの記録</description>\n"
-            "  <language>ja</language>\n"
+            f"  <link>{SITE}{list_url(lang)}</link>\n"
+            f"  <description>{FEED_DESC[lang]}</description>\n"
+            f"  <language>{HREFLANG[lang]}</language>\n"
             + ("\n".join(items) + "\n" if items else "")
             + "</channel>\n</rss>\n")
+
+
+def sitemap_entry(paths: dict[str, str], lastmod: dt.datetime) -> list[str]:
+    """各言語版を1件ずつ載せ、互いの言語版を xhtml:link で示す。"""
+    alts = "".join(f'\n    <xhtml:link rel="alternate" hreflang="{HREFLANG[lg]}" href="{SITE}{p}"/>' for lg, p in paths.items()) \
+        if len(paths) > 1 else ""
+    return [f"  <url>\n    <loc>{SITE}{p}</loc>\n    <lastmod>{lastmod:%Y-%m-%d}</lastmod>{alts}\n  </url>" for p in paths.values()]
 
 
 def build(now: dt.datetime, allow_fetch: bool) -> dict[Path, str | None]:
@@ -335,53 +530,88 @@ def build(now: dt.datetime, allow_fetch: bool) -> dict[Path, str | None]:
         posts.append(read_post(md))
     public = sorted([p for p in posts if is_public(p, now)], key=lambda p: p["date_obj"], reverse=True)
 
+    genres = load_genres()
+    known = {g["id"] for g in genres}
+    for p in posts:
+        unknown = [g for g in p.get("genres") or [] if g not in known]
+        if unknown:
+            raise ValueError(f"{p['slug']}: genres.json に無いジャンル {unknown} が指定されています")
+
     index_path = BLOG_DIR / "index.html"
     index_html = index_path.read_text(encoding="utf-8")
     out: dict[Path, str | None] = {}
+    if FORM_FILE.exists():
+        out[FORM_FILE] = sync_form(FORM_FILE.read_text(encoding="utf-8"), genres)
+    # 記事ごとの言語版（日本語＋原稿と一致する翻訳）
+    versions = {p["slug"]: {"ja": p, **{lang: t for lang in LANGS if (t := read_translation(p, lang))}} for p in public}
+    per_lang = {lang: [p for p in public if lang in versions[p["slug"]]] for lang in ("ja",) + LANGS}
+    list_langs = [lang for lang in ("ja",) + LANGS if per_lang[lang]]
 
-    # 一覧ページ：公開記事が1本以上あれば検索に出す
-    robots = ('    <!-- 公開中の記事がまだ無い間は検索結果に出さない（tools/build_blog.py が自動で切り替える） -->\n'
-              '    <meta name="robots" content="noindex">') if not public else \
-             '    <link rel="alternate" type="application/rss+xml" title="Yu\'s DLife Blog" href="/blog/feed.xml">'
-    out[index_path] = replace_region(index_html, "robots", robots)
+    # 一覧ページ（言語ごと。記事が1本も無い言語は検索に出さない）
+    for lang in ("ja",) + LANGS:
+        out[lang_root(lang) / "index.html"] = build_list_page(index_html, lang, bool(per_lang[lang]), list_langs)
+    ja_index = out[index_path]
 
-    # 記事ページ（番号は古い記事から 1, 2, 3 …。フィルムのコマ番号）
+    # 記事ページ（番号は古い記事から 1, 2, 3 …。フィルムのコマ番号。言語が違っても同じ番号）
     numbers = {p["slug"]: i for i, p in enumerate(reversed(public), 1)}
-    wanted_dirs = set()
+    wanted: set[Path] = set()
     for p in public:
         cards = load_cards(p, allow_fetch)
-        out[BLOG_DIR / p["slug"] / "index.html"] = build_post_page(p, numbers[p["slug"]], out[index_path], cards)
-        wanted_dirs.add(p["slug"])
-    # 公開をやめた記事・下書きに戻した記事のページは消す
-    for d in BLOG_DIR.iterdir():
-        if d.is_dir() and (d / "index.html").exists() and d.name not in wanted_dirs \
-                and "tools/build_blog.py" in (d / "index.html").read_text(encoding="utf-8"):
-            out[d / "index.html"] = None
+        for lang, v in versions[p["slug"]].items():
+            path = lang_root(lang) / p["slug"] / "index.html"
+            out[path] = build_post_page(v, lang, numbers[p["slug"]], ja_index, cards, versions[p["slug"]], genres)
+            wanted.add(path)
+    # 公開をやめた記事・下書きに戻した記事・使わなくなった翻訳のページは消す
+    for lang in ("ja",) + LANGS:
+        root = lang_root(lang)
+        if not root.exists():
+            continue
+        for d in root.iterdir():
+            page = d / "index.html"
+            if d.is_dir() and page.exists() and page not in wanted \
+                    and "tools/build_blog.py" in page.read_text(encoding="utf-8"):
+                out[page] = None
 
-    # 一覧データ（フィルムのコマ）
+    # 一覧データ（フィルムのコマ）。翻訳がある言語は、その言語のタイトル・タグ・URL を持つ
     listing = []
     for p in public:
         _, _, images = render_body(p, {})
         cover = p.get("cover") or (images[0] if images else "")
-        listing.append({
+        item = {
             "Id": p["slug"],
             "Date": p["date_obj"].isoformat(timespec="minutes"),
             "Title": p["title"],
             "Image": f"/images/{cover}" if cover else "",
-            "Url": f"/blog/{p['slug']}/",
+            "Url": post_url(p["slug"], "ja"),
             "Number": numbers[p["slug"]],
-        })
+            "Genres": list(p.get("genres") or []),
+            "Tags": list(p.get("tags") or []),
+        }
+        for lang, t in versions[p["slug"]].items():
+            if lang != "ja":
+                item[lang] = {"Title": t["title"], "Tags": t["tags"], "Url": post_url(p["slug"], lang)}
+        listing.append(item)
     out[BLOG_DIR / "posts.json"] = json.dumps(listing, ensure_ascii=False, indent=2) + "\n"
-    out[BLOG_DIR / "feed.xml"] = build_feed(public)
+    # 一覧の絞り込みボタン用のジャンル一覧（記事数つき。0件のジャンルはボタンを出さない）
+    counts = {g["id"]: sum(g["id"] in (p.get("genres") or []) for p in public) for g in genres}
+    out[BLOG_DIR / "genres.json"] = json.dumps(
+        [{"Id": g["id"], "Count": counts[g["id"]],
+          **{lang: {"Label": g_text(g, "label", lang), "Name": g_text(g, "name", lang)} for lang in ("ja",) + LANGS}}
+         for g in genres], ensure_ascii=False, indent=2) + "\n"
+    # RSS（言語ごと）
+    for lang in ("ja",) + LANGS:
+        out[lang_root(lang) / "feed.xml"] = build_feed(
+            [(versions[p["slug"]][lang], post_url(p["slug"], lang)) for p in per_lang[lang]], lang)
 
     # サイトマップ
     sm_path = ROOT / "sitemap.xml"
     sm = sm_path.read_text(encoding="utf-8")
-    urls = ""
+    entries: list[str] = []
     if public:
-        urls = "\n".join(
-            [f"  <url>\n    <loc>{SITE}/blog/</loc>\n    <lastmod>{public[0]['date_obj']:%Y-%m-%d}</lastmod>\n  </url>"]
-            + [f"  <url>\n    <loc>{SITE}/blog/{p['slug']}/</loc>\n    <lastmod>{p['date_obj']:%Y-%m-%d}</lastmod>\n  </url>" for p in public])
+        entries += sitemap_entry({lg: list_url(lg) for lg in list_langs}, public[0]["date_obj"])
+        for p in public:
+            entries += sitemap_entry({lg: post_url(p["slug"], lg) for lg in versions[p["slug"]]}, p["date_obj"])
+    urls = "\n".join(entries)
     out[sm_path] = re.sub(r"(  <!-- blog:urls -->\n).*?(  <!-- /blog:urls -->)",
                           lambda m: m.group(1) + (urls + "\n" if urls else "") + m.group(2), sm, flags=re.S)
     return out

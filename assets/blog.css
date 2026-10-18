@@ -1,5 +1,5 @@
 /* ブログ：ライトボックスに置いた 35mm フィルムのデザイン
-   一覧（/blog/）と記事ページ（/blog/post.html）で共通に使う。 */
+   一覧（/blog/）と記事ページ（/blog/<URL名>/）で共通に使う。 */
 
 :root {
     --lightbox: #eef1f1;        /* ライトボックスの光る台 */
@@ -76,6 +76,43 @@ body {
 .film-leader .edge-print {
     top: 24px;
     left: calc(-1 * var(--gutter));
+}
+
+/* ジャンルの絞り込みボタン（リーダー部分。フィルムの縁の印字と同じ色） */
+.film-filter {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin: 22px 0 0;
+}
+.film-filter[hidden] {
+    display: none;
+}
+.film-filter-chip {
+    padding: 5px 12px;
+    border: 1px solid rgba(232, 169, 58, 0.55);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--edge-print);
+    font-family: "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 0.06em;
+    line-height: 1.4;
+    cursor: pointer;
+}
+.film-filter-chip:hover,
+.film-filter-chip:focus-visible {
+    border-color: var(--edge-print);
+}
+.film-filter-chip[aria-pressed="true"] {
+    background: var(--edge-print);
+    border-color: var(--edge-print);
+    color: var(--film);
+}
+.film-filter-chip.is-tag {
+    text-transform: none;
 }
 
 /* ---------- コマ ---------- */
@@ -412,12 +449,35 @@ body {
     padding: 0;
     list-style: none;
 }
-.article-tags li {
+.article-tags a {
+    display: inline-block;
     padding: 3px 10px;
     border-radius: 12px;
     background: rgba(28, 25, 22, 0.08);
     color: #4a453e;
     font-size: 12px;
+    text-decoration: none;
+}
+.article-tags a:hover,
+.article-tags a:focus-visible {
+    background: rgba(28, 25, 22, 0.16);
+}
+/* ジャンルはフィルムの縁の印字風 */
+.article-tags a.article-genre {
+    border-radius: 3px;
+    background: var(--film);
+    color: var(--edge-print);
+    font-family: "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+    font-weight: bold;
+    letter-spacing: 0.06em;
+}
+/* 自動翻訳の注記（記事の日付の下） */
+.article-mt,
+.article-ja-only {
+    margin: 10px 0 18px;
+    padding: 8px 12px;
+    border-left: 3px solid var(--edge-print);
+    background: rgba(232, 169, 58, 0.08);
 }
 .article-note {
     margin: 18px 0 0;
