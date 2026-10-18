@@ -1,0 +1,19 @@
+# GitHub Actions の部品（actions/checkout など）を自動で最新に保つ設定（2026-10-18 管理者の指示）
+# 毎週月曜の朝に新しい版があるか確認し、あれば更新の PR を自動で作ります（英語の PR です）。
+# 内容は開発エージェントが確認して日本語でコメントします。マージは管理者が行います。
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    # 複数の部品の更新は1つの PR にまとめる
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "chore(actions)"
