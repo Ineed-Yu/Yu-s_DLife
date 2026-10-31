@@ -1,5 +1,6 @@
 # Acorn Club：クラリスの新着グッズ情報を自動で集める
 # - 2時間ごと（と手動）：取得元（content/acorn/sources.json）から集め、タイムライン（acorn-club/news.json）を更新して main に保存
+# - 手動で backfill を選ぶと、過去の記事（2016年〜）も期間を区切って探す
 # - 収集の仕組みや取得元を変える PR：実際の取得元から「試し取得」だけを行い、取得元ごとの結果を表示（書き換えない）
 name: Acorn Club の自動収集
 
@@ -7,6 +8,11 @@ on:
   schedule:
     - cron: "37 */2 * * *"   # 2時間ごと（混み合う0分を避ける）
   workflow_dispatch:
+    inputs:
+      backfill:
+        description: "過去の記事（2016年〜）も期間を区切って探して取り込む（10分ほどかかります）"
+        type: boolean
+        default: false
   pull_request:
     paths:
       - "tools/acorn_news.py"
@@ -31,6 +37,8 @@ jobs:
           python-version: "3.12"
       - name: 試し取得（ファイルは書き換えない）
         run: python3 tools/acorn_news.py collect --dry-run
+      - name: 過去分の試し取得（直近2期間だけ・ファイルは書き換えない）
+        run: python3 tools/acorn_news.py backfill --dry-run --windows 2
       - name: 記事の画像の試し取得（ファイルは書き換えない）
         run: python3 tools/acorn_news.py images --dry-run --limit 8
       - name: タイムラインが最新か確認
@@ -58,6 +66,10 @@ jobs:
           X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
           X_MONTHLY_POST_LIMIT: ${{ vars.X_MONTHLY_POST_LIMIT }}
         run: python3 tools/acorn_news.py collect
+
+      - name: 過去の記事を取り込む（手動で backfill を選んだときだけ）
+        if: github.event_name == 'workflow_dispatch' && inputs.backfill
+        run: python3 tools/acorn_news.py backfill
 
       - name: main に保存
         id: push

@@ -28,6 +28,16 @@
       },
       {
         "label": {
+          "ja": "声",
+          "en": "Voice"
+        },
+        "value": {
+          "ja": "英語版はマーサ・ティルトン、日本語吹き替え版は一城みゆ希",
+          "en": "Martha Tilton (English); Miyuki Ichijo (Japanese dub)"
+        }
+      },
+      {
+        "label": {
           "ja": "映画作品",
           "en": "Films"
         },
@@ -55,6 +65,10 @@
       {
         "name": "Wikipedia「クラリス (ディズニーキャラクター)」",
         "url": "https://ja.wikipedia.org/wiki/%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9_(%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC)"
+      },
+      {
+        "name": "キャステル「クラリスのプロフィールまとめ」（2021年10月12日）",
+        "url": "https://castel.jp/p/7284"
       }
     ]
   },
@@ -302,16 +316,33 @@
       "park": "hkdl",
       "kind": "event",
       "title": {
-        "ja": "グリズリー・ガルチのお祝い",
-        "en": "Celebration in Grizzly Gulch"
+        "ja": "チップとデールとクラリスのいたずらパーティー",
+        "en": "The Most Mischievous Party with Chip, Dale & Clarice"
       },
       "note": {
-        "ja": "香港ディズニーランドで、探検家の衣装のクラリスがチップとデールと一緒にお祝いを盛り上げる。",
-        "en": "At Hong Kong Disneyland, Clarice in an explorer outfit leads a town-wide celebration with Chip and Dale."
+        "ja": "香港ディズニーランド20周年の催しのひとつ。探検家のクラリスがチップとデールと一緒にグリズリー・ガルチで町じゅうの競争を開き、エリアを歩き回る。",
+        "en": "Part of Hong Kong Disneyland's 20th anniversary: explorer Clarice hosts a town-wide competition in Grizzly Gulch with Chip and Dale and roams the land."
       },
       "source": {
-        "name": "TDR Explorer（2026年4月16日）",
-        "url": "https://tdrexplorer.com/chip-n-dale-bring-a-town-wide-celebration-to-grizzly-gulch-at-hong-kong-disneyland/"
+        "name": "香港ディズニーランド 報道資料（2025年9月16日）",
+        "url": "https://news.hongkongdisneyland.com/en/press/2025-09-16/"
+      }
+    },
+    {
+      "date": "2025-01-01",
+      "park": "tdl",
+      "kind": "greeting",
+      "title": {
+        "ja": "東京ディズニーリゾートのお正月2025 ニューイヤーズ・グリーティング",
+        "en": "New Year's Greeting 2025"
+      },
+      "note": {
+        "ja": "パレードルートのお正月のグリーティングに、チップとデールと一緒に登場（1月13日まで）。",
+        "en": "Joined the New Year's greeting on the parade route with Chip and Dale (through January 13)."
+      },
+      "source": {
+        "name": "Dtimes（2025年1月1日）",
+        "url": "https://dtimes.jp/post-964374/"
       }
     }
   ]
