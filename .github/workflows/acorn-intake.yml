@@ -1,0 +1,80 @@
+# Acorn Club：入力フォーム（Issues →「Acorn Club に情報を追加する」）からタイムラインに追加
+# 動くのは「リポジトリの持ち主本人」が送信・編集したときだけです。送信した時点で管理者の承認とみなします。
+name: Acorn Club の手動追加
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+permissions:
+  contents: write
+  issues: write
+  pages: write
+
+# 他の自動処理と同時に main を書き換えないよう、1つずつ順番に動かす
+concurrency:
+  group: blog-publish
+  cancel-in-progress: false
+
+jobs:
+  add:
+    if: >-
+      startsWith(github.event.issue.title, '[Acorn]') &&
+      github.event.sender.login == github.repository_owner &&
+      github.event.issue.user.login == github.repository_owner
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ISSUE: ${{ github.event.issue.number }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      # Issue の本文はシェルに埋め込まず、イベントのファイルから Python で読む
+      - name: タイムラインに追加
+        run: python3 tools/acorn_news.py add "$GITHUB_EVENT_PATH" > "$RUNNER_TEMP/result.json"
+
+      - name: main に保存
+        id: push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for path in content/acorn acorn-club/news.json; do
+            if [ -e "$path" ]; then git add -A -- "$path"; fi
+          done
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -q -m "acorn: 手動追加 #${ISSUE} を反映"
+          for i in 1 2 3; do
+            git pull -q --rebase origin main && git push -q origin HEAD:main && break
+            sleep 5
+          done
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: サイトの再構築を依頼
+        if: steps.push.outputs.changed == 'true'
+        run: gh api -X POST "repos/${GITHUB_REPOSITORY}/pages/builds" --silent || echo "::warning::再構築の依頼に失敗しました。"
+
+      - name: 結果をコメント
+        if: always()
+        run: |
+          : > "$RUNNER_TEMP/comment.md"
+          if [ -s "$RUNNER_TEMP/result.json" ] && ! grep -q '"skipped"' "$RUNNER_TEMP/result.json"; then
+            python3 tools/acorn_news.py comment "$RUNNER_TEMP/result.json" > "$RUNNER_TEMP/comment.md"
+          fi
+          if [ "${{ job.status }}" != "success" ]; then
+            printf '⚠️ **自動処理の途中でエラーが起きました。** 反映されていない可能性があります。\n\n詳細: %s/%s/actions/runs/%s\n' \
+              "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" > "$RUNNER_TEMP/comment.md"
+          fi
+          if [ -s "$RUNNER_TEMP/comment.md" ]; then
+            gh issue comment "$ISSUE" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/comment.md"
+          fi
+          if [ "${{ job.status }}" = "success" ] && grep -q '"status": "added"' "$RUNNER_TEMP/result.json" 2>/dev/null; then
+            gh issue close "$ISSUE" --repo "$GITHUB_REPOSITORY" --reason completed || true
+          fi
