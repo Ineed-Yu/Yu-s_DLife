@@ -257,12 +257,15 @@ def parse_feed(data: bytes) -> list[dict]:
                     link = link or child.text.strip()
             elif cname in ("title", "pubDate", "published", "updated", "date", "description", "summary", "source"):
                 fields.setdefault(cname, "".join(child.itertext()))
+            elif cname in ("encoded", "content"):  # 本文（content:encoded / Atom の content）。クラリスが本文に出てくるかの確認だけに使う
+                fields.setdefault("content", "".join(child.itertext())[:200_000])
         entries.append({
             "title": fields.get("title", ""),
             "url": link,
             "date": fields.get("pubDate") or fields.get("published") or fields.get("date") or fields.get("updated"),
             "summary": fields.get("description") or fields.get("summary") or "",
             "source": fields.get("source", ""),
+            "content": fields.get("content", ""),
         })
     return entries
 
@@ -303,8 +306,16 @@ def items_from_source(src: dict, data: bytes, now: dt.datetime) -> tuple[list[di
             continue
         # ディズニー専門のサイト（disney_site）は「ディズニー」の語を、クラリスでのサイト内検索（clarice_search）は
         # 見出しの「クラリス」を求めない（見出しに出てこない記事の取りこぼしを防ぐ）
-        cat = is_relevant(title, clean_text(e["summary"], 600), src.get("topic"),
-                          require_disney=not src.get("disney_site"), require_clarice=not src.get("clarice_search"))
+        summary = clean_text(e["summary"], 600)
+        relaxed = False
+        if src.get("clarice_search"):
+            body = clean_text(e.get("content", ""), 50_000)
+            if body:  # 本文が配信に含まれるときは、本文にクラリスが出てくることを確かめる（検索が効いていない場合の混入を防ぐ）
+                if not CLARICE.search(f"{title}\n{summary}\n{body}") or OTHER_CLARICE.search(body):
+                    continue
+            relaxed = True
+        cat = is_relevant(title, summary, src.get("topic"),
+                          require_disney=not src.get("disney_site"), require_clarice=not relaxed)
         if not cat:
             continue
         date = parse_date(e["date"]) or now
