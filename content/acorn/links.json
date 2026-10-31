@@ -1,5 +1,5 @@
 {
-  "_説明": "Acorn Club の「公式サイト/アカウント一覧」。region（jp=日本・us=アメリカ・fr=フランス・cn=中国）ごとに切り替えて表示する。確認できた公式のものだけを載せる。",
+  "_説明": "Acorn Club の「公式サイト/アカウント一覧」。region（jp=日本・us=アメリカ・hi=ハワイ・fr=フランス・cn=中国・hk=香港）ごとに切り替えて表示する。確認できた公式のものだけを載せる。",
   "links": [
     {
       "name": {
@@ -66,6 +66,24 @@
     },
     {
       "name": {
+        "ja": "アウラニ・ディズニー・リゾート＆スパ公式サイト",
+        "en": "Aulani, A Disney Resort & Spa (official)"
+      },
+      "url": "https://www.disneyaulani.com/",
+      "kind": "web",
+      "region": "hi"
+    },
+    {
+      "name": {
+        "ja": "Disney Parks Blog（アウラニの記事）",
+        "en": "Disney Parks Blog: Aulani"
+      },
+      "url": "https://disneyparksblog.com/aulani/",
+      "kind": "web",
+      "region": "hi"
+    },
+    {
+      "name": {
         "ja": "ディズニーランド・パリ公式サイト",
         "en": "Disneyland Paris (official)",
         "fr": "Disneyland Paris (site officiel)"
@@ -110,7 +128,7 @@
       },
       "url": "https://www.hongkongdisneyland.com/",
       "kind": "web",
-      "region": "cn"
+      "region": "hk"
     },
     {
       "name": {
@@ -119,7 +137,7 @@
       },
       "url": "https://www.instagram.com/hkdisneyland/",
       "kind": "sns",
-      "region": "cn"
+      "region": "hk"
     }
   ]
 }

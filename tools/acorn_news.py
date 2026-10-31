@@ -9,7 +9,8 @@
         ↓
   acorn-club/news.json         … ページに表示するタイムライン（新しい順）
 
-- 取り込むのは「タイトル・リンク・掲載元・日付」だけ。記事の本文や写真は保存も表示もしない（著作権への配慮）。
+- 取り込むのは「タイトル・リンク・掲載元・日付」と、掲載元が共有用に指定した画像の「場所（URL）」だけ。
+  記事の本文は取り込まず、画像もこのサイトには保存しない（ページでは掲載元にある画像をそのまま表示する）。
 - 「クラリス / Clarice」と、ディズニーの話題であること、グッズ（ピンバッジ・ぬいぐるみ等）または登場情報
   （グリーティング・ショー・パレード・イベント）の話題であることの3つがそろう情報だけを残す。
   同じ名前の別作品（『カリオストロの城』のクラリス、『羊たちの沈黙』のクラリス など）は除く。
@@ -18,6 +19,7 @@
 使い方:
   python3 tools/acorn_news.py collect             # 取得元から集めて、タイムラインを作り直す（自動実行用）
   python3 tools/acorn_news.py collect --dry-run   # 書き換えずに、取得元ごとの結果を表示（PR での確認用）
+  python3 tools/acorn_news.py images --dry-run    # 書き換えずに、記事の画像が見つかるかを試す（PR での確認用）
   python3 tools/acorn_news.py build               # 集めた情報からタイムラインだけ作り直す
   python3 tools/acorn_news.py build --check       # タイムラインが最新か確認する（CI 用）
   python3 tools/acorn_news.py add イベントのJSON   # 入力フォームの内容を手動の情報として追加（自動実行用）
@@ -26,6 +28,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import datetime as dt
 import email.utils
 import hashlib
@@ -34,6 +37,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -258,6 +262,128 @@ def items_from_source(src: dict, data: bytes, now: dt.datetime) -> tuple[list[di
     return out, len(entries)
 
 
+# ---------------------------------------------------------------- 記事の画像（1件に1枚）
+# 掲載元が「共有されたときに表示する画像」として指定している画像（og:image / twitter:image）の場所だけを記録し、
+# ページではその場所のまま表示する（画像をこのサイトに保存・複製しない）。見つからなければ画像なしで表示する。
+# Google ニュース経由の情報は、先に元の記事の URL を調べる（調べた URL はリンク先にも使い、元の記事へ直接飛べるようにする）。
+IMAGE_TRIES_PER_RUN = 20       # 1回の収集で画像を探す件数の上限（掲載元への負担と実行時間を抑える）
+MAX_PAGE_BYTES = 1_500_000
+NO_IMAGE_HOSTS = ("x.com", "twitter.com", "instagram.com", "threads.net", "tiktok.com", "facebook.com")
+GNEWS_ARTICLE = re.compile(r"^https://news\.google\.com/(?:rss/)?articles/([A-Za-z0-9_-]+)")
+META_TAG = re.compile(r"<meta\b[^>]*>", re.I)
+META_ATTR = re.compile(r"""([a-zA-Z:_-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')""")
+IMAGE_KEYS = ("og:image:secure_url", "og:image", "twitter:image", "twitter:image:src")
+
+
+def http_get(url: str) -> tuple[str, str]:
+    """ページを取得して（最終的な URL, HTML の文字列）を返す。"""
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "text/html,application/xhtml+xml"})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        data = r.read(MAX_PAGE_BYTES)
+        final = r.geturl()
+        charset = r.headers.get_content_charset() or "utf-8"
+    return final, data.decode(charset, "replace")
+
+
+def http_post_form(url: str, body: str) -> str:
+    req = urllib.request.Request(url, data=body.encode("utf-8"), method="POST", headers={
+        "User-Agent": USER_AGENT, "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        return r.read(MAX_PAGE_BYTES).decode("utf-8", "replace")
+
+
+def decode_gnews(url: str, get=http_get, post=http_post_form) -> str | None:
+    """Google ニュースの記事 URL から、元の記事の URL を調べる。調べられなければ None。"""
+    m = GNEWS_ARTICLE.match(url)
+    if not m:
+        return None
+    gid = m.group(1)
+    try:
+        raw = base64.urlsafe_b64decode(gid + "=" * (-len(gid) % 4))
+    except (ValueError, TypeError):
+        raw = b""
+    if raw and b"AU_yqL" not in raw:  # 古い形式：URL がそのまま入っている
+        found = re.search(rb"https?://[\x21-\x7e]+", raw)
+        return safe_url(found.group(0).decode("ascii")) if found else None
+    _, page = get(f"https://news.google.com/rss/articles/{gid}")
+    sig = re.search(r'data-n-a-sg="([^"]+)"', page)
+    ts = re.search(r'data-n-a-ts="([^"]+)"', page)
+    if not sig or not ts:
+        return None
+    req = ["Fbv4je", '["garturlreq",[["X","X",["X","X"],null,null,1,1,"US:en",null,1,null,null,null,null,null,0,1],'
+           f'"X","X",1,[1,1,1],1,1,null,0,0,null,0],"{gid}",{int(ts.group(1))},"{sig.group(1)}"]']
+    text = post("https://news.google.com/_/DotsSplashUi/data/batchexecute",
+                "f.req=" + urllib.parse.quote(json.dumps([[req]])))
+    for line in text.splitlines():
+        if line.startswith("[["):
+            for row in json.loads(line):
+                if isinstance(row, list) and len(row) > 2 and row[1] == "Fbv4je" and row[2]:
+                    inner = json.loads(row[2])
+                    if isinstance(inner, list) and len(inner) > 1 and inner[0] == "garturlres":
+                        return safe_url(inner[1])
+    return None
+
+
+def find_share_image(page: str, base: str) -> str | None:
+    """記事の HTML から、掲載元が指定した共有用の画像（https のもの）を探す。"""
+    found: dict[str, str] = {}
+    for tag in META_TAG.findall(page[:400_000]):
+        attrs = {k.lower(): (v1 if v1 or not v2 else v2) for k, v1, v2 in META_ATTR.findall(tag)}
+        key = (attrs.get("property") or attrs.get("name") or "").lower()
+        if key in IMAGE_KEYS and attrs.get("content") and key not in found:
+            found[key] = html.unescape(attrs["content"].strip())
+    for key in IMAGE_KEYS:
+        if key in found:
+            url = urllib.parse.urljoin(base, found[key])
+            if url.startswith("https://") and len(url) <= 1000 and safe_url(url):
+                return url
+    return None
+
+
+def add_image(item: dict, get=http_get, post=http_post_form) -> str:
+    """1件分の元記事と画像を調べて item に書き込む。戻り値は結果の説明（試し取得の表示用）。"""
+    url = item["url"]
+    article = url
+    if GNEWS_ARTICLE.match(url):
+        article = decode_gnews(url, get, post)
+        if not article:
+            item["image"] = ""
+            return "元の記事を特定できませんでした"
+        item["article"] = article
+        time.sleep(0.5)
+    host = (urllib.parse.urlparse(article).hostname or "").removeprefix("www.")
+    if any(host == h or host.endswith("." + h) for h in NO_IMAGE_HOSTS):
+        item["image"] = ""
+        return "SNS のため画像は探しません"
+    final, page = get(article)
+    image = find_share_image(page, final)
+    item["image"] = image or ""
+    return image or "共有用の画像が指定されていません"
+
+
+def add_images(items: list[dict], limit: int, dry_run: bool, get=http_get, post=http_post_form) -> int:
+    """まだ画像を調べていない情報を、新しい順に最大 limit 件調べる。戻り値は調べた件数。"""
+    tried = 0
+    for item in sorted(items, key=lambda x: x.get("date", ""), reverse=True):
+        if tried >= limit:
+            break
+        if "image" in item or item.get("origin") == "x" or item.get("tweet"):
+            continue
+        tried += 1
+        target = dict(item) if dry_run else item
+        try:
+            note = add_image(target, get, post)
+        except Exception as e:  # 1件失敗しても続ける。失敗したものは次回もう一度調べる（3回失敗したらあきらめる）
+            target.pop("image", None)
+            target["image_tries"] = int(target.get("image_tries") or 0) + 1
+            if target["image_tries"] >= 3:
+                target["image"] = ""
+            note = f"取得できませんでした（{type(e).__name__}）"
+        if dry_run:
+            print(f"::notice title=画像::{item['title'][:30]} → {note[:120]}")
+    return tried
+
+
 # ---------------------------------------------------------------- X（旧 Twitter）の投稿
 # 有料の X API（読んだ投稿の件数に応じた従量課金）を使う。キー（Secrets の X_BEARER_TOKEN）が無ければ何もしない。
 # - 検索は「最近の投稿の検索」。前回の続きから読む（since_id）。1回に読むのは取得元ごとに最大 50 件
@@ -341,7 +467,7 @@ def build_timeline(collected: list[dict], manual: list[dict], exclude: dict, now
     oldest = now - dt.timedelta(days=MAX_AGE_DAYS)
     items = []
     for it in list(manual) + list(collected):
-        if it.get("hidden") or it["url"] in urls or any(w in it["title"].casefold() for w in words):
+        if it.get("hidden") or it["url"] in urls or it.get("article") in urls or any(w in it["title"].casefold() for w in words):
             continue
         d = dt.datetime.fromisoformat(it["date"])
         if d < oldest and it.get("origin") != "manual":
@@ -349,6 +475,10 @@ def build_timeline(collected: list[dict], manual: list[dict], exclude: dict, now
         item = {k: it[k] for k in ("id", "title", "url", "source", "lang", "category", "official", "date", "origin")}
         if it.get("tweet"):
             item["tweet"] = it["tweet"]
+        if safe_url(it.get("article")):
+            item["url"] = it["article"]  # Google ニュース経由のものは、元の記事へ直接リンクする
+        if (it.get("image") or "").startswith("https://"):
+            item["image"] = it["image"]
         items.append(item)
     seen, unique = set(), []
     for it in sorted(items, key=lambda x: x["date"], reverse=True):
@@ -416,7 +546,14 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search
     collected = merge_collected(load_json(DATA_DIR / "collected.json", []), found)
     collected.sort(key=lambda x: x["date"], reverse=True)
     collected = collected[: MAX_ITEMS * 2]
+    manual = load_json(DATA_DIR / "manual.json", [])
+    tried = add_images(manual, IMAGE_TRIES_PER_RUN, False)
+    tried += add_images(collected, IMAGE_TRIES_PER_RUN - tried, False)
+    if tried:
+        print(f"記事の画像を {tried} 件調べました")
     changed = write_if_changed(DATA_DIR / "collected.json", dump(collected))
+    if manual:
+        changed |= write_if_changed(DATA_DIR / "manual.json", dump(manual))
     if x_state:
         changed |= write_if_changed(X_STATE_FILE, dump(x_state))
     changed |= write_if_changed(OUT_FILE, timeline_json(now))
@@ -525,6 +662,9 @@ def main() -> int:
     sub = parser.add_subparsers(dest="cmd", required=True)
     c = sub.add_parser("collect")
     c.add_argument("--dry-run", action="store_true")
+    im = sub.add_parser("images")
+    im.add_argument("--dry-run", action="store_true")
+    im.add_argument("--limit", type=int, default=8)
     b = sub.add_parser("build")
     b.add_argument("--check", action="store_true")
     a = sub.add_parser("add")
@@ -535,6 +675,12 @@ def main() -> int:
     now = dt.datetime.now(JST)
     if args.cmd == "collect":
         return collect(args.dry_run, now)
+    if args.cmd == "images":
+        # 試し：まだ画像を調べていない情報のうち新しいものを、ファイルを書き換えずに調べて結果を表示する
+        items = load_json(DATA_DIR / "manual.json", []) + load_json(DATA_DIR / "collected.json", [])
+        tried = add_images(items, args.limit, True)
+        print(f"試し：{tried} 件の記事の画像を調べました（ファイルは書き換えていません）")
+        return 0
     if args.cmd == "build":
         text = timeline_json(now)
         if args.check:
