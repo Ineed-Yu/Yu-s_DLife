@@ -514,12 +514,26 @@
                 <select class="year-select" id="year-select"></select>
             </div>
             <div class="x-embed" id="x-embed" hidden></div>
+            <div class="filter-year filter-park" id="filter-park" hidden>
+                <label class="visually-hidden" for="park-select"
+                       data-ja="パークで絞り込む" data-en="Filter by park" data-fr="Filtrer par parc" data-zh="按乐园筛选">パークで絞り込む</label>
+                <select class="year-select park-select" id="park-select"></select>
+            </div>
         </nav>
         </div>
 
         <div class="club-main">
 
-        <section class="timeline" aria-labelledby="timeline-title">
+        <!-- クラリス年表：プロフィールと、作品・各パークでの登場の歴史（/acorn-club/history.json。出典で確かめたことだけ） -->
+        <section class="history" id="history" aria-labelledby="history-title" hidden>
+            <h2 class="visually-hidden" id="history-title"
+                data-ja="クラリス年表" data-en="Clarice timeline" data-fr="Chronologie de Clarice" data-zh="克拉丽丝年表">クラリス年表</h2>
+            <div class="history-profile" id="history-profile"></div>
+            <ol class="timeline-list history-list" id="history-list"></ol>
+            <p class="timeline-empty" id="history-empty" hidden></p>
+        </section>
+
+        <section class="timeline" id="timeline" aria-labelledby="timeline-title">
             <h2 class="visually-hidden" id="timeline-title"
                 data-ja="新着情報" data-en="Latest news" data-fr="Dernières nouvelles" data-zh="最新消息">新着情報</h2>
             <p class="lang-note" id="lang-note" hidden></p>

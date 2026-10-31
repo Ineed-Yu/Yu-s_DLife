@@ -11,6 +11,7 @@ on:
     paths:
       - "tools/acorn_news.py"
       - "content/acorn/sources.json"
+      - "acorn-club/history.json"
       - ".github/workflows/acorn-collect.yml"
 
 concurrency:
