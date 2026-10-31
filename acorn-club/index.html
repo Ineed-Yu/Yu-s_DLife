@@ -8,10 +8,14 @@
     <title>Acorn Club | Yu's DLife</title>
     <meta name="description" content="クラリスの新着グッズ・ピンバッジ・ぬいぐるみの情報を集めた、非公式・非営利のファンページ。">
     <script>
-    // 幕開けの演出：このタブで初めて開いたときだけ、動きを減らす設定でないときだけ（JavaScript が無ければ演出なし）
+    // 幕開けの演出：このタブで初めて開いたときだけ（JavaScript が無ければ演出なし）。
+    // 端末で「動きを減らす」設定になっているときは、幕を滑らせず、静かに消える控えめな演出にする
     try {
-        if (!sessionStorage.getItem('acornCurtainSeen') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        if (!sessionStorage.getItem('acornCurtainSeen')) {
             document.documentElement.classList.add('acorn-intro');
+            if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.documentElement.classList.add('acorn-intro-soft');
+            }
         }
     } catch (e) {}
     </script>
