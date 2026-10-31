@@ -40,6 +40,7 @@ import os
 import re
 import sys
 import time
+import unicodedata
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -86,12 +87,16 @@ PARADE = re.compile(r"パレード|parade|巡游|巡遊|défilé|cavalcade", re.
 SHOW = re.compile(r"ショー(?![ツトケ])|\bshows?\b|spectacle|表演|ステージ|\bstage\b|花火|fireworks|ナイトタイム", re.I)
 EVENT = re.compile(r"貸切|貸し切り|特別営業|プライベート・?イブニング|アフター6|スペシャルナイト|ナイトパーティ|パーティ|"
                    r"\bpart(?:y|ies)\b|after hours|celebration|セレブレーション|fan ?daze|D23|ファンイベント|"
-                   r"エンターテイメントプログラム|活动|活動", re.I)
+                   r"エンターテイメントプログラム|イベント|\bevents?\b|活动|活動", re.I)
 APPEAR_WORD = re.compile(r"登場|出演|デビュー|debut|appear(?:s|ance)?|会え", re.I)   # 弱い言葉（グッズの見出しにもよく使われる）
 # パークの話題であることの手がかり。特別イベント・「登場」はこれがあるときだけパーク側にする
 PARK_CONTEXT = re.compile(r"ディズニーランド|ディズニーシー|ディズニーリゾート|ＴＤＲ|TDR|TDL|TDS|パーク|トゥーンタウン|"
                           r"Disneyland|DisneySea|Disney World|Magic Kingdom|Epcot|Hollywood Studios|Animal Kingdom|"
-                          r"California Adventure|\bparks?\b|\bresort\b|乐园|樂園|度假区|度假區|parc", re.I)
+                          r"California Adventure|\bparks?\b|\bresort\b|乐园|樂園|度假区|度假區|parc|"
+                          r"グリズリー・?ガルチ|Grizzly Gulch|トゥモローランド|ファンタジーランド|アドベンチャーランド|"
+                          r"ウエスタンランド|クリッターカントリー|メインストリート|ワールドバザール|メディテレーニアンハーバー|"
+                          r"アメリカンウォーターフロント|ポートディスカバリー|ロストリバーデルタ|マーメイドラグーン|"
+                          r"アラビアンコースト|ミステリアスアイランド|ファンタジースプリングス|Main Street|Toontown|Adventureland", re.I)
 # パークでもグッズでもない話題（映画・配信・書籍の紹介など）
 NOT_PARK = re.compile(r"作品紹介|映画|streaming|tv show|DVD|Blu-ray|小説|絵本|ゲームアプリ", re.I)
 
@@ -144,8 +149,6 @@ def pick_category(by_title: str | None, by_text: str | None) -> str | None:
     見出しが「グッズ」で全体がピンバッジ・ぬいぐるみなら、より詳しい方を使う。"""
     if not by_title:
         return by_text
-    if by_title in APPEAR_CATEGORIES and by_text in GOODS_CATEGORIES:
-        return by_text   # 見出しが「登場」等でも、本文の要約が物の話題ならグッズ側
     if by_title == "other" and by_text in ("pin", "plush", "prize"):
         return by_text
     return by_title
@@ -305,15 +308,13 @@ HEADING_OR_CAPTION = re.compile(r"<h[1-4][^>]*>(.*?)</h[1-4]>|<figcaption[^>]*>(
 
 
 def clarice_is_featured(content_html: str) -> bool:
-    """本文（HTML）の中で、クラリスが主な話題のひとつか（小見出し・画像の説明に出てくる、または本文に2回以上）。"""
+    """本文（HTML）の中で、クラリスが主な話題のひとつか（小見出し・画像の説明に出てくる）。"""
     if not content_html:
         return False
     content_html = re.sub(r"<a\b[^>]*>.*?</a>", " ", content_html[:300_000], flags=re.I | re.S)  # 関連記事などのリンクは数えない
-    text = clean_text(content_html, 200_000)
-    if OTHER_CLARICE.search(text):
+    if OTHER_CLARICE.search(clean_text(content_html, 200_000)):
         return False
-    if len(CLARICE.findall(text)) >= 2:
-        return True
+    # 本文での出現回数は数えない（サイドバーや定型文に名前が出るだけの記事が混ざったため）
     return any(CLARICE.search(" ".join(g for g in m if g)) for m in HEADING_OR_CAPTION.findall(content_html[:200_000]))
 
 
@@ -379,7 +380,7 @@ def items_from_source(src: dict, data: bytes, now: dt.datetime) -> tuple[list[di
         # 見出しの「クラリス」を求めない（見出しに出てこない記事の取りこぼしを防ぐ）
         summary = clean_text(e["summary"], 600)
         # クラリスでのサイト内検索：見出しにクラリスが無くても、本文で「主な話題のひとつ」として扱われている記事は載せる
-        # （小見出し・画像の説明に出てくる、または本文に2回以上出てくる）。本文が配信に無いときは緩めない
+        # （小見出し・画像の説明に出てくる）。本文が配信に無いときは緩めない
         relaxed = bool(src.get("clarice_search")) and clarice_is_featured(e.get("content", ""))
         cat = is_relevant(title, summary, src.get("topic"),
                           require_disney=not src.get("disney_site"), require_clarice=not relaxed)
@@ -642,12 +643,80 @@ def build_timeline(collected: list[dict], manual: list[dict], exclude: dict, now
     return unique[:MAX_ITEMS]
 
 
+# ---------------------------------------------------------------- 同じ商品の記事をまとめる（グッズのみ）
+# 別の媒体が同じ商品を取り上げた記事（プレスリリースの転載など）は、いちばん新しい記事だけを表示する。
+# 判定：媒体が違う・日付が30日以内・見出しの特徴的な言葉が重なる（ありふれた言葉は除く）
+DEDUPE_DAYS = 30
+DEDUPE_STOP = set("""クラリス チップ デール チップとデール ディズニー disney 新発売 発売 登場 新登場 グッズ 新作 公式 限定 発売中
+先行販売 予約 開始 情報 ニュース 東京ディズニーリゾート 東京ディズニーランド 東京ディズニーシー ミッキー ミニー フレンズ
+キャラクター デザイン かわいい 可愛い 人気 シリーズ コレクション アイテム 種類 東京 土産 お土産 新作スイーツ 新作グッズ
+展開 開催 ショップ ストア clarice chip dale and the new collection disney's are now of in for it is to with full list
+coming available arrives today japan store""".split())
+DEDUPE_TOKEN = re.compile(r"[一-龥々ァ-ヴーa-z0-9]+")
+
+
+def title_tokens(title: str) -> set[str]:
+    t = unicodedata.normalize("NFKC", title).lower()
+    t = re.sub(r"[＆&・/／\-—–~～!！?？「」『』“”\"'’【】\[\]（）()<>＜＞、。,.:：♪☆★…|｜×]", " ", t)
+    return {w for w in DEDUPE_TOKEN.findall(t) if len(w) >= 2 and w not in DEDUPE_STOP}
+
+
+def same_product(a: dict, b: dict) -> bool:
+    if a.get("source") == b.get("source"):
+        return False   # 同じ媒体の別記事は、別の商品として残す
+    try:
+        if abs((dt.datetime.fromisoformat(a["date"]) - dt.datetime.fromisoformat(b["date"])).days) > DEDUPE_DAYS:
+            return False
+    except ValueError:
+        return False
+    ta, tb = title_tokens(a.get("title", "")), title_tokens(b.get("title", ""))
+    if not ta or not tb:
+        return False
+    shared = ta & tb
+    if len(shared) >= 2 and len(shared) / min(len(ta), len(tb)) >= 0.5:
+        return True
+    ga = {x[k:k + 3] for x in ["".join(sorted(ta))] for k in range(len(x) - 2)}
+    gb = {x[k:k + 3] for x in ["".join(sorted(tb))] for k in range(len(x) - 2)}
+    return bool(ga and gb) and 2 * len(ga & gb) / (len(ga) + len(gb)) >= 0.5
+
+
+def dedupe_goods(items: list[dict]) -> list[dict]:
+    """新しい順の items から、同じ商品の記事をまとめ、いちばん新しい記事に「ほか n 件」を付けて残す。"""
+    goods = [i for i in items if i.get("category") in GOODS_CATEGORIES and i.get("title") and i.get("origin") != "manual"]
+    parent = {id(i): id(i) for i in goods}
+
+    def find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    sources = {id(i): {i.get("source")} for i in goods}   # まとまりごとの媒体（同じ媒体が2つ入らないようにする）
+    for n, a in enumerate(goods):
+        for b in goods[n + 1:]:
+            ra, rb = find(id(a)), find(id(b))
+            if ra != rb and not (sources[ra] & sources[rb]) and same_product(a, b):
+                parent[rb] = ra
+                sources[ra] |= sources.pop(rb)
+    groups: dict[int, list[dict]] = {}
+    for i in goods:
+        groups.setdefault(find(id(i)), []).append(i)
+    drop = set()
+    for members in groups.values():
+        if len(members) < 2:
+            continue
+        members.sort(key=lambda x: x["date"], reverse=True)
+        members[0]["others"] = len(members) - 1
+        drop.update(id(m) for m in members[1:])
+    return [i for i in items if id(i) not in drop]
+
+
 def timeline_json(now: dt.datetime) -> str:
     collected = load_json(DATA_DIR / "collected.json", [])
     manual = load_json(DATA_DIR / "manual.json", [])
     exclude = load_json(DATA_DIR / "exclude.json", {})
     links = load_json(DATA_DIR / "links.json", {}).get("links", [])
-    items = build_timeline(collected, manual, exclude, now)
+    items = dedupe_goods(build_timeline(collected, manual, exclude, now))
     return dump({"items": items, "links": links})
 
 

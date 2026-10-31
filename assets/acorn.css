@@ -565,6 +565,15 @@ html.acorn-intro .club {
     color: #6b5643;
     overflow-wrap: anywhere;
 }
+.playbill-others {
+    margin-left: 8px;
+    color: #8a7258;
+}
+.playbill-others::before {
+    content: "／";
+    margin-right: 8px;
+    color: #b9a487;
+}
 .playbill-official {
     margin-left: 6px;
     padding: 0 6px;
