@@ -63,7 +63,7 @@ DISNEY = re.compile(r"ディズニー|disney|チップ|デール|chip\s*(?:'n'|n
                     r"迪士尼|奇奇|蒂蒂|HKDL|SHDL|DLP", re.I)
 OTHER_CLARICE = re.compile(r"カリオストロ|ルパン|lupin|cagliostro|starling|スターリング|羊たちの沈黙|silence of the lambs|"
                            r"hannibal|ハンニバル|lispector|リスペクトル|鲁邦|魯邦|卡里奥斯特罗|卡里奧斯特羅|沉默的羔羊|"
-                           r"沉默的羔羊|史达琳|史達琳|silence des agneaux|お化け退治|"
+                           r"沉默的羔羊|史达琳|史達琳|silence des agneaux|お化け退治|rebecca breeds|レベッカ・ブリーズ|\bCBS\b|"
                           # 同じ名前の医薬品（クラリス錠＝クラリスロマイシン）
                           r"クラリス錠|クラリスロマイシン|clarith|clarithromycin|医療用医薬品|医薬品|製薬|薬価|処方|抗菌薬|"
                           r"添付文書|錠\s*\d+|\d+\s*mg|kegg|japic|ドライシロップ", re.I)
@@ -115,7 +115,8 @@ GAME = re.compile(r"ツムツム(?!ぬいぐるみ)|新ツム|Tsum ?Tsum|マジ�
 PHYSICAL = re.compile(r"ぬいぐるみ|ぬいば|マスコット|プライズ|くじ|グッズ|フィギュア|発売|販売|plush|merch|\btoys?\b|soft toy|"
                       r"disney ?store|ディズニーストア|shopdisney|\d+\s*cm\b", re.I)
 # 映像作品として載せるのは、作品の中のクラリス（チップとデールのマドンナ）だと分かるときだけ
-CLARICE_WORK = re.compile(r"クラリス|clarice|クラリス|チップ|デール|chip|dale|パークライフ|Park Life|リス君は歌姫がお好き|Two Chips and a Miss", re.I)
+# 「Clarice」だけでは判断しない（米国のドラマ『Clarice』〔『羊たちの沈黙』の続編〕などがあるため）。チップとデール・ディズニーの手がかりが必要
+CLARICE_WORK = re.compile(r"チップ|デール|chip|dale|ディズニー|disney|パークライフ|Park Life|リス君は歌姫がお好き|Two Chips and a Miss", re.I)
 
 GOODS_CATEGORIES = ("plush", "pin", "prize", "other", "goods")  # グッズのタイムライン（goods は古い分類。表示は「その他」）
 APPEAR_CATEGORIES = ("show", "parade", "greeting", "event")     # 「パーク」のタイムライン
@@ -417,6 +418,8 @@ def items_from_source(src: dict, data: bytes, now: dt.datetime) -> tuple[list[di
         # クラリスでのサイト内検索：見出しにクラリスが無くても、本文で「主な話題のひとつ」として扱われている記事は載せる
         # （小見出し・画像の説明に出てくる）。本文が配信に無いときは緩めない
         relaxed = bool(src.get("clarice_search")) and clarice_is_featured(e.get("content", ""))
+        if src.get("kind") in ("search", "sns") and not src.get("site") and not (DISNEY.search(title) or CLARICE_WORK.search(title)):
+            continue  # ウェブ全体の検索・掲示板は、見出しでディズニーの話題と分かるものだけ（同じ名前の別作品などを防ぐ）
         cat = is_relevant(title, summary, src.get("topic"),
                           require_disney=not src.get("disney_site"), require_clarice=not relaxed)
         if not cat:
