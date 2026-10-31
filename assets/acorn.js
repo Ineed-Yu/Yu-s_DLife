@@ -48,6 +48,7 @@
         plush: { ja: 'ぬいぐるみ', en: 'Plush', fr: 'Peluches', zh: '毛绒玩偶' },
         goods: { ja: 'グッズ', en: 'Merchandise', fr: 'Produits', zh: '周边' },
         other: { ja: 'その他', en: 'Other', fr: 'Autres', zh: '其他' },
+        prize: { ja: 'プライズ', en: 'Prizes', fr: 'Lots', zh: '景品' },
         greeting: { ja: 'グリーティング', en: 'Greetings', fr: 'Rencontres', zh: '见面会' },
         show: { ja: 'ショー', en: 'Shows', fr: 'Spectacles', zh: '表演' },
         parade: { ja: 'パレード', en: 'Parades', fr: 'Parades', zh: '巡游' },
@@ -127,7 +128,7 @@
     // ---------- データ ----------
     let data = null;      // { items: [...], links: [...] }
     let failed = false;
-    const GOODS = ['pin', 'plush', 'goods', 'other'];
+    const GOODS = ['plush', 'pin', 'prize', 'other'];   // すべて／ぬいぐるみ／ピンバッジ／プライズ／その他
     const APPEAR = ['show', 'parade', 'greeting', 'event'];
     const VIEWS = ['history', 'goods', 'appear'];
     const PARKS = ['film', 'tdl', 'tds', 'dl', 'wdw', 'dlp', 'shdl', 'hkdl', 'aulani'];
@@ -252,13 +253,10 @@
         const catRow = document.getElementById('filter-category');
         if (!catRow) return;
         catRow.setAttribute('aria-label', t('kindLabel'));
-        if (state.category !== 'all' && state.view !== 'appear' && !items.some(i => i.category === state.category)) state.category = 'all';
         catRow.replaceChildren(chip(t('all'), state.category === 'all', () => setState({ category: 'all' })));
         (state.view === 'appear' ? APPEAR : GOODS).forEach(c => {
-            // パークの4つ（ショー・パレード・グリーティング・特別イベント）は、情報が無くても常に並べる
-            if (state.view === 'appear' || items.some(i => i.category === c)) {
-                catRow.appendChild(chip(t(c), state.category === c, () => setState({ category: c })));
-            }
+            // グッズの4つ・パークの4つは、情報が無くても常に並べる（迷わないように分け方を固定）
+            catRow.appendChild(chip(t(c), state.category === c, () => setState({ category: c })));
         });
         catRow.hidden = items.length === 0;
         // 年（西暦）：情報がある年だけを新しい順に、プルダウンで選ぶ
@@ -617,7 +615,8 @@
             .then(json => {
                 data = {
                     items: (Array.isArray(json.items) ? json.items : [])
-                        .filter(i => i && (i.title || i.origin === 'x') && safeUrl(i.url)),
+                        .filter(i => i && (i.title || i.origin === 'x') && safeUrl(i.url))
+                        .map(i => (i.category === 'goods' ? Object.assign({}, i, { category: 'other' }) : i)),  // 古い分類「グッズ」は「その他」
                     links: Array.isArray(json.links) ? json.links : []
                 };
                 render();

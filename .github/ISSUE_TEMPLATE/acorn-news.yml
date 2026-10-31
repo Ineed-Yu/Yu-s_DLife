@@ -35,15 +35,15 @@ body:
       label: 種類
       description: 上の4つは「グッズ」、下の4つは「パーク」のタイムラインに載ります。
       options:
-        - ピンバッジ
         - ぬいぐるみ
-        - グッズ
+        - ピンバッジ
+        - プライズ
         - その他（グッズ）
         - ショー
         - パレード
         - グリーティング
         - 特別イベント
-      default: 2
+      default: 3
     validations:
       required: true
 
