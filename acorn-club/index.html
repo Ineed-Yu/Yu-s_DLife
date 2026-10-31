@@ -490,7 +490,7 @@
     <!-- Acorn Club：クラリスの新着グッズ情報のタイムライン（非公式・非営利のファンページ）
          データは /acorn-club/news.json（tools/acorn_news.py が自動で集める）。記事の本文・写真は載せず、見出しとリンクだけ -->
     <main class="club" id="acorn-main">
-        <!-- PC では左に看板・切り替え・絞り込み・公式の情報源、右にタイムライン。スマホでは上から順に1列 -->
+        <!-- PC では左に看板・切り替え・絞り込み・公式サイト/アカウント一覧、右にタイムライン。スマホでは上から順に1列 -->
         <div class="club-side">
         <header class="marquee">
             <div class="marquee-inner">
@@ -508,8 +508,11 @@
 
         <nav class="filters" aria-label="絞り込み">
             <div class="filter-row" id="filter-category" role="group"></div>
-            <div class="filter-row filter-year" id="filter-year" role="group"></div>
-            <div class="filter-row filter-lang" id="filter-lang" role="group"></div>
+            <div class="filter-year" id="filter-year" hidden>
+                <label class="visually-hidden" for="year-select" id="year-label"
+                       data-ja="年で絞り込む" data-en="Filter by year" data-fr="Filtrer par année" data-zh="按年份筛选">年で絞り込む</label>
+                <select class="year-select" id="year-select"></select>
+            </div>
             <div class="x-embed" id="x-embed" hidden></div>
         </nav>
         </div>
@@ -519,6 +522,7 @@
         <section class="timeline" aria-labelledby="timeline-title">
             <h2 class="visually-hidden" id="timeline-title"
                 data-ja="新着情報" data-en="Latest news" data-fr="Dernières nouvelles" data-zh="最新消息">新着情報</h2>
+            <p class="lang-note" id="lang-note" hidden></p>
             <ol class="timeline-list" id="timeline-list"></ol>
             <p class="timeline-empty" id="timeline-empty" hidden></p>
         </section>
@@ -528,12 +532,10 @@
 
         <section class="sources" aria-labelledby="sources-title">
             <h2 class="sources-title" id="sources-title"
-                data-ja="公式の情報源" data-en="Official sources" data-fr="Sources officielles" data-zh="官方信息来源">公式の情報源</h2>
+                data-ja="公式サイト/アカウント一覧" data-en="Official sites and accounts" data-fr="Sites et comptes officiels" data-zh="官方网站/账号一览">公式サイト/アカウント一覧</h2>
             <p class="sources-text"
-               data-ja="最新の発表は、各パークやショップの公式サイト・公式アカウントで確認できます。"
-               data-en="See the official sites and accounts of each park and shop for the latest announcements."
-               data-fr="Consultez les sites et comptes officiels de chaque parc et boutique pour les dernières annonces."
-               data-zh="最新公告请查看各乐园和商店的官方网站与官方账号。">最新の発表は、各パークやショップの公式サイト・公式アカウントで確認できます。</p>
+               data-ja="公式サイト/アカウントで最新情報をチェック" data-en="Check the official sites and accounts for the latest news" data-fr="Les dernières nouvelles sur les sites et comptes officiels" data-zh="在官方网站/账号查看最新消息">公式サイト/アカウントで最新情報をチェック</p>
+            <div class="region-tabs" id="sources-regions" role="group"></div>
             <ul class="sources-list" id="sources-list"></ul>
         </section>
 

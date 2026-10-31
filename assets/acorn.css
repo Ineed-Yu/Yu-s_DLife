@@ -39,7 +39,12 @@ body.acorn-page {
     white-space: nowrap;
 }
 
-/* ---------- 幕開け（葉っぱの幕） ---------- */
+/* ---------- 幕開け（葉っぱの幕） ----------
+   動きはすべて CSS のアニメーションで、ページが表示された瞬間から1本の流れで進む（合計 約2.1秒）。
+     0.10s〜0.60s  題名が灯る
+     0.85s〜1.95s  幕が左右に開く（同時に題名と明かりが消え、奥のページがわずかに近づく）
+     2.05s         幕が見えなくなり、スクリプトが取り除く
+   幕の葉は動かさず（描き直しが起きない）、幕全体を横に滑らせるだけにしてカクつきを防ぐ。 */
 .curtain {
     display: none;
 }
@@ -48,33 +53,38 @@ html.acorn-intro .curtain {
     position: fixed;
     inset: 0;
     z-index: 200;
-    pointer-events: auto;
-    background: radial-gradient(circle at 50% 45%, rgba(245, 196, 94, 0.35), rgba(58, 36, 22, 0) 55%);
-    /* 万一スクリプトが止まっても、4秒後には必ず消える */
-    animation: curtain-safety 0.4s linear 4s forwards;
+    pointer-events: none;
+    animation: curtain-done 0.1s linear 1.95s forwards;
 }
-html.acorn-intro body {
-    overflow: hidden;
+html.acorn-intro .curtain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: radial-gradient(circle at 50% 45%, rgba(245, 196, 94, 0.35), rgba(58, 36, 22, 0) 55%);
+    animation: curtain-fade 0.7s ease 0.85s forwards;
 }
 .curtain-half {
     position: absolute;
-    top: -4%;
-    bottom: -4%;
-    width: 56%;
+    top: 0;
+    bottom: 0;
+    width: calc(50% + 3px);
     overflow: hidden;
     background: linear-gradient(90deg, var(--leaf-dark), #22401a);
-    transition: transform 1.25s cubic-bezier(0.7, 0, 0.25, 1);
+    will-change: transform;
+    backface-visibility: hidden;
+    contain: strict;
 }
 .curtain-left {
-    left: -3%;
+    left: 0;
     border-right: 6px solid var(--velvet);
-    animation: leaf-rustle 0.7s ease-in-out 0.1s 2 alternate;
+    animation: curtain-open-left 1.1s cubic-bezier(0.65, 0, 0.25, 1) 0.85s both;
 }
 .curtain-right {
-    right: -3%;
+    right: 0;
     border-left: 6px solid var(--velvet);
     background: linear-gradient(270deg, var(--leaf-dark), #22401a);
-    animation: leaf-rustle 0.7s ease-in-out 0.25s 2 alternate-reverse;
+    animation: curtain-open-right 1.1s cubic-bezier(0.65, 0, 0.25, 1) 0.85s both;
 }
 .curtain-leaves {
     width: 100%;
@@ -83,13 +93,16 @@ html.acorn-intro body {
 }
 .curtain-title {
     position: absolute;
+    z-index: 2;
     left: 50%;
     top: 46%;
-    transform: translate(-50%, -50%) scale(0.92);
     text-align: center;
-    opacity: 0;
-    transition: opacity 0.5s ease, transform 0.9s ease;
     pointer-events: none;
+    will-change: transform, opacity;
+    /* 灯る → 幕が開き始めると同時にすっと消える（看板の題名と重ならない） */
+    animation:
+        curtain-title-in 0.5s ease-out 0.1s both,
+        curtain-title-out 0.35s ease-in 0.85s forwards;
 }
 .curtain-acorn {
     width: 56px;
@@ -107,6 +120,7 @@ html.acorn-intro body {
 }
 .curtain-skip {
     position: absolute;
+    z-index: 3;
     right: 18px;
     bottom: 22px;
     padding: 8px 16px;
@@ -117,41 +131,46 @@ html.acorn-intro body {
     font: inherit;
     font-size: 13px;
     cursor: pointer;
+    pointer-events: auto;
+    animation: curtain-fade 0.3s ease 0.85s forwards;
 }
 .curtain-skip:focus-visible {
     outline: 2px solid var(--bulb);
     outline-offset: 2px;
 }
-/* 段階1：題名が光る → 段階2：幕が左右に開く */
-.curtain.is-lit .curtain-title {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+/* 「スキップ」を押したとき：幕ごと素早く消す */
+html.acorn-intro .curtain.is-skipping {
+    animation: curtain-fade 0.25s ease forwards;
 }
-.curtain.is-open .curtain-left {
-    transform: translateX(-105%) rotate(-4deg);
+/* 幕が開くと同時に、奥のページがわずかに近づいて見える */
+html.acorn-intro .club {
+    animation: club-reveal 1s cubic-bezier(0.2, 0.7, 0.2, 1) 0.95s both;
 }
-.curtain.is-open .curtain-right {
-    transform: translateX(105%) rotate(4deg);
+@keyframes curtain-open-left {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-104%, 0, 0); }
 }
-.curtain.is-open .curtain-title {
-    opacity: 0;
-    transform: translate(-50%, -62%) scale(1.06);
-    transition-delay: 0.35s;
+@keyframes curtain-open-right {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(104%, 0, 0); }
 }
-.curtain.is-open {
-    background: transparent;
-    pointer-events: none;
+@keyframes curtain-title-in {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.94); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
-.curtain.is-open .curtain-skip {
-    opacity: 0;
-    transition: opacity 0.3s ease;
+@keyframes curtain-title-out {
+    from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    to { opacity: 0; transform: translate(-50%, -54%) scale(1.03); }
 }
-@keyframes leaf-rustle {
-    from { transform: translateX(0) rotate(0); }
-    to { transform: translateX(6px) rotate(0.6deg); }
+@keyframes curtain-fade {
+    to { opacity: 0; }
 }
-@keyframes curtain-safety {
+@keyframes curtain-done {
     to { opacity: 0; visibility: hidden; }
+}
+@keyframes club-reveal {
+    from { opacity: 0.55; transform: scale(0.985); }
+    to { opacity: 1; transform: none; }
 }
 
 /* ---------- 看板（電球で縁取ったクラブの看板） ---------- */
@@ -202,7 +221,7 @@ html.acorn-intro body {
     color: #f3e3c3;
 }
 
-/* ---------- 「グッズ・新商品」「グリーティング・ショー」の切り替え ---------- */
+/* ---------- 「グッズ」「パーク」の切り替え ---------- */
 .club-views {
     display: flex;
     gap: 0;
@@ -285,15 +304,47 @@ html.acorn-intro body {
 .timeline-item[data-category="show"]::before { background: #e8a0d0; }
 .timeline-item[data-category="parade"]::before { background: #f08a5d; }
 .timeline-item[data-category="event"]::before { background: #c9b6ff; }
-.filter-year .filter-chip {
-    font-variant-numeric: tabular-nums;
-}
-.filter-row[hidden] {
+.filter-row[hidden],
+.filter-year[hidden] {
     display: none;
 }
-.filter-lang .filter-chip {
+/* 年（西暦）のプルダウン */
+.filter-year {
+    display: flex;
+}
+.year-select {
+    appearance: none;
+    -webkit-appearance: none;
+    min-width: 9.5em;
+    padding: 7px 38px 7px 16px;
+    border: 1px solid rgba(245, 196, 94, 0.45);
+    border-radius: 999px;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23f5c45e' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 15px center / 12px 8px no-repeat,
+        rgba(43, 28, 18, 0.5);
+    color: #f3e3c3;
+    font: inherit;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+}
+.year-select:hover {
+    border-color: var(--bulb);
+}
+.year-select:focus-visible {
+    outline: 2px solid var(--playbill);
+    outline-offset: 2px;
+}
+.year-select option {
+    background: var(--bark);
+    color: var(--playbill);
+}
+/* ページの言語の情報がまだ無いときの一言 */
+.lang-note {
+    margin: 0 0 14px;
     font-size: 12px;
-    padding: 4px 12px;
+    line-height: 1.7;
+    color: #cdb999;
 }
 
 /* ---------- タイムライン（つるのように伸びる枝） ---------- */
@@ -419,7 +470,7 @@ html.acorn-intro body {
     margin: 16px auto 0;
 }
 
-/* ---------- 公式の情報源 ---------- */
+/* ---------- 公式サイト/アカウント一覧（リージョンで切り替え） ---------- */
 .sources {
     margin-top: 40px;
     padding: 18px 18px 8px;
@@ -438,7 +489,40 @@ html.acorn-intro body {
     line-height: 1.8;
     color: #e9d6b2;
 }
+.region-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin: 0 0 14px;
+    padding: 3px;
+    border: 1px solid rgba(245, 196, 94, 0.4);
+    border-radius: 999px;
+    background: rgba(43, 28, 18, 0.5);
+}
+.region-tabs[hidden] {
+    display: none;
+}
+.region-tab {
+    padding: 6px 4px;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: #e9d6b2;
+    font: inherit;
+    font-size: 13px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.region-tab[aria-pressed="true"] {
+    background: var(--bulb);
+    color: var(--ink);
+    font-weight: 700;
+}
+.region-tab:focus-visible {
+    outline: 2px solid var(--playbill);
+    outline-offset: 1px;
+}
 .sources-list {
+    min-height: 5.5em;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -466,7 +550,7 @@ body.acorn-page .site-footer {
 }
 
 /* ---------- 画面の大きさに合わせた配置 ----------
-   スマホ：1列（看板 → 切り替え → 絞り込み → タイムライン → 公式の情報源 → 注記）
+   スマホ：1列（看板 → 切り替え → 絞り込み → タイムライン → 公式サイト/アカウント一覧 → 注記）
    タブレット：1列のまま横幅を広げる
    PC：左に看板・操作・情報源（スクロールしても見える）、右にタイムライン。読む行の長さは広げすぎない */
 .club-side,
@@ -553,26 +637,10 @@ body.acorn-page .site-footer {
     .filters {
         margin-top: 16px;
     }
-    /* 年のボタンは1行に並べ、横にスクロールして選ぶ */
-    .filter-year {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        margin: 0 -14px;
-        padding: 2px 14px 6px;
-        scrollbar-width: none;
-    }
-    .filter-year::-webkit-scrollbar {
-        display: none;
-    }
-    .filter-year .filter-chip {
-        flex: none;
-    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .curtain-half,
-    .curtain-title {
-        transition: none;
-        animation: none;
+    html.acorn-intro .curtain {
+        display: none;
     }
 }

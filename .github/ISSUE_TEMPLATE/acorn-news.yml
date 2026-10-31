@@ -33,7 +33,7 @@ body:
     id: category
     attributes:
       label: 種類
-      description: 上の4つは「グッズ・新商品」、下の4つは「グリーティング・ショー」のタイムラインに載ります。
+      description: 上の4つは「グッズ」、下の4つは「パーク」のタイムラインに載ります。
       options:
         - ピンバッジ
         - ぬいぐるみ
