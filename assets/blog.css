@@ -550,6 +550,16 @@ body {
     .film:not(.is-single) .film-frames > li[hidden] {
         display: none;
     }
+    /* 記事が無いとき・絞り込みで0件のときのコマは、横幅いっぱいに1つ */
+    .film:not(.is-single) #film-empty,
+    .film:not(.is-single) #film-nomatch {
+        grid-column: 1 / -1;
+    }
+    .film:not(.is-single) #film-empty .frame,
+    .film:not(.is-single) #film-nomatch .frame {
+        aspect-ratio: auto;
+        min-height: 220px;
+    }
     .film:not(.is-single) .frame-number {
         right: calc(var(--rail) - var(--gutter));
     }
