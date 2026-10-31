@@ -226,12 +226,14 @@ body {
     stroke-linejoin: round;
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
-    opacity: 0.92;
-    transition: stroke-dashoffset 0.45s ease-out;
+    /* 線の端の丸が小さな点として残らないよう、選ぶまでは見えなくしておく */
+    opacity: 0;
+    transition: stroke-dashoffset 0.45s ease-out, opacity 0.1s linear;
 }
 .frame:hover + .grease-mark path,
 .frame:focus-visible + .grease-mark path {
     stroke-dashoffset: 0;
+    opacity: 0.92;
 }
 .frame:hover img,
 .frame:focus-visible img {
@@ -492,6 +494,87 @@ body {
 /* フッターはフィルムから少し離す */
 .site-footer {
     margin-top: 56px;
+}
+
+/* ---------- 画面の大きさに合わせた配置 ----------
+   スマホ：1本のフィルム（下の max-width: 600px）
+   タブレット：1本のフィルムのまま幅を広げる
+   PC：写真のベタ焼き（コンタクトシート）のように、1コマずつのフィルムをライトボックスの上に並べる
+       記事ページは、写真を大きく、本文は読みやすい行の長さを保って広げる */
+@media (min-width: 760px) {
+    .film {
+        width: min(100%, 720px);
+    }
+    .article {
+        width: min(100%, 720px);
+    }
+}
+@media (min-width: 1080px) {
+    /* 一覧：フィルム全体の地と送り穴をやめ、見出しと各コマをそれぞれ短いフィルムにする */
+    .film:not(.is-single) {
+        width: min(100% - 64px, 1180px);
+        margin-top: 32px;
+        padding: 0;
+        background: none;
+        box-shadow: none;
+    }
+    .film:not(.is-single)::before,
+    .film:not(.is-single)::after {
+        display: none;
+    }
+    .film:not(.is-single) .film-leader,
+    .film:not(.is-single) .film-frames > li {
+        background:
+            url("/assets/film-perf.svg") left top / var(--rail) auto repeat-y,
+            url("/assets/film-perf.svg") right top / var(--rail) auto repeat-y,
+            var(--film);
+        box-shadow: 0 10px 24px rgba(28, 25, 22, 0.24), 0 1px 3px rgba(28, 25, 22, 0.3);
+    }
+    .film:not(.is-single) .film-leader {
+        padding: 40px calc(var(--rail) + 24px) 32px;
+    }
+    .film:not(.is-single) .film-leader .edge-print {
+        left: calc(var(--rail) - var(--gutter));
+    }
+    .film:not(.is-single) .film-frames {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 32px 28px;
+        margin-top: 32px;
+        padding: 0;
+    }
+    .film:not(.is-single) .film-frames > li {
+        padding: 16px var(--rail);
+    }
+    /* 絞り込みで隠したコマ・記事が無いときのコマは、並びから外す */
+    .film:not(.is-single) .film-frames > li[hidden] {
+        display: none;
+    }
+    .film:not(.is-single) .frame-number {
+        right: calc(var(--rail) - var(--gutter));
+    }
+    .film:not(.is-single) .grease-mark {
+        left: calc(var(--rail) - 8px);
+        right: calc(var(--rail) - 8px);
+        width: calc(100% - 2 * var(--rail) + 16px);
+        top: 8px;
+        bottom: 8px;
+        height: calc(100% - 16px);
+    }
+    /* 記事ページ：写真のコマを大きく（タイトルが画面に入る大きさまで）、本文は 760px まで */
+    .film.is-single {
+        width: min(100%, 880px);
+    }
+    .article {
+        width: min(100%, 760px);
+        padding-top: 44px;
+    }
+    .article-title {
+        font-size: 30px;
+    }
+    .article-body p {
+        font-size: 17px;
+    }
 }
 
 /* ---------- スマホ ---------- */
