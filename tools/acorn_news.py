@@ -72,11 +72,11 @@ GOODS = re.compile(r"グッズ|新商品|新作|発売|販売|新登場|コレ�
                    r"周边|周邊|商品|新品|上市|发售|發售|限定|精品|产品|產品|"
                    r"produits?|boutique|nouveaut[ée]s?|collection|en vente|sortie", re.I)
 # 登場情報（グリーティング・ショー・パレード・イベント）
-GREETING = re.compile(r"グリーティング|ミート|meet[\s-]*(?:and|&|'n'|n)?[\s-]*greet|greeting|character dining|"
+GREETING = re.compile(r"グリーティング|ミート|会える|会おう|会いに|会う方法|meet[\s-]*(?:and|&|'n'|n)?[\s-]*greet|greeting|character dining|"
                       r"キャラクターダイニング|キャラダイ|见面|見面|合影|rencontre", re.I)
 PARADE = re.compile(r"パレード|parade|巡游|巡遊|défilé|cavalcade", re.I)
 SHOW = re.compile(r"ショー|\bshows?\b|spectacle|表演|演出|ステージ|\bstage\b|花火|fireworks|ナイトタイム", re.I)
-EVENT = re.compile(r"イベント|\bevents?\b|ハロウィ[ー]?ン|クリスマス|お正月|イースター|七夕|halloween|christmas|easter|"
+EVENT = re.compile(r"イベント|\bevents?\b|パーティ|\bpart(?:y|ies)\b|アニバーサリー|セレブレーション|celebration|フェスティバル|festival|ハロウィ[ー]?ン|クリスマス|お正月|イースター|七夕|halloween|christmas|easter|"
                    r"周年|anniversary|万圣|萬聖|圣诞|聖誕|新年|初登場|登場|出演|衣装|コスチューム|costume|debut|デビュー|"
                    r"appear(?:s|ance)?|returns?", re.I)
 
@@ -104,10 +104,12 @@ def category_of(text: str, topic: str | None = None) -> str | None:
     return None
 
 
-def is_relevant(title: str, summary: str, topic: str | None = None, require_disney: bool = True) -> str | None:
-    """タイムラインに載せる情報か判定し、載せるなら種類を返す。"""
+def is_relevant(title: str, summary: str, topic: str | None = None, require_disney: bool = True,
+                require_clarice: bool = True) -> str | None:
+    """タイムラインに載せる情報か判定し、載せるなら種類を返す。
+    require_clarice=False は「クラリス」でのサイト内検索の結果など、本文にクラリスが出てくることが確かな取得元用。"""
     text = f"{title}\n{summary}"
-    if not CLARICE.search(text) or OTHER_CLARICE.search(text):
+    if OTHER_CLARICE.search(text) or (require_clarice and not CLARICE.search(text)):
         return None
     if require_disney and not DISNEY.search(text) and topic != "pin":
         return None
@@ -255,12 +257,15 @@ def parse_feed(data: bytes) -> list[dict]:
                     link = link or child.text.strip()
             elif cname in ("title", "pubDate", "published", "updated", "date", "description", "summary", "source"):
                 fields.setdefault(cname, "".join(child.itertext()))
+            elif cname in ("encoded", "content"):  # 本文（content:encoded / Atom の content）。クラリスが本文に出てくるかの確認だけに使う
+                fields.setdefault("content", "".join(child.itertext())[:200_000])
         entries.append({
             "title": fields.get("title", ""),
             "url": link,
             "date": fields.get("pubDate") or fields.get("published") or fields.get("date") or fields.get("updated"),
             "summary": fields.get("description") or fields.get("summary") or "",
             "source": fields.get("source", ""),
+            "content": fields.get("content", ""),
         })
     return entries
 
@@ -299,7 +304,18 @@ def items_from_source(src: dict, data: bytes, now: dt.datetime) -> tuple[list[di
             url = None  # 安全の確認に通らないリンクは載せない
         if not title or not url:
             continue
-        cat = is_relevant(title, clean_text(e["summary"], 600), src.get("topic"))
+        # ディズニー専門のサイト（disney_site）は「ディズニー」の語を、クラリスでのサイト内検索（clarice_search）は
+        # 見出しの「クラリス」を求めない（見出しに出てこない記事の取りこぼしを防ぐ）
+        summary = clean_text(e["summary"], 600)
+        relaxed = False
+        if src.get("clarice_search"):
+            body = clean_text(e.get("content", ""), 50_000)
+            if body:  # 本文が配信に含まれるときは、本文にクラリスが出てくることを確かめる（検索が効いていない場合の混入を防ぐ）
+                if not CLARICE.search(f"{title}\n{summary}\n{body}") or OTHER_CLARICE.search(body):
+                    continue
+            relaxed = True
+        cat = is_relevant(title, summary, src.get("topic"),
+                          require_disney=not src.get("disney_site"), require_clarice=not relaxed)
         if not cat:
             continue
         date = parse_date(e["date"]) or now
@@ -663,7 +679,7 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search
 
 # ---------------------------------------------------------------- 過去分の取り込み（backfill）
 # Google ニュースの検索は新しい順の上位しか返さないため、期間（after: / before:）を区切って過去の記事を探す。
-# 手動の実行（Actions の「Acorn Club の自動収集」で backfill を選ぶ）で1回だけ動かす想定。
+# 2時間ごとの自動収集のたびに少しずつ（1回4分まで）進め、どこまで調べたかを残して続きから調べる。
 BACKFILL_SINCE = 2004         # 東京ディズニーランドにクラリスが登場した 2005 年の前年から
 BACKFILL_MONTHS = 3            # 1回の検索で区切る期間（月）
 
@@ -687,17 +703,60 @@ def windowed_url(url: str, after: str, before: str) -> str:
     return urllib.parse.urlunparse(p._replace(query=urllib.parse.urlencode({k: v[0] for k, v in q.items()})))
 
 
-def backfill(dry_run: bool, now: dt.datetime, windows: int | None = None, fetcher=fetch, pause: float = 1.0) -> int:
-    sources = [s for s in load_json(DATA_DIR / "sources.json", {}).get("sources", [])
-               if s.get("backfill") and "news.google.com/rss/search" in s.get("url", "")]
+BACKFILL_STATE = DATA_DIR / "backfill_state.json"
+BACKFILL_MAX_PAGES = 40
+
+
+def backfill(dry_run: bool, now: dt.datetime, windows: int | None = None, fetcher=fetch, pause: float = 1.0,
+             budget: float = 240.0, reset: bool = False, clock=time.monotonic) -> int:
+    """過去分を少しずつ取り込む。1回の実行は budget 秒まで。どこまで調べたかを backfill_state.json に残し、
+    次の実行（2時間ごとの自動収集）で続きから調べる。取得元が増えたときも、その取得元の過去分を自動で調べる。
+    windows を指定したとき（PR の試し取得）は、直近の期間だけを状態に関係なく調べる。"""
+    all_sources = load_json(DATA_DIR / "sources.json", {}).get("sources", [])
+    gnews = [s for s in all_sources if s.get("backfill") and "news.google.com/rss/search" in s.get("url", "")]
+    site_search = [s for s in all_sources if s.get("clarice_search") and "feed=rss2" in s.get("url", "")]
     spans = backfill_windows(now)
-    if windows:
+    trial = bool(windows)
+    if trial:
         spans = spans[-windows:]
+    state = {} if (reset or trial) else load_json(BACKFILL_STATE, {})
+    state.setdefault("windows", {})   # Google ニュース：取得元ごとに、調べ終えた期間の数（古い順）
+    state.setdefault("pages", {})     # サイト内検索：取得元ごとに、読み終えたページ数（"done" なら最後まで）
+    start = clock()
     found: list[dict] = []
-    fails = 0
     per_source: dict[str, int] = {}
-    for src in sources:
-        for after, before in spans:
+    fails = 0
+    out_of_time = False
+
+    def time_left() -> bool:
+        return trial or clock() - start < budget
+
+    # 件数の多いサイト内検索（ページをさかのぼる）を先に、Google ニュースの期間ごとの検索を後に
+    for src in site_search:
+        done = state["pages"].get(src["id"], 0)
+        if done == "done" and not trial:
+            continue
+        page = 1 if trial else int(done) + 1
+        last = 3 if trial else BACKFILL_MAX_PAGES
+        while page <= last and time_left():
+            try:
+                items, total = items_from_source(src, fetcher(paged_url(src["url"], page)), now)
+            except Exception:
+                total, items = 0, []   # ページの終わり（404 など）
+            if not total:
+                page = None
+                break
+            found += items
+            per_source[src["id"]] = per_source.get(src["id"], 0) + len(items)
+            page += 1
+            time.sleep(pause)
+        if not trial:
+            state["pages"][src["id"]] = "done" if page is None or page > last else page - 1
+        out_of_time |= page is not None and page <= last
+    for src in gnews:
+        i = 0 if trial else int(state["windows"].get(src["id"], 0))
+        while i < len(spans) and time_left():
+            after, before = spans[i]
             try:
                 items, _ = items_from_source(src, fetcher(windowed_url(src["url"], after, before)), now)
                 found += items
@@ -705,13 +764,20 @@ def backfill(dry_run: bool, now: dt.datetime, windows: int | None = None, fetche
             except Exception as e:
                 fails += 1
                 print(f"{src['id']} {after}〜{before}: 取得できませんでした（{type(e).__name__}）")
+            i += 1
             time.sleep(pause)
+        if not trial:
+            state["windows"][src["id"]] = i
+        out_of_time |= i < len(spans)
+    complete = not out_of_time
     summary = "、".join(f"{k} {v}" for k, v in per_source.items())
-    print(f"::notice title=過去分::{len(sources)} 件の検索 × {len(spans)} 期間 → 候補 {len(found)} 件（失敗 {fails} 回）: {summary}")
-    for it in sorted(found, key=lambda x: x["date"])[:8]:
+    print(f"::notice title=過去分::候補 {len(found)} 件（失敗 {fails} 回）{'・すべて調べ終えました' if complete else '・続きは次回'}: {summary}")
+    for it in sorted(found, key=lambda x: x["date"])[:5]:
         print(f"::notice title=過去分の例::{it['date'][:10]} {it['title'][:50]}")
     if dry_run:
         return 0
+    if not trial:
+        write_if_changed(BACKFILL_STATE, dump(state))
     collected = merge_collected(load_json(DATA_DIR / "collected.json", []), found)
     collected.sort(key=lambda x: x["date"], reverse=True)
     collected = collected[: MAX_ITEMS * 2]
@@ -719,6 +785,10 @@ def backfill(dry_run: bool, now: dt.datetime, windows: int | None = None, fetche
     changed |= write_if_changed(OUT_FILE, timeline_json(now))
     print("更新しました" if changed else "変更なし")
     return 0
+
+
+def paged_url(url: str, page: int) -> str:
+    return url if page == 1 else f"{url}{'&' if '?' in url else '?'}paged={page}"
 
 
 # ---------------------------------------------------------------- 入力フォーム（手動で追加）
@@ -869,13 +939,28 @@ def add_source(event: dict, now: dt.datetime, fetcher=fetch, getter=http_get) ->
         errors.append("「追加の確認」にチェックが入っていません。")
     if errors:
         return {"status": "error", "errors": errors}
+    host = (urllib.parse.urlparse(site).hostname or "").removeprefix("www.")
+    kind, via_bing = "blog", False
     try:
         feed_url, data = find_feed(site, search, fetcher, getter)
-    except Exception as e:
-        return {"status": "error", "errors": [f"このサイトの配信（RSS / Atom）を見つけられませんでした（{str(e)[:100]}）。"
-                                              "RSS の URL が分かれば、それを「サイトの URL」に入れてください。"]}
-    src = {"id": "user-" + re.sub(r"[^a-z0-9]+", "-", (urllib.parse.urlparse(feed_url).hostname or "site").lower()).strip("-"),
-           "name": name, "lang": lang, "url": feed_url, "kind": "blog", "added_by_issue": int(issue["number"])}
+    except Exception:
+        # 配信（RSS）の無いサイトは、Bing のサイト内検索（site:）で「クラリス」を含むページを探す
+        mkt = {"ja": "ja-JP", "en": "en-US", "fr": "fr-FR", "zh": "zh-CN"}[lang]
+        feed_url = ("https://www.bing.com/search?q=" + urllib.parse.quote_plus(f"site:{host} {search or ('クラリス' if lang == 'ja' else 'Clarice')}")
+                    + f"&format=rss&mkt={mkt}")
+        kind, via_bing = "search", True
+        try:
+            data = fetcher(feed_url)
+            parse_feed(data)
+        except Exception as e:
+            return {"status": "error", "errors": [f"このサイトの配信（RSS / Atom）が見つからず、サイト内検索もできませんでした（{str(e)[:100]}）。"
+                                                  "RSS の URL が分かれば、それを「サイトの URL」に入れてください。"]}
+    src = {"id": "user-" + re.sub(r"[^a-z0-9]+", "-", host.lower()).strip("-"),
+           "name": name, "lang": lang, "url": feed_url, "kind": kind, "disney_site": True, "added_by_issue": int(issue["number"])}
+    if via_bing:
+        src["site"] = host
+    elif search and "feed=rss2" in feed_url and "?s=" in feed_url:
+        src["clarice_search"] = True
     items, total = items_from_source(src, data, now)
     data_all = load_json(DATA_DIR / "sources.json", {})
     sources = data_all.get("sources", [])
@@ -886,7 +971,7 @@ def add_source(event: dict, now: dt.datetime, fetcher=fetch, getter=http_get) ->
         src["id"] += "-2"
     data_all["sources"] = others + [src]
     write_if_changed(DATA_DIR / "sources.json", dump(data_all))
-    return {"status": "added", "feed": feed_url, "name": name, "total": total, "matched": len(items),
+    return {"status": "added", "feed": feed_url, "via_bing": via_bing, "name": name, "total": total, "matched": len(items),
             "examples": [i["title"][:60] for i in items[:3]], "errors": []}
 
 
@@ -897,7 +982,7 @@ def source_comment(result: dict) -> str:
     if result.get("status") == "exists":
         return f"ℹ️ この配信（{result['feed']}）はすでに取得元に入っています。"
     lines = [f"✅ **取得元に追加しました。** 次の自動収集（2時間ごと）から、このサイトの新しい情報も集めます。",
-             "", f"- 配信: {result['feed']}",
+             "", f"- 配信: {result['feed']}" + ("（RSS が無いため、Bing のサイト内検索で探します）" if result.get("via_bing") else ""),
              f"- 試し取得: 配信 {result['total']} 件のうち、条件（クラリス・ディズニー・グッズ／パーク）に合う情報 {result['matched']} 件"]
     lines += [f"  - {t}" for t in result.get("examples", [])]
     if not result["matched"]:
@@ -927,6 +1012,8 @@ def main() -> int:
     bf = sub.add_parser("backfill")
     bf.add_argument("--dry-run", action="store_true")
     bf.add_argument("--windows", type=int, help="新しい方から、この数の期間だけ調べる（試し用）")
+    bf.add_argument("--budget", type=float, default=240.0, help="1回に使う時間（秒）。続きは次回")
+    bf.add_argument("--reset", action="store_true", help="どこまで調べたかを消して、最初から調べ直す")
     im = sub.add_parser("images")
     im.add_argument("--dry-run", action="store_true")
     im.add_argument("--limit", type=int, default=8)
@@ -945,7 +1032,7 @@ def main() -> int:
     if args.cmd == "collect":
         return collect(args.dry_run, now)
     if args.cmd == "backfill":
-        return backfill(args.dry_run, now, args.windows)
+        return backfill(args.dry_run, now, args.windows, budget=args.budget, reset=args.reset)
     if args.cmd == "images":
         # 試し：まだ画像を調べていない情報のうち新しいものを、ファイルを書き換えずに調べて結果を表示する
         items = load_json(DATA_DIR / "manual.json", []) + load_json(DATA_DIR / "collected.json", [])
