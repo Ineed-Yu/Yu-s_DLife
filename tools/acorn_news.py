@@ -19,6 +19,7 @@
 使い方:
   python3 tools/acorn_news.py collect             # 取得元から集めて、タイムラインを作り直す（自動実行用）
   python3 tools/acorn_news.py collect --dry-run   # 書き換えずに、取得元ごとの結果を表示（PR での確認用）
+  python3 tools/acorn_news.py backfill            # 過去の記事を期間ごとに探して取り込む（手動で1回）
   python3 tools/acorn_news.py images --dry-run    # 書き換えずに、記事の画像が見つかるかを試す（PR での確認用）
   python3 tools/acorn_news.py build               # 集めた情報からタイムラインだけ作り直す
   python3 tools/acorn_news.py build --check       # タイムラインが最新か・クラリス年表の書き方が正しいか確認する（CI 用）
@@ -201,6 +202,7 @@ def parse_feed(data: bytes) -> list[dict]:
         link = None
         for child in el:
             cname = strip_ns(child.tag)
+            cname = {"source": "source", "pubdate": "pubDate"}.get(cname.lower(), cname)  # Bing は News:Source
             if cname == "link":
                 href = child.get("href")
                 if href and child.get("rel", "alternate") == "alternate":
@@ -228,6 +230,16 @@ def fetch(url: str) -> bytes:
     return data
 
 
+def unwrap_link(url: str) -> str:
+    """Bing ニュースのリンク（bing.com/news/apiclick.aspx?url=元の記事）から元の記事の URL を取り出す。"""
+    p = urllib.parse.urlparse(url)
+    if (p.hostname or "").endswith("bing.com"):
+        target = urllib.parse.parse_qs(p.query).get("url", [""])[0]
+        if target.startswith(("http://", "https://")):
+            return target
+    return url
+
+
 def items_from_source(src: dict, data: bytes, now: dt.datetime) -> tuple[list[dict], int]:
     """1つの取得元の配信から、載せる情報を取り出す。戻り値: (情報, 配信の全件数)"""
     entries = parse_feed(data)
@@ -238,7 +250,7 @@ def items_from_source(src: dict, data: bytes, now: dt.datetime) -> tuple[list[di
         # Google ニュースはタイトルの末尾に「 - 掲載元」が付く
         if src.get("aggregator") and source and title.endswith(f" - {source}"):
             title = title[: -len(source) - 3].strip()
-        url = safe_url(e["url"])
+        url = safe_url(unwrap_link(e["url"] or ""))
         if not title or not url:
             continue
         cat = is_relevant(title, clean_text(e["summary"], 600), src.get("topic"))
@@ -266,7 +278,7 @@ def items_from_source(src: dict, data: bytes, now: dt.datetime) -> tuple[list[di
 # 掲載元が「共有されたときに表示する画像」として指定している画像（og:image / twitter:image）の場所だけを記録し、
 # ページではその場所のまま表示する（画像をこのサイトに保存・複製しない）。見つからなければ画像なしで表示する。
 # Google ニュース経由の情報は、先に元の記事の URL を調べる（調べた URL はリンク先にも使い、元の記事へ直接飛べるようにする）。
-IMAGE_TRIES_PER_RUN = 20       # 1回の収集で画像を探す件数の上限（掲載元への負担と実行時間を抑える）
+IMAGE_TRIES_PER_RUN = 30       # 1回の収集で画像を探す件数の上限（掲載元への負担と実行時間を抑える）
 MAX_PAGE_BYTES = 1_500_000
 NO_IMAGE_HOSTS = ("x.com", "twitter.com", "instagram.com", "threads.net", "tiktok.com", "facebook.com")
 GNEWS_ARTICLE = re.compile(r"^https://news\.google\.com/(?:rss/)?articles/([A-Za-z0-9_-]+)")
@@ -543,30 +555,38 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search
     except ValueError:
         x_limit = X_DEFAULT_MONTHLY_LIMIT
     x_state = load_json(X_STATE_FILE, {})
+    notes: list[str] = []   # 取得元ごとの結果（GitHub の注記は1ステップ10件までしか出ないため、最後に要約を先頭にして出す）
+    tally: list[str] = []
     for src in sources:
         if src.get("type") == "x":
             if not x_token:
-                print(f"::notice title={src['id']}::{src['name']}: X のキー（X_BEARER_TOKEN）が未登録のため停止中")
+                notes.append(f"::notice title={src['id']}::{src['name']}: X のキー（X_BEARER_TOKEN）が未登録のため停止中")
                 continue
             if dry_run:  # 試し取得では課金されないよう、X は読まない
-                print(f"::notice title={src['id']}::{src['name']}: 試し取得では X を読みません（費用がかかるため）")
+                notes.append(f"::notice title={src['id']}::{src['name']}: 試し取得では X を読みません（費用がかかるため）")
                 continue
             try:
                 items, total = collect_x(src, x_token, x_state, x_limit, now, x_search_fn)
                 ok += 1
                 found += items
-                print(f"::notice title={src['id']}::{src['name']}: 投稿 {total} 件 → 掲載 {len(items)} 件（今月 {x_state.get('reads', 0)}/{x_limit} 件）")
+                notes.append(f"::notice title={src['id']}::{src['name']}: 投稿 {total} 件 → 掲載 {len(items)} 件（今月 {x_state.get('reads', 0)}/{x_limit} 件）")
             except Exception as e:
-                print(f"::warning title={src['id']}::{src['name']}: 取得できませんでした（{type(e).__name__}: {str(e)[:120]}）")
+                notes.append(f"::warning title={src['id']}::{src['name']}: 取得できませんでした（{type(e).__name__}: {str(e)[:120]}）")
+                tally.append(f"{src['id']} ×")
             continue
         try:
             items, total = items_from_source(src, fetcher(src["url"]), now)
             ok += 1
             found += items
-            print(f"::notice title={src['id']}::{src['name']}: 配信 {total} 件 → 掲載候補 {len(items)} 件"
+            tally.append(f"{src['id']} {len(items)}/{total}")
+            notes.append(f"::notice title={src['id']}::{src['name']}: 配信 {total} 件 → 掲載候補 {len(items)} 件"
                   + "".join(f" / {i['title'][:40]}" for i in items[:3]))
         except Exception as e:  # 1つの取得元が失敗しても他は続ける
-            print(f"::warning title={src['id']}::{src['name']}: 取得できませんでした（{type(e).__name__}: {str(e)[:120]}）")
+            notes.append(f"::warning title={src['id']}::{src['name']}: 取得できませんでした（{type(e).__name__}: {str(e)[:120]}）")
+            tally.append(f"{src['id']} ×")
+    print(f"::notice title=まとめ::取得元 {ok}/{len(sources)} 件・候補 {len(found)} 件（取得元 候補/配信）: " + "、".join(tally))
+    for line in notes:
+        print(line)
     if dry_run:
         print(f"試し取得：{ok}/{len(sources)} 件の取得元から {len(found)} 件の候補（ファイルは書き換えていません）")
         return 0
@@ -586,6 +606,66 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search
     changed |= write_if_changed(OUT_FILE, timeline_json(now))
     print(f"取得元 {ok}/{len(sources)} 件、新しい候補 {len(found)} 件、{'更新しました' if changed else '変更なし'}")
     return 0 if ok or not sources else 1
+
+
+# ---------------------------------------------------------------- 過去分の取り込み（backfill）
+# Google ニュースの検索は新しい順の上位しか返さないため、期間（after: / before:）を区切って過去の記事を探す。
+# 手動の実行（Actions の「Acorn Club の自動収集」で backfill を選ぶ）で1回だけ動かす想定。
+BACKFILL_SINCE = 2016
+BACKFILL_MONTHS = 3            # 1回の検索で区切る期間（月）
+
+
+def backfill_windows(now: dt.datetime, since: int = BACKFILL_SINCE, months: int = BACKFILL_MONTHS) -> list[tuple[str, str]]:
+    out, y, m = [], since, 1
+    while dt.date(y, m, 1) <= now.date():
+        start = dt.date(y, m, 1)
+        m2, y2 = m + months, y
+        while m2 > 12:
+            m2, y2 = m2 - 12, y2 + 1
+        out.append((start.isoformat(), dt.date(y2, m2, 1).isoformat()))
+        y, m = y2, m2
+    return out
+
+
+def windowed_url(url: str, after: str, before: str) -> str:
+    p = urllib.parse.urlparse(url)
+    q = urllib.parse.parse_qs(p.query)
+    q["q"] = [f"{q.get('q', [''])[0]} after:{after} before:{before}"]
+    return urllib.parse.urlunparse(p._replace(query=urllib.parse.urlencode({k: v[0] for k, v in q.items()})))
+
+
+def backfill(dry_run: bool, now: dt.datetime, windows: int | None = None, fetcher=fetch, pause: float = 1.0) -> int:
+    sources = [s for s in load_json(DATA_DIR / "sources.json", {}).get("sources", [])
+               if s.get("backfill") and "news.google.com/rss/search" in s.get("url", "")]
+    spans = backfill_windows(now)
+    if windows:
+        spans = spans[-windows:]
+    found: list[dict] = []
+    fails = 0
+    per_source: dict[str, int] = {}
+    for src in sources:
+        for after, before in spans:
+            try:
+                items, _ = items_from_source(src, fetcher(windowed_url(src["url"], after, before)), now)
+                found += items
+                per_source[src["id"]] = per_source.get(src["id"], 0) + len(items)
+            except Exception as e:
+                fails += 1
+                print(f"{src['id']} {after}〜{before}: 取得できませんでした（{type(e).__name__}）")
+            time.sleep(pause)
+    summary = "、".join(f"{k} {v}" for k, v in per_source.items())
+    print(f"::notice title=過去分::{len(sources)} 件の検索 × {len(spans)} 期間 → 候補 {len(found)} 件（失敗 {fails} 回）: {summary}")
+    for it in sorted(found, key=lambda x: x["date"])[:8]:
+        print(f"::notice title=過去分の例::{it['date'][:10]} {it['title'][:50]}")
+    if dry_run:
+        return 0
+    collected = merge_collected(load_json(DATA_DIR / "collected.json", []), found)
+    collected.sort(key=lambda x: x["date"], reverse=True)
+    collected = collected[: MAX_ITEMS * 2]
+    changed = write_if_changed(DATA_DIR / "collected.json", dump(collected))
+    changed |= write_if_changed(OUT_FILE, timeline_json(now))
+    print("更新しました" if changed else "変更なし")
+    return 0
 
 
 # ---------------------------------------------------------------- 入力フォーム（手動で追加）
@@ -690,6 +770,9 @@ def main() -> int:
     sub = parser.add_subparsers(dest="cmd", required=True)
     c = sub.add_parser("collect")
     c.add_argument("--dry-run", action="store_true")
+    bf = sub.add_parser("backfill")
+    bf.add_argument("--dry-run", action="store_true")
+    bf.add_argument("--windows", type=int, help="新しい方から、この数の期間だけ調べる（試し用）")
     im = sub.add_parser("images")
     im.add_argument("--dry-run", action="store_true")
     im.add_argument("--limit", type=int, default=8)
@@ -703,6 +786,8 @@ def main() -> int:
     now = dt.datetime.now(JST)
     if args.cmd == "collect":
         return collect(args.dry_run, now)
+    if args.cmd == "backfill":
+        return backfill(args.dry_run, now, args.windows)
     if args.cmd == "images":
         # 試し：まだ画像を調べていない情報のうち新しいものを、ファイルを書き換えずに調べて結果を表示する
         items = load_json(DATA_DIR / "manual.json", []) + load_json(DATA_DIR / "collected.json", [])

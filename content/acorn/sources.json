@@ -1,19 +1,21 @@
 {
-  "_説明": "Acorn Club のタイムラインに載せる情報の取得元。RSS / Atom の配信（記事のタイトル・リンク・掲載元・日付だけを取り込み、本文や写真は保存しない）と、type が x のものは有料の X API の検索（キー X_BEARER_TOKEN を登録するまでは動かない。保存は投稿 ID などだけで、表示は X の公式の埋め込み）。追加・削除したら PR にすると、PR 上で試し取得の結果が出ます（X は費用がかかるため試し取得しない）。",
+  "_説明": "Acorn Club のタイムラインに載せる情報の取得元。RSS / Atom の配信（記事のタイトル・リンク・掲載元・日付だけを取り込み、本文や写真は保存しない）と、type が x のものは有料の X API の検索（キー X_BEARER_TOKEN を登録するまでは動かない。保存は投稿 ID などだけで、表示は X の公式の埋め込み）。追加・削除したら PR にすると、PR 上で試し取得の結果が出ます（X は費用がかかるため試し取得しない）。 backfill: true の Google ニュースは、過去分の取り込み（backfill）で期間を区切って検索する。",
   "sources": [
     {
       "id": "gnews-ja",
       "name": "Google ニュース（日本語）",
       "lang": "ja",
       "url": "https://news.google.com/rss/search?q=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9+%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC&hl=ja&gl=JP&ceid=JP:ja",
-      "aggregator": true
+      "aggregator": true,
+      "backfill": true
     },
     {
       "id": "gnews-en",
       "name": "Google News (English)",
       "lang": "en",
       "url": "https://news.google.com/rss/search?q=%22Clarice%22+Disney&hl=en-US&gl=US&ceid=US:en",
-      "aggregator": true
+      "aggregator": true,
+      "backfill": true
     },
     {
       "id": "gnews-en-pins",
@@ -42,7 +44,8 @@
       "name": "Google 新聞（繁體中文・香港）",
       "lang": "zh",
       "aggregator": true,
-      "url": "https://news.google.com/rss/search?q=%28%E5%85%8B%E6%8B%89%E8%8E%89%E7%B5%B2+OR+%E5%85%8B%E6%8B%89%E8%8E%89%E4%B8%9D+OR+Clarice%29+%E8%BF%AA%E5%A3%AB%E5%B0%BC&hl=zh-HK&gl=HK&ceid=HK%3Azh-Hant"
+      "url": "https://news.google.com/rss/search?q=%28%E5%85%8B%E6%8B%89%E8%8E%89%E7%B5%B2+OR+%E5%85%8B%E6%8B%89%E8%8E%89%E4%B8%9D+OR+Clarice%29+%E8%BF%AA%E5%A3%AB%E5%B0%BC&hl=zh-HK&gl=HK&ceid=HK%3Azh-Hant",
+      "backfill": true
     },
     {
       "id": "gnews-fr",
@@ -81,14 +84,16 @@
       "name": "Google ニュース（日本語・グリーティング等）",
       "lang": "ja",
       "aggregator": true,
-      "url": "https://news.google.com/rss/search?q=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9+%28%E3%82%B0%E3%83%AA%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0+OR+%E3%83%91%E3%83%AC%E3%83%BC%E3%83%89+OR+%E3%82%B7%E3%83%A7%E3%83%BC+OR+%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%29+%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC&hl=ja&gl=JP&ceid=JP%3Aja"
+      "url": "https://news.google.com/rss/search?q=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9+%28%E3%82%B0%E3%83%AA%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0+OR+%E3%83%91%E3%83%AC%E3%83%BC%E3%83%89+OR+%E3%82%B7%E3%83%A7%E3%83%BC+OR+%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%29+%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC&hl=ja&gl=JP&ceid=JP%3Aja",
+      "backfill": true
     },
     {
       "id": "gnews-en-appear",
       "name": "Google News (English, greetings & shows)",
       "lang": "en",
       "aggregator": true,
-      "url": "https://news.google.com/rss/search?q=%22Clarice%22+Disney+%28greeting+OR+%22meet+and+greet%22+OR+parade+OR+show%29&hl=en-US&gl=US&ceid=US%3Aen"
+      "url": "https://news.google.com/rss/search?q=%22Clarice%22+Disney+%28greeting+OR+%22meet+and+greet%22+OR+parade+OR+show%29&hl=en-US&gl=US&ceid=US%3Aen",
+      "backfill": true
     },
     {
       "id": "x-goods",
@@ -101,6 +106,52 @@
       "type": "x",
       "name": "X（グリーティング・ショー）",
       "query": "(クラリス OR Clarice OR 克拉莉丝) (グリーティング OR パレード OR ショー OR greeting OR parade) has:images -is:retweet"
+    },
+    {
+      "id": "gnews-ja-goods",
+      "name": "Google ニュース（日本語・グッズ）",
+      "lang": "ja",
+      "url": "https://news.google.com/rss/search?q=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9+%28%E3%82%B0%E3%83%83%E3%82%BA+OR+%E3%81%AC%E3%81%84%E3%81%90%E3%82%8B%E3%81%BF+OR+%E3%81%AC%E3%81%84%E3%81%B0+OR+%E3%83%94%E3%83%B3%E3%83%90%E3%83%83%E3%82%B8+OR+%E6%96%B0%E5%95%86%E5%93%81+OR+%E7%99%BA%E5%A3%B2%29&hl=ja&gl=JP&ceid=JP%3Aja",
+      "aggregator": true,
+      "backfill": true
+    },
+    {
+      "id": "gnews-ja-trio",
+      "name": "Google ニュース（日本語・チップとデールとクラリス）",
+      "lang": "ja",
+      "url": "https://news.google.com/rss/search?q=%28%22%E3%83%81%E3%83%83%E3%83%97%E3%81%A8%E3%83%87%E3%83%BC%E3%83%AB%E3%81%A8%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9%22+OR+%22%E3%83%81%E3%83%83%E3%83%97%EF%BC%86%E3%83%87%E3%83%BC%E3%83%AB%EF%BC%86%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9%22+OR+%22%E3%83%81%E3%83%83%E3%83%97%26%E3%83%87%E3%83%BC%E3%83%AB%26%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9%22+OR+%22%E3%83%81%E3%83%83%E3%83%97%E3%81%A8%E3%83%87%E3%83%BC%E3%83%AB+%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9%22%29&hl=ja&gl=JP&ceid=JP%3Aja",
+      "aggregator": true,
+      "backfill": true
+    },
+    {
+      "id": "gnews-ja-tdr",
+      "name": "Google ニュース（日本語・東京ディズニーリゾート）",
+      "lang": "ja",
+      "url": "https://news.google.com/rss/search?q=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9+%28%E6%9D%B1%E4%BA%AC%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC%E3%83%A9%E3%83%B3%E3%83%89+OR+%E6%9D%B1%E4%BA%AC%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC%E3%82%B7%E3%83%BC+OR+%E6%9D%B1%E4%BA%AC%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC%E3%83%AA%E3%82%BE%E3%83%BC%E3%83%88%29&hl=ja&gl=JP&ceid=JP%3Aja",
+      "aggregator": true,
+      "backfill": true
+    },
+    {
+      "id": "gnews-en-merch",
+      "name": "Google ニュース（英語・グッズ）",
+      "lang": "en",
+      "url": "https://news.google.com/rss/search?q=%22Clarice%22+%28%22Chip+and+Dale%22+OR+%22Chip+%27n%27+Dale%22+OR+chipmunk%29+%28merchandise+OR+plush+OR+collection+OR+loungefly+OR+ears%29&hl=en-US&gl=US&ceid=US%3Aen",
+      "aggregator": true,
+      "backfill": true
+    },
+    {
+      "id": "bing-ja",
+      "name": "Bing ニュース（日本語）",
+      "lang": "ja",
+      "url": "https://www.bing.com/news/search?q=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9+%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC&format=rss&mkt=ja-JP",
+      "aggregator": true
+    },
+    {
+      "id": "bing-en",
+      "name": "Bing ニュース（英語）",
+      "lang": "en",
+      "url": "https://www.bing.com/news/search?q=%22Clarice%22+Disney+chipmunk&format=rss&mkt=en-US",
+      "aggregator": true
     }
   ]
 }
