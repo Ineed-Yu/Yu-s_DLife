@@ -1,6 +1,8 @@
 // Acorn Club（/acorn-club/）の表示処理
 // 1. 幕開け：葉っぱの幕が左右に開いて Acorn Club が現れる（このタブで初回だけ・動きを減らす設定なら出さない）
-// 2. タイムライン：/acorn-club/news.json を「グッズ・新商品」「グリーティング・ショー」に分け、種類・年・言語で絞り込んで表示
+// 2. タイムライン：/acorn-club/news.json を「グッズ」「パーク（グリーティング・ショー・パレード）」に分け、種類と年で絞り込んで表示。
+//    情報の言語はページ上部の言語切替（JP/EN/FR/ZH）に合わせる（その言語の情報がまだ無いときは全言語を表示）
+// 4. 公式サイト/アカウント一覧：日本・アメリカ・フランス・中国のリージョンごとに切り替えて表示
 // 3. X の投稿：最初はリンクだけ。利用者が「X の投稿を表示する」を押したときだけ X の公式の埋め込みを読み込む
 // 文字はすべて textContent で入れ、HTML として解釈させない。リンクは http / https だけ。
 (function () {
@@ -48,8 +50,19 @@
         show: { ja: 'ショー', en: 'Shows', fr: 'Spectacles', zh: '表演' },
         parade: { ja: 'パレード', en: 'Parades', fr: 'Parades', zh: '巡游' },
         event: { ja: 'イベント', en: 'Events', fr: 'Événements', zh: '活动' },
-        view_goods: { ja: 'グッズ・新商品', en: 'Merchandise', fr: 'Produits', zh: '周边新品' },
-        view_appear: { ja: 'グリーティング・ショー', en: 'Greetings & shows', fr: 'Rencontres et spectacles', zh: '见面会与表演' },
+        view_goods: { ja: 'グッズ', en: 'Merchandise', fr: 'Produits', zh: '周边' },
+        view_appear: { ja: 'パーク', en: 'Parks', fr: 'Parcs', zh: '乐园' },
+        region_jp: { ja: '日本', en: 'Japan', fr: 'Japon', zh: '日本' },
+        region_us: { ja: 'アメリカ', en: 'USA', fr: 'États-Unis', zh: '美国' },
+        region_fr: { ja: 'フランス', en: 'France', fr: 'France', zh: '法国' },
+        region_cn: { ja: '中国', en: 'China', fr: 'Chine', zh: '中国' },
+        regionLabel: { ja: 'リージョンを選ぶ', en: 'Choose a region', fr: 'Choisir une région', zh: '选择地区' },
+        langFallback: {
+            ja: '日本語の情報がまだないため、すべての言語の情報を表示しています。',
+            en: 'There is no news in English here yet, so news in all languages is shown.',
+            fr: 'Pas encore de nouvelles en français ici : les informations de toutes les langues sont affichées.',
+            zh: '这里暂时没有中文信息，因此显示所有语言的信息。'
+        },
         viewLabel: { ja: '表示する情報', en: 'What to show', fr: 'Informations affichées', zh: '显示内容' },
         xPost: { ja: 'X の投稿', en: 'Post on X', fr: 'Publication sur X', zh: 'X 上的帖子' },
         xShow: { ja: 'X の投稿を表示する', en: 'Show posts from X', fr: 'Afficher les publications X', zh: '显示 X 帖子' },
@@ -60,15 +73,8 @@
             fr: 'L’affichage se connecte à X (ex-Twitter) et montre les publications avec leurs images.',
             zh: '显示时将连接 X（原 Twitter）服务，并带图片显示帖子。'
         },
-        allLang: { ja: 'すべての言語', en: 'All languages', fr: 'Toutes les langues', zh: '所有语言' },
-        lang_ja: { ja: '日本語の情報', en: 'In Japanese', fr: 'En japonais', zh: '日语' },
-        lang_en: { ja: '英語の情報', en: 'In English', fr: 'En anglais', zh: '英语' },
-        lang_zh: { ja: '中国語の情報', en: 'In Chinese', fr: 'En chinois', zh: '中文' },
-        lang_fr: { ja: 'フランス語の情報', en: 'In French', fr: 'En français', zh: '法语' },
         allYears: { ja: 'すべての年', en: 'All years', fr: 'Toutes les années', zh: '全部年份' },
-        yearLabel: { ja: '年で絞り込む', en: 'Filter by year', fr: 'Filtrer par année', zh: '按年份筛选' },
         kindLabel: { ja: '種類で絞り込む', en: 'Filter by type', fr: 'Filtrer par type', zh: '按类型筛选' },
-        langLabel: { ja: '言語で絞り込む', en: 'Filter by language', fr: 'Filtrer par langue', zh: '按语言筛选' },
         official: { ja: '公式', en: 'Official', fr: 'Officiel', zh: '官方' },
         added: { ja: '手動で追加', en: 'Added by hand', fr: 'Ajouté à la main', zh: '手动添加' },
         opens: { ja: '（別のサイトが開きます）', en: ' (opens another site)', fr: ' (ouvre un autre site)', zh: '（将打开其他网站）' },
@@ -100,13 +106,17 @@
     const GOODS = ['pin', 'plush', 'goods', 'other'];
     const APPEAR = ['greeting', 'show', 'parade', 'event'];
     const viewOf = item => (APPEAR.includes(item.category) ? 'appear' : 'goods');
-    const state = { view: 'goods', category: 'all', lang: 'all', year: 'all', limit: 40 };
+    const state = { view: 'goods', category: 'all', year: 'all', limit: 40 };
+    const REGIONS = ['jp', 'us', 'fr', 'cn'];
+    const REGION_OF_LANG = { ja: 'jp', en: 'us', fr: 'fr', zh: 'cn' };
+    let region = null;    // 利用者が選んだリージョン（選ぶまではページの言語に合わせる）
     let xEmbed = false;
     try {
         xEmbed = localStorage.getItem('acornXEmbed') === '1';
     } catch (e) {}
     try {
-        if (new URLSearchParams(location.search).get('view') === 'appear') state.view = 'appear';
+        const v = new URLSearchParams(location.search).get('view');
+        if (v === 'park' || v === 'appear') state.view = 'appear';
     } catch (e) {}
     const yearOf = item => String(item.date || '').slice(0, 4);
 
@@ -143,7 +153,7 @@
         return b;
     }
 
-    // 「グッズ・新商品」「グリーティング・ショー」の切り替え（タブ）
+    // 「グッズ」「パーク」の切り替え（タブ）
     function renderViews() {
         const box = document.getElementById('club-views');
         if (!box) return;
@@ -158,10 +168,10 @@
             b.addEventListener('click', () => {
                 if (state.view === v) return;
                 state.view = v;
-                Object.assign(state, { category: 'all', year: 'all', lang: 'all', limit: 40 });
+                Object.assign(state, { category: 'all', year: 'all', limit: 40 });
                 try {
                     const q = new URLSearchParams(location.search);
-                    if (v === 'appear') q.set('view', 'appear'); else q.delete('view');
+                    if (v === 'appear') q.set('view', 'park'); else q.delete('view');
                     history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
                 } catch (e) {}
                 render();
@@ -208,36 +218,34 @@
 
     function renderFilters(items) {
         const catRow = document.getElementById('filter-category');
-        const langRow = document.getElementById('filter-lang');
-        if (!catRow || !langRow) return;
+        if (!catRow) return;
         catRow.setAttribute('aria-label', t('kindLabel'));
-        langRow.setAttribute('aria-label', t('langLabel'));
+        if (state.category !== 'all' && !items.some(i => i.category === state.category)) state.category = 'all';
         catRow.replaceChildren(chip(t('all'), state.category === 'all', () => setState({ category: 'all' })));
         (state.view === 'appear' ? APPEAR : GOODS).forEach(c => {
             if (items.some(i => i.category === c)) {
                 catRow.appendChild(chip(t(c), state.category === c, () => setState({ category: c })));
             }
         });
-        // 年（西暦）：情報がある年だけ、新しい順に並べる
-        const yearRow = document.getElementById('filter-year');
-        if (yearRow) {
-            const years = [...new Set(items.map(yearOf).filter(y => /^\d{4}$/.test(y)))].sort().reverse();
-            yearRow.setAttribute('aria-label', t('yearLabel'));
-            yearRow.replaceChildren();
-            if (years.length) {
-                yearRow.appendChild(chip(t('allYears'), state.year === 'all', () => setState({ year: 'all' })));
-                years.forEach(y => yearRow.appendChild(chip(y, state.year === y, () => setState({ year: y }))));
-            }
-            yearRow.hidden = years.length === 0;
-        }
-        // 言語：情報がある言語だけ
-        const langs = ['ja', 'en', 'zh', 'fr'].filter(l => items.some(i => i.lang === l));
-        langRow.replaceChildren();
-        if (langs.length > 1) {
-            langRow.appendChild(chip(t('allLang'), state.lang === 'all', () => setState({ lang: 'all' })));
-            langs.forEach(l => langRow.appendChild(chip(t('lang_' + l), state.lang === l, () => setState({ lang: l }))));
-        }
         catRow.hidden = items.length === 0;
+        // 年（西暦）：情報がある年だけを新しい順に、プルダウンで選ぶ
+        const yearBox = document.getElementById('filter-year');
+        const select = document.getElementById('year-select');
+        if (yearBox && select) {
+            const years = [...new Set(items.map(yearOf).filter(y => /^\d{4}$/.test(y)))].sort().reverse();
+            if (state.year !== 'all' && !years.includes(state.year)) state.year = 'all';
+            select.replaceChildren();
+            const all = el('option', '', t('allYears'));
+            all.value = 'all';
+            select.appendChild(all);
+            years.forEach(y => {
+                const o = el('option', '', y);
+                o.value = y;
+                select.appendChild(o);
+            });
+            select.value = state.year;
+            yearBox.hidden = years.length === 0;
+        }
     }
 
     function setState(next) {
@@ -289,6 +297,12 @@
         return li;
     }
 
+    // 情報の言語：ページの言語に合わせる。その言語の情報がこの切り替え（グッズ／パーク）に1件も無いときは全言語
+    function byPageLanguage(items) {
+        const mine = items.filter(i => i.lang === currentLang);
+        return { items: mine.length ? mine : items, fallback: mine.length === 0 && items.length > 0 };
+    }
+
     function render() {
         const list = document.getElementById('timeline-list');
         const empty = document.getElementById('timeline-empty');
@@ -302,11 +316,16 @@
         if (!data) return;
         renderViews();
         renderXToggle(data.items);
-        const items = data.items.filter(i => viewOf(i) === state.view);
+        const picked = byPageLanguage(data.items.filter(i => viewOf(i) === state.view));
+        const items = picked.items;
+        const note = document.getElementById('lang-note');
+        if (note) {
+            note.textContent = t('langFallback');
+            note.hidden = !picked.fallback;
+        }
         renderFilters(items);
         const shown = items.filter(i =>
             (state.category === 'all' || i.category === state.category) &&
-            (state.lang === 'all' || i.lang === state.lang) &&
             (state.year === 'all' || yearOf(i) === state.year));
         list.replaceChildren();
         let month = '';
@@ -333,18 +352,40 @@
         renderLinks();
     }
 
+    // 公式サイト/アカウント一覧：リージョン（日本・アメリカ・フランス・中国）を選ぶと、その地域の一覧を表示
     function renderLinks() {
         const ul = document.getElementById('sources-list');
+        const tabs = document.getElementById('sources-regions');
         if (!ul || !data) return;
+        const links = (data.links || []).filter(l => safeUrl(l.url) && REGIONS.includes(l.region));
+        const available = REGIONS.filter(r => links.some(l => l.region === r));
+        let current = region || REGION_OF_LANG[currentLang];
+        if (!available.includes(current)) current = available[0];
+        if (tabs) {
+            tabs.setAttribute('aria-label', t('regionLabel'));
+            tabs.replaceChildren();
+            available.forEach(r => {
+                const b = el('button', 'region-tab', t('region_' + r));
+                b.type = 'button';
+                b.setAttribute('aria-pressed', r === current ? 'true' : 'false');
+                b.setAttribute('aria-controls', 'sources-list');
+                b.addEventListener('click', () => {
+                    region = r;
+                    renderLinks();
+                });
+                tabs.appendChild(b);
+            });
+            tabs.hidden = available.length === 0;
+        }
         ul.replaceChildren();
-        (data.links || []).forEach(link => {
+        links.filter(l => l.region === current).forEach(link => {
             const url = safeUrl(link.url);
-            if (!url) return;
             const li = el('li');
             const a = el('a', '', (link.name && (link.name[currentLang] || link.name.en || link.name.ja)) || url);
             a.href = url;
             a.target = '_blank';
             a.rel = 'noopener noreferrer';
+            a.appendChild(el('span', 'visually-hidden', t('opens')));
             li.appendChild(a);
             ul.appendChild(li);
         });
@@ -372,6 +413,8 @@
     }
 
     // ---------- 幕開け ----------
+    // 動き自体は CSS だけで進む（ページの表示と同時に始まり、スクリプトの読み込みを待たない）。
+    // ここでは、終わったあとに幕を取り除くことと「スキップ」だけを受け持つ。
     function openCurtain() {
         const root = document.documentElement;
         const curtain = document.getElementById('acorn-curtain');
@@ -379,7 +422,6 @@
         try {
             sessionStorage.setItem('acornCurtainSeen', '1');
         } catch (e) {}
-        const skip = document.getElementById('acorn-skip');
         let done = false;
         const finish = () => {
             if (done) return;
@@ -387,15 +429,22 @@
             root.classList.remove('acorn-intro');
             curtain.remove();
         };
+        curtain.addEventListener('animationend', e => {
+            if (e.target === curtain) finish();
+        });
+        setTimeout(finish, 4000); // 念のため（動きが止められた環境でも必ず消える）
+        const skip = document.getElementById('acorn-skip');
         if (skip) {
             skip.tabIndex = 0;
-            skip.addEventListener('click', finish);
+            skip.addEventListener('click', () => {
+                curtain.classList.add('is-skipping');
+                setTimeout(finish, 260);
+            });
         }
-        // 葉がそよぐ → 看板が灯る → 幕が左右に開く → 消える
-        setTimeout(() => curtain.classList.add('is-lit'), 450);
-        setTimeout(() => curtain.classList.add('is-open'), 1500);
-        setTimeout(finish, 2900);
     }
+
+    // 幕は、ページの部品がそろったらすぐに準備する（この script は本文の最後にある）
+    openCurtain();
 
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -403,7 +452,8 @@
         });
         const saved = getSavedLanguage();
         if (saved !== 'ja') switchLanguage(saved);
-        openCurtain();
+        const yearSelect = document.getElementById('year-select');
+        if (yearSelect) yearSelect.addEventListener('change', () => setState({ year: yearSelect.value }));
         load();
     });
 })();

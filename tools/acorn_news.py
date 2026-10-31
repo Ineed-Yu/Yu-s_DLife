@@ -75,7 +75,7 @@ EVENT = re.compile(r"イベント|\bevents?\b|ハロウィ[ー]?ン|クリスマ
                    r"appear(?:s|ance)?|returns?", re.I)
 
 GOODS_CATEGORIES = ("pin", "plush", "goods", "other")           # グッズ・新商品のタイムライン
-APPEAR_CATEGORIES = ("greeting", "show", "parade", "event")     # グリーティング・ショーのタイムライン
+APPEAR_CATEGORIES = ("greeting", "show", "parade", "event")     # 「パーク」のタイムライン
 CATEGORIES = GOODS_CATEGORIES + APPEAR_CATEGORIES
 
 

@@ -1,5 +1,5 @@
 {
-  "_説明": "タイムラインの上に常に出す「公式の情報源」へのリンク。SNS の投稿は自動で集められないため、ここから公式アカウントを開けるようにする。確認できた公式のものだけを載せる。",
+  "_説明": "Acorn Club の「公式サイト/アカウント一覧」。region（jp=日本・us=アメリカ・fr=フランス・cn=中国）ごとに切り替えて表示する。確認できた公式のものだけを載せる。",
   "links": [
     {
       "name": {
@@ -7,7 +7,8 @@
         "en": "Tokyo Disney Resort (official)"
       },
       "url": "https://www.tokyodisneyresort.jp/",
-      "kind": "web"
+      "kind": "web",
+      "region": "jp"
     },
     {
       "name": {
@@ -15,7 +16,8 @@
         "en": "Tokyo Disney Resort on X (@TDR_PR)"
       },
       "url": "https://x.com/TDR_PR",
-      "kind": "sns"
+      "kind": "sns",
+      "region": "jp"
     },
     {
       "name": {
@@ -23,7 +25,8 @@
         "en": "shopDisney Japan"
       },
       "url": "https://shopdisney.disney.co.jp/",
-      "kind": "web"
+      "kind": "web",
+      "region": "jp"
     },
     {
       "name": {
@@ -31,7 +34,8 @@
         "en": "shopDisney (US)"
       },
       "url": "https://www.shopdisney.com/",
-      "kind": "web"
+      "kind": "web",
+      "region": "us"
     },
     {
       "name": {
@@ -39,41 +43,26 @@
         "en": "Disney Parks Blog (official)"
       },
       "url": "https://disneyparksblog.com/",
-      "kind": "web"
+      "kind": "web",
+      "region": "us"
     },
     {
       "name": {
-        "ja": "上海ディズニーリゾート公式サイト",
-        "en": "Shanghai Disney Resort (official)",
-        "zh": "上海迪士尼度假区官方网站"
+        "ja": "ディズニーランド・リゾート（カリフォルニア）公式 Instagram（@disneyland）",
+        "en": "Disneyland Resort on Instagram (@disneyland)"
       },
-      "url": "https://www.shanghaidisneyresort.com/",
-      "kind": "web"
+      "url": "https://www.instagram.com/disneyland/",
+      "kind": "sns",
+      "region": "us"
     },
     {
       "name": {
-        "ja": "上海ディズニーリゾート公式 Instagram（@shanghaidisneyresort）",
-        "en": "Shanghai Disney Resort on Instagram (@shanghaidisneyresort)"
+        "ja": "ウォルト・ディズニー・ワールド公式 Instagram（@waltdisneyworld）",
+        "en": "Walt Disney World on Instagram (@waltdisneyworld)"
       },
-      "url": "https://www.instagram.com/shanghaidisneyresort/",
-      "kind": "sns"
-    },
-    {
-      "name": {
-        "ja": "香港ディズニーランド公式サイト",
-        "en": "Hong Kong Disneyland (official)",
-        "zh": "香港迪士尼樂園官方網站"
-      },
-      "url": "https://www.hongkongdisneyland.com/",
-      "kind": "web"
-    },
-    {
-      "name": {
-        "ja": "香港ディズニーランド公式 Instagram（@hkdisneyland）",
-        "en": "Hong Kong Disneyland on Instagram (@hkdisneyland)"
-      },
-      "url": "https://www.instagram.com/hkdisneyland/",
-      "kind": "sns"
+      "url": "https://www.instagram.com/waltdisneyworld/",
+      "kind": "sns",
+      "region": "us"
     },
     {
       "name": {
@@ -82,7 +71,8 @@
         "fr": "Disneyland Paris (site officiel)"
       },
       "url": "https://www.disneylandparis.com/",
-      "kind": "web"
+      "kind": "web",
+      "region": "fr"
     },
     {
       "name": {
@@ -90,23 +80,46 @@
         "en": "Disneyland Paris on Instagram (@disneylandparis)"
       },
       "url": "https://www.instagram.com/disneylandparis/",
-      "kind": "sns"
+      "kind": "sns",
+      "region": "fr"
     },
     {
       "name": {
-        "ja": "ディズニーランド・リゾート（カリフォルニア）公式 Instagram（@disneyland）",
-        "en": "Disneyland Resort on Instagram (@disneyland)"
+        "ja": "上海ディズニーリゾート公式サイト",
+        "en": "Shanghai Disney Resort (official)",
+        "zh": "上海迪士尼度假区官方网站"
       },
-      "url": "https://www.instagram.com/disneyland/",
-      "kind": "sns"
+      "url": "https://www.shanghaidisneyresort.com/",
+      "kind": "web",
+      "region": "cn"
     },
     {
       "name": {
-        "ja": "ウォルト・ディズニー・ワールド公式 Instagram（@waltdisneyworld）",
-        "en": "Walt Disney World on Instagram (@waltdisneyworld)"
+        "ja": "上海ディズニーリゾート公式 Instagram（@shanghaidisneyresort）",
+        "en": "Shanghai Disney Resort on Instagram (@shanghaidisneyresort)"
       },
-      "url": "https://www.instagram.com/waltdisneyworld/",
-      "kind": "sns"
+      "url": "https://www.instagram.com/shanghaidisneyresort/",
+      "kind": "sns",
+      "region": "cn"
+    },
+    {
+      "name": {
+        "ja": "香港ディズニーランド公式サイト",
+        "en": "Hong Kong Disneyland (official)",
+        "zh": "香港迪士尼樂園官方網站"
+      },
+      "url": "https://www.hongkongdisneyland.com/",
+      "kind": "web",
+      "region": "cn"
+    },
+    {
+      "name": {
+        "ja": "香港ディズニーランド公式 Instagram（@hkdisneyland）",
+        "en": "Hong Kong Disneyland on Instagram (@hkdisneyland)"
+      },
+      "url": "https://www.instagram.com/hkdisneyland/",
+      "kind": "sns",
+      "region": "cn"
     }
   ]
 }
