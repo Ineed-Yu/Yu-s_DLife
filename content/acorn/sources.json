@@ -24,6 +24,34 @@
       "aggregator": true
     },
     {
+      "id": "gnews-en-parks",
+      "name": "Google News (English, overseas parks)",
+      "lang": "en",
+      "aggregator": true,
+      "url": "https://news.google.com/rss/search?q=%22Clarice%22+%28%22Shanghai+Disneyland%22+OR+%22Hong+Kong+Disneyland%22+OR+%22Disneyland+Paris%22%29&hl=en-US&gl=US&ceid=US%3Aen"
+    },
+    {
+      "id": "gnews-zh-cn",
+      "name": "Google 新闻（简体中文）",
+      "lang": "zh",
+      "aggregator": true,
+      "url": "https://news.google.com/rss/search?q=%28%E5%85%8B%E6%8B%89%E8%8E%89%E4%B8%9D+OR+%E5%85%8B%E6%8B%89%E4%B8%BD%E4%B8%9D%29+%E8%BF%AA%E5%A3%AB%E5%B0%BC&hl=zh-CN&gl=CN&ceid=CN%3Azh-Hans"
+    },
+    {
+      "id": "gnews-zh-hk",
+      "name": "Google 新聞（繁體中文・香港）",
+      "lang": "zh",
+      "aggregator": true,
+      "url": "https://news.google.com/rss/search?q=%28%E5%85%8B%E6%8B%89%E8%8E%89%E7%B5%B2+OR+%E5%85%8B%E6%8B%89%E8%8E%89%E4%B8%9D+OR+Clarice%29+%E8%BF%AA%E5%A3%AB%E5%B0%BC&hl=zh-HK&gl=HK&ceid=HK%3Azh-Hant"
+    },
+    {
+      "id": "gnews-fr",
+      "name": "Google Actualités (français)",
+      "lang": "fr",
+      "aggregator": true,
+      "url": "https://news.google.com/rss/search?q=%22Clarice%22+Disney&hl=fr&gl=FR&ceid=FR%3Afr"
+    },
+    {
       "id": "tdrexplorer",
       "name": "TDR Explorer",
       "lang": "en",

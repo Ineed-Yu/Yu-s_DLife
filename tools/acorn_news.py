@@ -42,23 +42,27 @@ DATA_DIR = ROOT / "content" / "acorn"
 OUT_FILE = ROOT / "acorn-club" / "news.json"
 JST = dt.timezone(dt.timedelta(hours=9))
 
-MAX_ITEMS = 300               # タイムラインに残す最大件数
-MAX_AGE_DAYS = 730            # これより古い情報は載せない（約2年）
+MAX_ITEMS = 1000              # タイムラインに残す最大件数（年ごとに選んで見られるよう、過去の分も残す）
+MAX_AGE_DAYS = 3650           # これより古い情報は載せない（約10年）
 MAX_FEED_BYTES = 3 * 1024 * 1024
 USER_AGENT = "AcornClubTimeline/1.0 (+https://divaclarice321.com/acorn-club/; unofficial fan page)"
 
 # ---------------------------------------------------------------- 絞り込みの条件
-CLARICE = re.compile(r"クラリス|clarice", re.I)
+CLARICE = re.compile(r"クラリス|clarice|克拉莉丝|克拉丽丝|克拉莉絲|克拉麗絲", re.I)
 DISNEY = re.compile(r"ディズニー|disney|チップ|デール|chip\s*(?:'n'|n'|and|&)?\s*dale|ＴＤＲ|TDR|TDL|TDS|"
-                    r"東京ディズニー|ショップディズニー|ディズニーストア|shopdisney|disneyland|epcot|magic kingdom", re.I)
+                    r"東京ディズニー|ショップディズニー|ディズニーストア|shopdisney|disneyland|epcot|magic kingdom|"
+                    r"迪士尼|奇奇|蒂蒂|HKDL|SHDL|DLP", re.I)
 OTHER_CLARICE = re.compile(r"カリオストロ|ルパン|lupin|cagliostro|starling|スターリング|羊たちの沈黙|silence of the lambs|"
-                           r"hannibal|ハンニバル|lispector|リスペクトル", re.I)
-PIN = re.compile(r"ピンバッ?ジ|ピン(?:トレ|セット|バッチ)|\bpins?\b|pin trading|lanyard", re.I)
-PLUSH = re.compile(r"ぬいぐるみ|ぬいば|ぬいバッジ|ツムツム|plush|tsum\s*tsum|stuffed|nuimos", re.I)
-GOODS = re.compile(r"グッズ|新商品|新作|発売|販売|登場|コレクション|ストア|ショップ|キーチェーン|ストラップ|カチューシャ|"
+                           r"hannibal|ハンニバル|lispector|リスペクトル|鲁邦|魯邦|卡里奥斯特罗|卡里奧斯特羅|沉默的羔羊|"
+                           r"沉默的羔羊|史达琳|史達琳|silence des agneaux", re.I)
+PIN = re.compile(r"ピンバッ?ジ|ピン(?:トレ|セット|バッチ)|\bpins?\b|pin trading|lanyard|徽章|胸针|胸針|pin's", re.I)
+PLUSH = re.compile(r"ぬいぐるみ|ぬいば|ぬいバッジ|ツムツム|plush|tsum\s*tsum|stuffed|nuimos|毛绒|毛絨|公仔|玩偶|peluche", re.I)
+GOODS = re.compile(r"グッズ|新商品|新作|発売|販売|新登場|コレクション|ストア|ショップ|キーチェーン|ストラップ|カチューシャ|"
                    r"ポーチ|バッグ|マグ|タオル|ステッカー|フィギュア|お菓子|スーベニア|"
                    r"merch|merchandise|collection|release|ears|loungefly|mug|apparel|figure|ornament|"
-                   r"spirit jersey|keychain|souvenir|shopdisney|new arrivals?|now available|coming soon", re.I)
+                   r"spirit jersey|keychain|souvenir|shopdisney|new arrivals?|now available|coming soon|"
+                   r"周边|周邊|商品|新品|上市|发售|發售|限定|精品|产品|產品|"
+                   r"produits?|boutique|nouveaut[ée]s?|collection|en vente|sortie", re.I)
 CATEGORIES = ("pin", "plush", "goods", "other")
 
 

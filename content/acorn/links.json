@@ -1,10 +1,112 @@
 {
   "_説明": "タイムラインの上に常に出す「公式の情報源」へのリンク。SNS の投稿は自動で集められないため、ここから公式アカウントを開けるようにする。確認できた公式のものだけを載せる。",
   "links": [
-    {"name": {"ja": "東京ディズニーリゾート公式サイト", "en": "Tokyo Disney Resort (official)"}, "url": "https://www.tokyodisneyresort.jp/", "kind": "web"},
-    {"name": {"ja": "東京ディズニーリゾート公式 X（@TDR_PR）", "en": "Tokyo Disney Resort on X (@TDR_PR)"}, "url": "https://x.com/TDR_PR", "kind": "sns"},
-    {"name": {"ja": "ショップディズニー（日本）", "en": "shopDisney Japan"}, "url": "https://shopdisney.disney.co.jp/", "kind": "web"},
-    {"name": {"ja": "shopDisney（米国）", "en": "shopDisney (US)"}, "url": "https://www.shopdisney.com/", "kind": "web"},
-    {"name": {"ja": "Disney Parks Blog（米国の公式ブログ）", "en": "Disney Parks Blog (official)"}, "url": "https://disneyparksblog.com/", "kind": "web"}
+    {
+      "name": {
+        "ja": "東京ディズニーリゾート公式サイト",
+        "en": "Tokyo Disney Resort (official)"
+      },
+      "url": "https://www.tokyodisneyresort.jp/",
+      "kind": "web"
+    },
+    {
+      "name": {
+        "ja": "東京ディズニーリゾート公式 X（@TDR_PR）",
+        "en": "Tokyo Disney Resort on X (@TDR_PR)"
+      },
+      "url": "https://x.com/TDR_PR",
+      "kind": "sns"
+    },
+    {
+      "name": {
+        "ja": "ショップディズニー（日本）",
+        "en": "shopDisney Japan"
+      },
+      "url": "https://shopdisney.disney.co.jp/",
+      "kind": "web"
+    },
+    {
+      "name": {
+        "ja": "shopDisney（米国）",
+        "en": "shopDisney (US)"
+      },
+      "url": "https://www.shopdisney.com/",
+      "kind": "web"
+    },
+    {
+      "name": {
+        "ja": "Disney Parks Blog（米国の公式ブログ）",
+        "en": "Disney Parks Blog (official)"
+      },
+      "url": "https://disneyparksblog.com/",
+      "kind": "web"
+    },
+    {
+      "name": {
+        "ja": "上海ディズニーリゾート公式サイト",
+        "en": "Shanghai Disney Resort (official)",
+        "zh": "上海迪士尼度假区官方网站"
+      },
+      "url": "https://www.shanghaidisneyresort.com/",
+      "kind": "web"
+    },
+    {
+      "name": {
+        "ja": "上海ディズニーリゾート公式 Instagram（@shanghaidisneyresort）",
+        "en": "Shanghai Disney Resort on Instagram (@shanghaidisneyresort)"
+      },
+      "url": "https://www.instagram.com/shanghaidisneyresort/",
+      "kind": "sns"
+    },
+    {
+      "name": {
+        "ja": "香港ディズニーランド公式サイト",
+        "en": "Hong Kong Disneyland (official)",
+        "zh": "香港迪士尼樂園官方網站"
+      },
+      "url": "https://www.hongkongdisneyland.com/",
+      "kind": "web"
+    },
+    {
+      "name": {
+        "ja": "香港ディズニーランド公式 Instagram（@hkdisneyland）",
+        "en": "Hong Kong Disneyland on Instagram (@hkdisneyland)"
+      },
+      "url": "https://www.instagram.com/hkdisneyland/",
+      "kind": "sns"
+    },
+    {
+      "name": {
+        "ja": "ディズニーランド・パリ公式サイト",
+        "en": "Disneyland Paris (official)",
+        "fr": "Disneyland Paris (site officiel)"
+      },
+      "url": "https://www.disneylandparis.com/",
+      "kind": "web"
+    },
+    {
+      "name": {
+        "ja": "ディズニーランド・パリ公式 Instagram（@disneylandparis）",
+        "en": "Disneyland Paris on Instagram (@disneylandparis)"
+      },
+      "url": "https://www.instagram.com/disneylandparis/",
+      "kind": "sns"
+    },
+    {
+      "name": {
+        "ja": "ディズニーランド・リゾート（カリフォルニア）公式 Instagram（@disneyland）",
+        "en": "Disneyland Resort on Instagram (@disneyland)"
+      },
+      "url": "https://www.instagram.com/disneyland/",
+      "kind": "sns"
+    },
+    {
+      "name": {
+        "ja": "ウォルト・ディズニー・ワールド公式 Instagram（@waltdisneyworld）",
+        "en": "Walt Disney World on Instagram (@waltdisneyworld)"
+      },
+      "url": "https://www.instagram.com/waltdisneyworld/",
+      "kind": "sns"
+    }
   ]
 }

@@ -488,22 +488,23 @@
     <!-- /partial:home-button -->
 
     <!-- Acorn Club：クラリスの新着グッズ情報のタイムライン（非公式・非営利のファンページ）
-         データは /acorn-club/news.json（tools/acorn_news.py が2時間ごとに自動で集める）。記事の本文・写真は載せず、見出しとリンクだけ -->
+         データは /acorn-club/news.json（tools/acorn_news.py が自動で集める）。記事の本文・写真は載せず、見出しとリンクだけ -->
     <main class="club" id="acorn-main">
         <header class="marquee">
             <div class="marquee-inner">
                 <svg class="marquee-acorn" aria-hidden="true"><use href="#acorn-mark"/></svg>
                 <h1 class="marquee-name">Acorn Club</h1>
                 <p class="marquee-lead"
-                   data-ja="クラリスの新しいグッズ、ピンバッジ、ぬいぐるみの知らせを集めています。"
-                   data-en="News of new Clarice merchandise, pins and plush, gathered in one place."
-                   data-fr="Les nouveautés Clarice : produits, pin's et peluches, réunis au même endroit."
-                   data-zh="汇集Clarice的新周边、徽章和毛绒玩偶的消息。">クラリスの新しいグッズ、ピンバッジ、ぬいぐるみの知らせを集めています。</p>
+                   data-ja="ディズニーキャラクター・クラリスの非公式ファンページです。"
+                   data-en="An unofficial fan page for Clarice, the Disney character."
+                   data-fr="Une page de fans non officielle consacrée à Clarice, personnage Disney."
+                   data-zh="迪士尼角色克拉莉丝的非官方粉丝页面。">ディズニーキャラクター・クラリスの非公式ファンページです。</p>
             </div>
         </header>
 
         <nav class="filters" aria-label="絞り込み">
             <div class="filter-row" id="filter-category" role="group"></div>
+            <div class="filter-row filter-year" id="filter-year" role="group"></div>
             <div class="filter-row filter-lang" id="filter-lang" role="group"></div>
         </nav>
 
@@ -518,18 +519,18 @@
             <h2 class="sources-title" id="sources-title"
                 data-ja="公式の情報源" data-en="Official sources" data-fr="Sources officielles" data-zh="官方信息来源">公式の情報源</h2>
             <p class="sources-text"
-               data-ja="SNS の投稿は自動では集められません。公式アカウントやサイトで最新の発表を確認できます。"
-               data-en="Social posts can't be collected automatically. Check the official accounts and sites for the latest announcements."
-               data-fr="Les publications des réseaux sociaux ne sont pas collectées automatiquement. Consultez les comptes et sites officiels."
-               data-zh="社交媒体的帖子无法自动收集。最新公告请查看官方账号和网站。">SNS の投稿は自動では集められません。公式アカウントやサイトで最新の発表を確認できます。</p>
+               data-ja="最新の発表は、各パークやショップの公式サイト・公式アカウントで確認できます。"
+               data-en="See the official sites and accounts of each park and shop for the latest announcements."
+               data-fr="Consultez les sites et comptes officiels de chaque parc et boutique pour les dernières annonces."
+               data-zh="最新公告请查看各乐园和商店的官方网站与官方账号。">最新の発表は、各パークやショップの公式サイト・公式アカウントで確認できます。</p>
             <ul class="sources-list" id="sources-list"></ul>
         </section>
 
         <p class="club-note"
-           data-ja="※ 個人による非公式・非営利のファンページです。ウォルト・ディズニー・カンパニーおよび関連会社とは一切関係ありません。掲載しているのは各サイトの見出しとリンクだけで、2時間ごとに自動で集めています。価格・発売日・在庫は必ずリンク先でご確認ください。"
-           data-en="* An unofficial, non-commercial fan page made by an individual, not affiliated with The Walt Disney Company or its affiliates. Only headlines and links are shown, collected automatically every two hours. Always check prices, dates and availability on the linked page."
-           data-fr="* Page de fans non officielle et non commerciale, sans lien avec The Walt Disney Company ni ses filiales. Seuls les titres et les liens sont affichés, collectés automatiquement toutes les deux heures. Vérifiez toujours prix, dates et disponibilité sur la page liée."
-           data-zh="※ 本页面为个人制作的非官方、非营利粉丝页面，与华特迪士尼公司及其关联公司无任何关系。仅显示各网站的标题和链接，每两小时自动收集。价格、发售日和库存请务必在链接页面确认。">※ 個人による非公式・非営利のファンページです。ウォルト・ディズニー・カンパニーおよび関連会社とは一切関係ありません。掲載しているのは各サイトの見出しとリンクだけで、2時間ごとに自動で集めています。価格・発売日・在庫は必ずリンク先でご確認ください。</p>
+           data-ja="※ 個人による非公式・非営利のファンページです。ウォルト・ディズニー・カンパニーおよび関連会社とは一切関係ありません。商品の詳細は各リンク先でご確認ください。"
+           data-en="* An unofficial, non-commercial fan page made by an individual, not affiliated with The Walt Disney Company or its affiliates. Please check each linked page for product details."
+           data-fr="* Page de fans non officielle et non commerciale, sans lien avec The Walt Disney Company ni ses filiales. Consultez chaque page liée pour le détail des produits."
+           data-zh="※ 本页面为个人制作的非官方、非营利粉丝页面，与华特迪士尼公司及其关联公司无任何关系。商品详情请查看各链接页面。">※ 個人による非公式・非営利のファンページです。ウォルト・ディズニー・カンパニーおよび関連会社とは一切関係ありません。商品の詳細は各リンク先でご確認ください。</p>
     </main>
 
     <!-- partial:footer -->

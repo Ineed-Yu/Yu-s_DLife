@@ -232,6 +232,12 @@ html.acorn-intro body {
     outline: 2px solid var(--playbill);
     outline-offset: 2px;
 }
+.filter-year .filter-chip {
+    font-variant-numeric: tabular-nums;
+}
+.filter-row[hidden] {
+    display: none;
+}
 .filter-lang .filter-chip {
     font-size: 12px;
     padding: 4px 12px;
