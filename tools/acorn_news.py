@@ -80,7 +80,7 @@ GOODS = re.compile(r"グッズ|新商品|新作|発売|販売|新登場|コレ�
                    r"スリッパ|パズル|ジグソー|パスケース|ショルダー|プラッシー|ダイソー|出店|ポップアップ|ケース|ブランケット|"
                    r"ショーツ|マット|きっぷ|切符|フリーきっぷ|スナップフォト|"
                    r"merch|merchandise|collection|release|\bears\b|loungefly|\bmugs?\b|apparel|figure|ornament|"
-                   r"spirit jersey|keychain|souvenir|shopdisney|new arrivals?|now available|coming soon|snacks?|treats?|menu|"
+                   r"spirit jersey|keychain|souvenir|shopdisney|disney ?store|ディズニーストア|うるぽちゃ|urupocha|new arrivals?|now available|coming soon|snacks?|treats?|menu|"
                    r"周边|周邊|商品|新品|上市|发售|發售|精品|产品|產品|美食|"
                    r"produits?|boutique|nouveaut[ée]s?|collection|en vente|sortie", re.I)
 # パーク：クラリスに「会う・見る」ための情報だけ（ショー・パレード・グリーティング・貸切や特別営業などでの登場）
@@ -112,7 +112,8 @@ GAME = re.compile(r"ツムツム(?!ぬいぐるみ)|新ツム|Tsum ?Tsum|マジ�
                   r"ドリームライトバレー|Dreamlight Valley|ツイステ|ディズニー ?ソラリウム|LINE ?GAME|ゲームアプリ|スマホゲーム|"
                   r"アプリゲーム|ゲーム内|イベント開催中.*ゲーム|\bgame\b|\bapp\b", re.I)
 # 物としてのグッズの言葉（ゲームの名前が入っていても、ぬいぐるみ等の商品の記事はグッズ）
-PHYSICAL = re.compile(r"ぬいぐるみ|ぬいば|マスコット|プライズ|くじ|グッズ|フィギュア|発売|販売|plush|merch", re.I)
+PHYSICAL = re.compile(r"ぬいぐるみ|ぬいば|マスコット|プライズ|くじ|グッズ|フィギュア|発売|販売|plush|merch|\btoys?\b|soft toy|"
+                      r"disney ?store|ディズニーストア|shopdisney|\d+\s*cm\b", re.I)
 # 映像作品として載せるのは、作品の中のクラリス（チップとデールのマドンナ）だと分かるときだけ
 CLARICE_WORK = re.compile(r"クラリス|clarice|クラリス|チップ|デール|chip|dale|パークライフ|Park Life|リス君は歌姫がお好き|Two Chips and a Miss", re.I)
 
@@ -569,6 +570,60 @@ def add_images(items: list[dict], limit: int, dry_run: bool, get=http_get, post=
     return tried
 
 
+# ---------------------------------------------------------------- 見出しの自動翻訳（Claude API）
+# ページの言語（日本語・英語・フランス語・中国語）に合わせて見出しだけを表示するため、見出しを4言語に訳して t に保存する。
+# キー（Secrets の ANTHROPIC_API_KEY。ブログの翻訳と共通）が無ければ何もしない。月の上限（見出しの件数）を超えたら止まる。
+TRANSLATE_STATE = DATA_DIR / "translate_state.json"
+TRANSLATE_LANGS = ("ja", "en", "fr", "zh")
+TRANSLATE_DEFAULT_MONTHLY = 2000     # 月に訳す見出しの件数の上限（Variables の ACORN_TRANSLATE_MONTHLY_LIMIT で変更）
+TRANSLATE_BATCH = 40
+TRANSLATE_SYSTEM = """You translate short news headlines for an unofficial fan page about Clarice, the Disney chipmunk
+(Chip 'n' Dale's friend). For each headline, give natural headlines in Japanese, English, French and Simplified Chinese.
+Rules: translate faithfully and briefly; do not add information; keep product names, brand names and quoted titles recognizable
+(use the official name in that language when you know it, e.g. クラリス = Clarice, チップとデール = Chip 'n' Dale,
+東京ディズニーランド = Tokyo Disneyland); keep numbers and dates as they are.
+Reply with only a JSON array, one object per headline in the same order: [{"ja": "...", "en": "...", "fr": "...", "zh": "..."}]"""
+
+
+def translate_titles(items: list[dict], api_key: str, model: str, limit: int, now: dt.datetime, call=None) -> int:
+    """まだ訳の無い見出しを新しい順に訳す。戻り値は訳した件数。"""
+    if call is None:
+        from translate_blog import call_claude as call  # ブログの翻訳と同じ呼び出し（再試行つき）
+    state = load_json(TRANSLATE_STATE, {})
+    month = now.strftime("%Y-%m")
+    if state.get("month") != month:
+        state = {"month": month, "count": 0}
+    todo = [i for i in sorted(items, key=lambda x: x.get("date", ""), reverse=True)
+            if i.get("title") and i.get("origin") != "x"
+            and any(l != i.get("lang") and not (i.get("t") or {}).get(l) for l in TRANSLATE_LANGS)]
+    done = 0
+    for n in range(0, len(todo), TRANSLATE_BATCH):
+        batch = todo[n:n + TRANSLATE_BATCH]
+        if state["count"] + len(batch) > limit:
+            print(f"::notice title=見出しの翻訳::今月の上限（{limit} 件）に達したため止めました")
+            break
+        text = call(TRANSLATE_SYSTEM, json.dumps([i["title"] for i in batch], ensure_ascii=False), api_key, model)
+        m = re.search(r"\[.*\]", text, re.S)
+        try:
+            rows = json.loads(m.group(0)) if m else None
+        except json.JSONDecodeError:
+            rows = None
+        state["count"] += len(batch)
+        if not isinstance(rows, list) or len(rows) != len(batch):
+            print("::warning title=見出しの翻訳::翻訳結果の形が合わなかったため、この分は使いません")
+            continue
+        for item, row in zip(batch, rows):
+            if not isinstance(row, dict):
+                continue
+            tr = {l: clean_text(str(row.get(l, "")), 200) for l in TRANSLATE_LANGS if l != item.get("lang")}
+            tr = {l: v for l, v in tr.items() if v and not re.search(r"<\s*script|https?://", v, re.I)}
+            if tr:
+                item["t"] = tr
+                done += 1
+    write_if_changed(TRANSLATE_STATE, dump(state))
+    return done
+
+
 # ---------------------------------------------------------------- X（旧 Twitter）の投稿
 # 有料の X API（読んだ投稿の件数に応じた従量課金）を使う。キー（Secrets の X_BEARER_TOKEN）が無ければ何もしない。
 # - 検索は「最近の投稿の検索」。前回の続きから読む（since_id）。1回に読むのは取得元ごとに最大 50 件
@@ -669,6 +724,8 @@ def build_timeline(collected: list[dict], manual: list[dict], exclude: dict, now
             item["url"] = it["article"]  # Google ニュース経由のものは、元の記事へ直接リンクする
         if (it.get("image") or "").startswith("https://"):
             item["image"] = it["image"]
+        if isinstance(it.get("t"), dict) and it["t"]:
+            item["t"] = it["t"]
         items.append(item)
     seen, unique = set(), []
     for it in sorted(items, key=lambda x: x["date"], reverse=True):
@@ -851,6 +908,20 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search
     tried += add_images(collected, IMAGE_TRIES_PER_RUN - tried, False)
     if tried:
         print(f"記事の画像を {tried} 件調べました")
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+    if api_key:
+        model = os.environ.get("ACORN_TRANSLATE_MODEL") or os.environ.get("BLOG_TRANSLATE_MODEL") or "claude-sonnet-5-5"
+        try:
+            limit = int(os.environ.get("ACORN_TRANSLATE_MONTHLY_LIMIT") or TRANSLATE_DEFAULT_MONTHLY)
+        except ValueError:
+            limit = TRANSLATE_DEFAULT_MONTHLY
+        try:
+            n = translate_titles(manual + collected, api_key, model, limit, now)
+            print(f"見出しを {n} 件翻訳しました")
+        except Exception as e:  # 翻訳に失敗しても収集は止めない
+            print(f"::warning title=見出しの翻訳::翻訳できませんでした（{type(e).__name__}: {str(e)[:120]}）")
+    else:
+        print("見出しの翻訳：キー（ANTHROPIC_API_KEY）が未登録のため、元の言語で表示します")
     changed = write_if_changed(DATA_DIR / "collected.json", dump(collected))
     if manual:
         changed |= write_if_changed(DATA_DIR / "manual.json", dump(manual))
