@@ -491,9 +491,12 @@ body {
     margin-top: 28px;
 }
 
-/* フッターはフィルムから少し離す */
+/* フッターはフィルムから少し離し、ページが短いときも画面の下端にそろえる */
+body > main {
+    margin-bottom: 56px;
+}
 .site-footer {
-    margin-top: 56px;
+    margin-top: auto;
 }
 
 /* ---------- 画面の大きさに合わせた配置 ----------
