@@ -1,5 +1,5 @@
 {
-  "_説明": "Acorn Club のタイムラインに載せる情報の取得元。RSS / Atom の配信（記事のタイトル・リンク・掲載元・日付だけを取り込み、本文や写真は保存しない）と、type が x のものは有料の X API の検索（キー X_BEARER_TOKEN を登録するまでは動かない。保存は投稿 ID などだけで、表示は X の公式の埋め込み）。追加・削除したら PR にすると、PR 上で試し取得の結果が出ます（X は費用がかかるため試し取得しない）。 backfill: true の Google ニュースは、過去分の取り込み（backfill）で期間を区切って検索する。 kind: blog=情報サイト・ブログ、search=検索（ブログ・個人サイト・ショップなど幅広い）、sns=掲示板など。安全の確認（is_safe_url）はすべての情報に行う。",
+  "_説明": "Acorn Club のタイムラインに載せる情報の取得元。RSS / Atom の配信（記事のタイトル・リンク・掲載元・日付だけを取り込み、本文や写真は保存しない）と、type が x のものは有料の X API の検索（キー X_BEARER_TOKEN を登録するまでは動かない。保存は投稿 ID などだけで、表示は X の公式の埋め込み）。追加・削除したら PR にすると、PR 上で試し取得の結果が出ます（X は費用がかかるため試し取得しない）。 backfill: true の Google ニュースは、過去分の取り込み（backfill）で期間を区切って検索する。 kind: blog=情報サイト・ブログ、search=検索（ブログ・個人サイト・ショップなど幅広い）、sns=掲示板など。安全の確認（is_safe_url）はすべての情報に行う。 disney_site: ディズニー専門サイト（「ディズニー」の語を求めない）。clarice_search: クラリスでのサイト内検索（見出しに「クラリス」が無くても載せる。過去分はページをさかのぼる）。site: Bing のサイト内検索（RSS の無いサイト用）。",
   "sources": [
     {
       "id": "gnews-ja",
@@ -58,20 +58,26 @@
       "id": "tdrexplorer",
       "name": "TDR Explorer",
       "lang": "en",
-      "url": "https://tdrexplorer.com/?s=clarice&feed=rss2"
+      "url": "https://tdrexplorer.com/?s=clarice&feed=rss2",
+      "disney_site": true,
+      "clarice_search": true
     },
     {
       "id": "wdwinfo",
       "name": "WDWInfo",
       "lang": "en",
-      "url": "https://www.wdwinfo.com/?s=clarice&feed=rss2"
+      "url": "https://www.wdwinfo.com/?s=clarice&feed=rss2",
+      "disney_site": true,
+      "clarice_search": true
     },
     {
       "id": "disneyparksblog",
       "name": "Disney Parks Blog",
       "lang": "en",
       "official": true,
-      "url": "https://disneyparksblog.com/?s=clarice&feed=rss2"
+      "url": "https://disneyparksblog.com/?s=clarice&feed=rss2",
+      "disney_site": true,
+      "clarice_search": true
     },
     {
       "id": "laughingplace",
@@ -158,49 +164,63 @@
       "name": "Dtimes",
       "lang": "ja",
       "url": "https://dtimes.jp/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&feed=rss2",
-      "kind": "blog"
+      "kind": "blog",
+      "disney_site": true,
+      "clarice_search": true
     },
     {
       "id": "dpost",
       "name": "Dpost",
       "lang": "ja",
       "url": "https://dpost.jp/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&feed=rss2",
-      "kind": "blog"
+      "kind": "blog",
+      "disney_site": true,
+      "clarice_search": true
     },
     {
       "id": "mezzomiki",
       "name": "MezzoMiki",
       "lang": "ja",
       "url": "https://mezzomiki.jp/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&feed=rss2",
-      "kind": "blog"
+      "kind": "blog",
+      "disney_site": true,
+      "clarice_search": true
     },
     {
       "id": "wdwnt",
       "name": "WDW News Today",
       "lang": "en",
       "url": "https://wdwnt.com/?s=clarice&feed=rss2",
-      "kind": "blog"
+      "kind": "blog",
+      "disney_site": true,
+      "clarice_search": true
     },
     {
       "id": "insidethemagic",
       "name": "Inside the Magic",
       "lang": "en",
       "url": "https://insidethemagic.net/?s=clarice&feed=rss2",
-      "kind": "blog"
+      "kind": "blog",
+      "disney_site": true,
+      "clarice_search": true
     },
     {
       "id": "mickeyblog",
       "name": "MickeyBlog",
       "lang": "en",
       "url": "https://mickeyblog.com/?s=clarice&feed=rss2",
-      "kind": "blog"
+      "kind": "blog",
+      "disney_site": true,
+      "clarice_search": true
     },
     {
       "id": "dlptips",
       "name": "DLP Tips",
       "lang": "en",
       "url": "https://dlptips.com/?s=clarice&feed=rss2",
-      "kind": "blog"
+      "kind": "blog",
+      "disney_site": true,
+      "clarice_search": true
     },
     {
       "id": "hatena-ja",
@@ -234,6 +254,33 @@
       "url": "https://www.reddit.com/search.rss?q=clarice%20disney&sort=new",
       "kind": "sns",
       "safe_check": true
+    },
+    {
+      "id": "tdrnavi",
+      "name": "TDR NAVI（Bing のサイト内検索）",
+      "lang": "ja",
+      "url": "https://www.bing.com/search?q=site%3Atdrnavi.jp+%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&format=rss&mkt=ja-JP",
+      "kind": "search",
+      "disney_site": true,
+      "site": "tdrnavi.jp"
+    },
+    {
+      "id": "bing-site-mezzomiki",
+      "name": "MezzoMiki（Bing のサイト内検索）",
+      "lang": "ja",
+      "url": "https://www.bing.com/search?q=site%3Amezzomiki.jp+%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&format=rss&mkt=ja-JP",
+      "kind": "search",
+      "disney_site": true,
+      "site": "mezzomiki.jp"
+    },
+    {
+      "id": "bing-site-dtimes",
+      "name": "Dtimes（Bing のサイト内検索）",
+      "lang": "ja",
+      "url": "https://www.bing.com/search?q=site%3Adtimes.jp+%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&format=rss&mkt=ja-JP",
+      "kind": "search",
+      "disney_site": true,
+      "site": "dtimes.jp"
     }
   ]
 }

@@ -72,11 +72,11 @@ GOODS = re.compile(r"グッズ|新商品|新作|発売|販売|新登場|コレ�
                    r"周边|周邊|商品|新品|上市|发售|發售|限定|精品|产品|產品|"
                    r"produits?|boutique|nouveaut[ée]s?|collection|en vente|sortie", re.I)
 # 登場情報（グリーティング・ショー・パレード・イベント）
-GREETING = re.compile(r"グリーティング|ミート|meet[\s-]*(?:and|&|'n'|n)?[\s-]*greet|greeting|character dining|"
+GREETING = re.compile(r"グリーティング|ミート|会える|会おう|会いに|会う方法|meet[\s-]*(?:and|&|'n'|n)?[\s-]*greet|greeting|character dining|"
                       r"キャラクターダイニング|キャラダイ|见面|見面|合影|rencontre", re.I)
 PARADE = re.compile(r"パレード|parade|巡游|巡遊|défilé|cavalcade", re.I)
 SHOW = re.compile(r"ショー|\bshows?\b|spectacle|表演|演出|ステージ|\bstage\b|花火|fireworks|ナイトタイム", re.I)
-EVENT = re.compile(r"イベント|\bevents?\b|ハロウィ[ー]?ン|クリスマス|お正月|イースター|七夕|halloween|christmas|easter|"
+EVENT = re.compile(r"イベント|\bevents?\b|パーティ|\bpart(?:y|ies)\b|アニバーサリー|セレブレーション|celebration|フェスティバル|festival|ハロウィ[ー]?ン|クリスマス|お正月|イースター|七夕|halloween|christmas|easter|"
                    r"周年|anniversary|万圣|萬聖|圣诞|聖誕|新年|初登場|登場|出演|衣装|コスチューム|costume|debut|デビュー|"
                    r"appear(?:s|ance)?|returns?", re.I)
 
@@ -104,10 +104,12 @@ def category_of(text: str, topic: str | None = None) -> str | None:
     return None
 
 
-def is_relevant(title: str, summary: str, topic: str | None = None, require_disney: bool = True) -> str | None:
-    """タイムラインに載せる情報か判定し、載せるなら種類を返す。"""
+def is_relevant(title: str, summary: str, topic: str | None = None, require_disney: bool = True,
+                require_clarice: bool = True) -> str | None:
+    """タイムラインに載せる情報か判定し、載せるなら種類を返す。
+    require_clarice=False は「クラリス」でのサイト内検索の結果など、本文にクラリスが出てくることが確かな取得元用。"""
     text = f"{title}\n{summary}"
-    if not CLARICE.search(text) or OTHER_CLARICE.search(text):
+    if OTHER_CLARICE.search(text) or (require_clarice and not CLARICE.search(text)):
         return None
     if require_disney and not DISNEY.search(text) and topic != "pin":
         return None
@@ -299,7 +301,10 @@ def items_from_source(src: dict, data: bytes, now: dt.datetime) -> tuple[list[di
             url = None  # 安全の確認に通らないリンクは載せない
         if not title or not url:
             continue
-        cat = is_relevant(title, clean_text(e["summary"], 600), src.get("topic"))
+        # ディズニー専門のサイト（disney_site）は「ディズニー」の語を、クラリスでのサイト内検索（clarice_search）は
+        # 見出しの「クラリス」を求めない（見出しに出てこない記事の取りこぼしを防ぐ）
+        cat = is_relevant(title, clean_text(e["summary"], 600), src.get("topic"),
+                          require_disney=not src.get("disney_site"), require_clarice=not src.get("clarice_search"))
         if not cat:
             continue
         date = parse_date(e["date"]) or now
@@ -687,9 +692,29 @@ def windowed_url(url: str, after: str, before: str) -> str:
     return urllib.parse.urlunparse(p._replace(query=urllib.parse.urlencode({k: v[0] for k, v in q.items()})))
 
 
+def paged_url(url: str, page: int) -> str:
+    return url if page == 1 else f"{url}{'&' if '?' in url else '?'}paged={page}"
+
+
+def backfill_pages(src: dict, now: dt.datetime, fetcher, max_pages: int, pause: float) -> list[dict]:
+    """WordPress のサイト内検索の配信を、2ページ目、3ページ目…とさかのぼって読む（配信は新しい10件ほどしか返さないため）。"""
+    out = []
+    for page in range(1, max_pages + 1):
+        try:
+            items, total = items_from_source(src, fetcher(paged_url(src["url"], page)), now)
+        except Exception:
+            break  # ページの終わり（404 など）
+        if not total:
+            break
+        out += items
+        time.sleep(pause)
+    return out
+
+
 def backfill(dry_run: bool, now: dt.datetime, windows: int | None = None, fetcher=fetch, pause: float = 1.0) -> int:
-    sources = [s for s in load_json(DATA_DIR / "sources.json", {}).get("sources", [])
-               if s.get("backfill") and "news.google.com/rss/search" in s.get("url", "")]
+    all_sources = load_json(DATA_DIR / "sources.json", {}).get("sources", [])
+    sources = [s for s in all_sources if s.get("backfill") and "news.google.com/rss/search" in s.get("url", "")]
+    site_search = [s for s in all_sources if s.get("clarice_search") and "feed=rss2" in s.get("url", "")]
     spans = backfill_windows(now)
     if windows:
         spans = spans[-windows:]
@@ -706,6 +731,10 @@ def backfill(dry_run: bool, now: dt.datetime, windows: int | None = None, fetche
                 fails += 1
                 print(f"{src['id']} {after}〜{before}: 取得できませんでした（{type(e).__name__}）")
             time.sleep(pause)
+    for src in site_search:
+        items = backfill_pages(src, now, fetcher, 3 if windows else 40, pause)
+        found += items
+        per_source[src["id"]] = len(items)
     summary = "、".join(f"{k} {v}" for k, v in per_source.items())
     print(f"::notice title=過去分::{len(sources)} 件の検索 × {len(spans)} 期間 → 候補 {len(found)} 件（失敗 {fails} 回）: {summary}")
     for it in sorted(found, key=lambda x: x["date"])[:8]:
@@ -869,13 +898,28 @@ def add_source(event: dict, now: dt.datetime, fetcher=fetch, getter=http_get) ->
         errors.append("「追加の確認」にチェックが入っていません。")
     if errors:
         return {"status": "error", "errors": errors}
+    host = (urllib.parse.urlparse(site).hostname or "").removeprefix("www.")
+    kind, via_bing = "blog", False
     try:
         feed_url, data = find_feed(site, search, fetcher, getter)
-    except Exception as e:
-        return {"status": "error", "errors": [f"このサイトの配信（RSS / Atom）を見つけられませんでした（{str(e)[:100]}）。"
-                                              "RSS の URL が分かれば、それを「サイトの URL」に入れてください。"]}
-    src = {"id": "user-" + re.sub(r"[^a-z0-9]+", "-", (urllib.parse.urlparse(feed_url).hostname or "site").lower()).strip("-"),
-           "name": name, "lang": lang, "url": feed_url, "kind": "blog", "added_by_issue": int(issue["number"])}
+    except Exception:
+        # 配信（RSS）の無いサイトは、Bing のサイト内検索（site:）で「クラリス」を含むページを探す
+        mkt = {"ja": "ja-JP", "en": "en-US", "fr": "fr-FR", "zh": "zh-CN"}[lang]
+        feed_url = ("https://www.bing.com/search?q=" + urllib.parse.quote_plus(f"site:{host} {search or ('クラリス' if lang == 'ja' else 'Clarice')}")
+                    + f"&format=rss&mkt={mkt}")
+        kind, via_bing = "search", True
+        try:
+            data = fetcher(feed_url)
+            parse_feed(data)
+        except Exception as e:
+            return {"status": "error", "errors": [f"このサイトの配信（RSS / Atom）が見つからず、サイト内検索もできませんでした（{str(e)[:100]}）。"
+                                                  "RSS の URL が分かれば、それを「サイトの URL」に入れてください。"]}
+    src = {"id": "user-" + re.sub(r"[^a-z0-9]+", "-", host.lower()).strip("-"),
+           "name": name, "lang": lang, "url": feed_url, "kind": kind, "disney_site": True, "added_by_issue": int(issue["number"])}
+    if via_bing:
+        src["site"] = host
+    elif search and "feed=rss2" in feed_url and "?s=" in feed_url:
+        src["clarice_search"] = True
     items, total = items_from_source(src, data, now)
     data_all = load_json(DATA_DIR / "sources.json", {})
     sources = data_all.get("sources", [])
@@ -886,7 +930,7 @@ def add_source(event: dict, now: dt.datetime, fetcher=fetch, getter=http_get) ->
         src["id"] += "-2"
     data_all["sources"] = others + [src]
     write_if_changed(DATA_DIR / "sources.json", dump(data_all))
-    return {"status": "added", "feed": feed_url, "name": name, "total": total, "matched": len(items),
+    return {"status": "added", "feed": feed_url, "via_bing": via_bing, "name": name, "total": total, "matched": len(items),
             "examples": [i["title"][:60] for i in items[:3]], "errors": []}
 
 
@@ -897,7 +941,7 @@ def source_comment(result: dict) -> str:
     if result.get("status") == "exists":
         return f"ℹ️ この配信（{result['feed']}）はすでに取得元に入っています。"
     lines = [f"✅ **取得元に追加しました。** 次の自動収集（2時間ごと）から、このサイトの新しい情報も集めます。",
-             "", f"- 配信: {result['feed']}",
+             "", f"- 配信: {result['feed']}" + ("（RSS が無いため、Bing のサイト内検索で探します）" if result.get("via_bing") else ""),
              f"- 試し取得: 配信 {result['total']} 件のうち、条件（クラリス・ディズニー・グッズ／パーク）に合う情報 {result['matched']} 件"]
     lines += [f"  - {t}" for t in result.get("examples", [])]
     if not result["matched"]:
