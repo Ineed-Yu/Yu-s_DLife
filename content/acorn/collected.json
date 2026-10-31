@@ -9,7 +9,9 @@
     "category": "goods",
     "official": false,
     "date": "2026-08-18T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://nijimen.kusuguru.co.jp/topics/630888",
+    "image": "https://nijimen.kusuguru.co.jp/wp-content/uploads/2026/08/avail-disney-minnie-thumb.jpg"
   },
   {
     "id": "9feb393d31dcc785",
@@ -21,7 +23,9 @@
     "category": "goods",
     "official": false,
     "date": "2026-05-08T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://www.disney.co.jp/shopping/itemnews/20260508_01",
+    "image": "https://lumiere-a.akamaihd.net/v1/images/sp_kv_6e212f0a.jpeg?region=0%2C0%2C677%2C677"
   },
   {
     "id": "f3eb669f1744d838",
@@ -33,7 +37,9 @@
     "category": "goods",
     "official": false,
     "date": "2026-04-27T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://news.yahoo.co.jp/articles/8edb177e5f3f1d4292ae5e93194d43933121cfed",
+    "image_tries": 1
   },
   {
     "id": "249216466f345a2c",
@@ -45,7 +51,9 @@
     "category": "goods",
     "official": false,
     "date": "2026-04-26T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://wdwnt.com/2026/04/chip-n-dale-loungefly-bags-including-clarice-released-online/",
+    "image": "https://r2-media.wdwnt.com/2026/04/chip-dale-loungefly-featured.png"
   },
   {
     "id": "e64e7b8de61566fe",
@@ -57,7 +65,9 @@
     "category": "goods",
     "official": false,
     "date": "2026-04-19T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://www.crank-in.net/trend/sweets/183989/1",
+    "image": "https://www.crank-in.net/img/db/269044162171407_1200.jpg"
   },
   {
     "id": "754192f980f28735",
@@ -69,7 +79,9 @@
     "category": "goods",
     "official": false,
     "date": "2026-04-18T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://www.cinemacafe.net/article/2026/04/18/108734.html",
+    "image": "https://www.cinemacafe.net/imgs/ogp_f/799206.jpg"
   },
   {
     "id": "444fce9e1ebd3301",
@@ -81,7 +93,9 @@
     "category": "goods",
     "official": false,
     "date": "2026-04-16T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://prtimes.jp/main/html/rd/p/000001948.000025606.html",
+    "image": "https://prcdn.freetls.fastly.net/release_image/25606/1948/25606-1948-ad35d3dbf90f6cc0e5bb6ee76ca07ad3-1000x692.jpg?format=jpeg&auto=webp&fit=bounds&width=2400&height=1260"
   },
   {
     "id": "952632b0dc7fe32b",
@@ -93,7 +107,9 @@
     "category": "plush",
     "official": false,
     "date": "2026-03-23T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://wdwnt.com/2026/03/chip-dale-clarice-don-pastel-bear-suits-for-latest-japanese-plush-drop-on-disney-store/",
+    "image": "https://r2-media.wdwnt.com/2026/03/JapanChipmunkBearPlush_featured.jpg"
   },
   {
     "id": "5f57060378a31d0f",
@@ -105,7 +121,9 @@
     "category": "plush",
     "official": false,
     "date": "2026-03-23T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://piratesandprincesses.net/chip-dale-and-clarice-disney-japan-bear-plush-are-now-available/",
+    "image": "https://piratesandprincesses.net/wp-content/uploads/2026/03/japan-plush.png"
   },
   {
     "id": "2d3e29afaa0569bb",
@@ -117,7 +135,9 @@
     "category": "goods",
     "official": false,
     "date": "2026-03-10T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://www.disney.co.jp/store/news/information/if20260310_membercard",
+    "image": "https://lumiere-a.akamaihd.net/v1/images/c_d_spring_2026_677x677_f3df3fb9.jpeg?region=0%2C0%2C677%2C677"
   },
   {
     "id": "58528a8eca4eb408",
@@ -129,7 +149,8 @@
     "category": "plush",
     "official": false,
     "date": "2026-03-06T17:49+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "image": "https://tdrexplorer.com/wp-content/uploads/2026/03/Chip-and-Dale-Birthday-Collection-Brings-Bear-Pyjamas-and-Clarice-to-Disney-Store-Japan-Social-Image.jpg"
   },
   {
     "id": "9b27d3c7ea602cfb",
@@ -141,7 +162,9 @@
     "category": "goods",
     "official": false,
     "date": "2026-03-06T17:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://news.nicovideo.jp/watch/nw19005029",
+    "image_tries": 1
   },
   {
     "id": "51a57c96c9797778",
@@ -153,7 +176,9 @@
     "category": "goods",
     "official": false,
     "date": "2026-01-22T17:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://dtimes.jp/post-1085834/",
+    "image": "https://dtimes.jp/wp-content/uploads/2025/12/②lineup.jpg"
   },
   {
     "id": "65218b4e5fb7fa9f",
@@ -165,7 +190,9 @@
     "category": "goods",
     "official": false,
     "date": "2025-11-26T17:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://newscast.jp/news/9863669",
+    "image": "https://www.atpress.ne.jp/attachments/P5cxV5gR0IOq27vyzghX.gif"
   },
   {
     "id": "25688c1dce154a03",
@@ -177,7 +204,8 @@
     "category": "plush",
     "official": false,
     "date": "2025-10-09T20:12+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "image": "https://tdrexplorer.com/wp-content/uploads/2025/10/DIsney-Store-Japan-Tweed-Style-Social-Image.jpg"
   },
   {
     "id": "8f53c5587ab497b8",
@@ -189,7 +217,8 @@
     "category": "plush",
     "official": false,
     "date": "2025-07-30T18:32+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "image": "https://tdrexplorer.com/wp-content/uploads/2025/07/Minnie-Friends-Soak-Up-the-Sun-in-Disney-Store-Japans-New-‘Summer-Style-Plush-Collection-Social-Image.jpg"
   },
   {
     "id": "665ea651f7a52a87",
@@ -201,7 +230,9 @@
     "category": "plush",
     "official": false,
     "date": "2025-02-20T21:43+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://www.micechat.com/409686-east-meets-west-disneys-international-plushes-finally-arrive-in-the-u-s/disney-store-disney-store-japan-and-china-plushes-wish-list-kirame-sparkle-eyes-plush-mike-wazoswki-and-clarice/",
+    "image": "https://www.micechat.com/wp-content/uploads/2025/02/Disney-Store-Disney-Store-Japan-and-China-plushes-wish-list-kirame-sparkle-eyes-plush-mike-wazoswki-and-clarice.jpg"
   },
   {
     "id": "120c5567f546871c",
@@ -213,7 +244,9 @@
     "category": "goods",
     "official": false,
     "date": "2025-01-01T17:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://dtimes.jp/post-964374/",
+    "image": "https://dtimes.jp/wp-content/uploads/2025/01/Z8H_4720-2.jpg"
   },
   {
     "id": "fb8a75d55e73732c",
@@ -225,7 +258,23 @@
     "category": "goods",
     "official": false,
     "date": "2024-09-26T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://prtimes.jp/main/html/rd/p/000000311.000047990.html",
+    "image": "https://prcdn.freetls.fastly.net/release_image/47990/311/47990-311-be24462630e7e8623c466b6c63c375d5-1040x1040.jpg?format=jpeg&auto=webp&fit=bounds&width=2400&height=1260"
+  },
+  {
+    "id": "72afe86d431fa5e9",
+    "title": "『LINE：ディズニー ツムツム』、バレンタインイベントに合わせたハートモチーフの可愛らしい新ツム「ラブリースティッチ＆エンジェル」「ラブリークラリス」「ラブリーティンク」の３種類が登場！",
+    "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBadUhERzNfUzZZdnFpZXR1ZndabFBldDRQcnN5ZjRRZzdFUTV6WjZRTndaSGFHZHhzbVBlS0JMdXp5aFpvLS12VTF5NjhvcmVGRFE5OExUelBMakFfdkpMT3diaXNFdm9pQXc?oc=5",
+    "source": "PR TIMES",
+    "via": "gnews-ja-appear",
+    "lang": "ja",
+    "category": "plush",
+    "official": false,
+    "date": "2023-02-01T17:00+09:00",
+    "origin": "auto",
+    "article": "https://prtimes.jp/main/html/rd/p/000004207.000001594.html",
+    "image": "https://prcdn.freetls.fastly.net/release_image/1594/4207/1594-4207-be38bb9c1826dedda35fa71618c41bd8-1040x543.png?format=jpeg&auto=webp&fit=bounds&width=2400&height=1260"
   },
   {
     "id": "c16414f857abba5c",
