@@ -134,9 +134,34 @@ def strip_ns(tag: str) -> str:
     return tag.rsplit("}", 1)[-1]
 
 
+XML_ENTITIES = {"amp", "lt", "gt", "quot", "apos"}
+BAD_CHARS = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
+
+
+def repair_xml(text: str) -> str:
+    """配信によくある崩れ（&nbsp; などの HTML の文字参照、単独の &、制御文字）を直す。"""
+    def entity(m: re.Match) -> str:
+        name = m.group(1)
+        if name in XML_ENTITIES or name.startswith("#"):
+            return m.group(0)
+        ch = html.unescape(m.group(0))
+        return f"&#{ord(ch)};" if len(ch) == 1 else "&amp;" + name + ";"
+    text = BAD_CHARS.sub("", text)
+    text = re.sub(r"&(#?[A-Za-z0-9]+);", entity, text)
+    return re.sub(r"&(?!(?:#[0-9]+|#x[0-9A-Fa-f]+|[A-Za-z][A-Za-z0-9]*);)", "&amp;", text)
+
+
 def parse_feed(data: bytes) -> list[dict]:
     """RSS 2.0 / Atom を読み、{title, url, date, summary, source} の一覧を返す。"""
-    root = ET.fromstring(data)  # 外部実体は標準ライブラリの既定で展開されない
+    try:
+        root = ET.fromstring(data)  # 外部実体は標準ライブラリの既定で展開されない
+    except ET.ParseError:
+        text = data.decode("utf-8", "replace").lstrip("\ufeff \r\n\t")
+        if not text.startswith("<?xml") and not re.match(r"<(rss|feed|rdf:RDF)\b", text):
+            raise ValueError("RSS / Atom ではない応答でした（ページやブロック画面の可能性）") from None
+        root = ET.fromstring(repair_xml(text).encode("utf-8"))
+    if strip_ns(root.tag) not in ("rss", "feed", "RDF"):
+        raise ValueError(f"RSS / Atom ではない応答でした（<{strip_ns(root.tag)}>）")
     entries = []
     for el in root.iter():
         name = strip_ns(el.tag)
