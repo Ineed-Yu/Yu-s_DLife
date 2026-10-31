@@ -83,7 +83,8 @@
       "id": "laughingplace",
       "name": "Laughing Place",
       "lang": "en",
-      "url": "https://www.laughingplace.com/feed/"
+      "url": "https://www.laughingplace.com/feed/",
+      "disney_site": true
     },
     {
       "id": "gnews-ja-appear",
@@ -281,6 +282,59 @@
       "kind": "search",
       "disney_site": true,
       "site": "dtimes.jp"
+    },
+    {
+      "id": "meritrip",
+      "name": "メリトリップ",
+      "lang": "ja",
+      "url": "https://meri-trip.jp/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&feed=rss2",
+      "kind": "blog",
+      "disney_site": true,
+      "clarice_search": true
+    },
+    {
+      "id": "mickeynet",
+      "name": "ミッキーネット",
+      "lang": "ja",
+      "url": "https://www.bing.com/search?q=site%3Ajp.mickeynet.com+%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&format=rss&mkt=ja-JP",
+      "kind": "search",
+      "disney_site": true,
+      "site": "jp.mickeynet.com"
+    },
+    {
+      "id": "dmk-blog",
+      "name": "ディズニー・マジカル・キングダム・ブログ",
+      "lang": "ja",
+      "url": "https://www.disney-magical-kingdom-blog.com/feeds/posts/default?alt=rss&q=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9",
+      "kind": "blog",
+      "disney_site": true,
+      "clarice_search": true
+    },
+    {
+      "id": "disneyworldfan",
+      "name": "ディズニーワールドファン",
+      "lang": "ja",
+      "url": "https://disneyworldfan.jp/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&feed=rss2",
+      "kind": "blog",
+      "disney_site": true,
+      "clarice_search": true
+    },
+    {
+      "id": "ed92",
+      "name": "ED92",
+      "lang": "ja",
+      "url": "https://www.bing.com/search?q=site%3Aed92.org+%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&format=rss&mkt=ja-JP",
+      "kind": "search",
+      "disney_site": true,
+      "site": "ed92.org"
+    },
+    {
+      "id": "disneypinsblog",
+      "name": "Disney Pins Blog",
+      "lang": "en",
+      "url": "https://disneypinsblog.com/blogs/news.atom",
+      "kind": "blog",
+      "disney_site": true
     }
   ]
 }
