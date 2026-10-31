@@ -430,6 +430,24 @@
     },
     {
       "name": {
+        "ja": "アウラニ・ディズニー・リゾート＆スパ公式サイト",
+        "en": "Aulani, A Disney Resort & Spa (official)"
+      },
+      "url": "https://www.disneyaulani.com/",
+      "kind": "web",
+      "region": "hi"
+    },
+    {
+      "name": {
+        "ja": "Disney Parks Blog（アウラニの記事）",
+        "en": "Disney Parks Blog: Aulani"
+      },
+      "url": "https://disneyparksblog.com/aulani/",
+      "kind": "web",
+      "region": "hi"
+    },
+    {
+      "name": {
         "ja": "ディズニーランド・パリ公式サイト",
         "en": "Disneyland Paris (official)",
         "fr": "Disneyland Paris (site officiel)"
@@ -474,7 +492,7 @@
       },
       "url": "https://www.hongkongdisneyland.com/",
       "kind": "web",
-      "region": "cn"
+      "region": "hk"
     },
     {
       "name": {
@@ -483,7 +501,7 @@
       },
       "url": "https://www.instagram.com/hkdisneyland/",
       "kind": "sns",
-      "region": "cn"
+      "region": "hk"
     }
   ]
 }

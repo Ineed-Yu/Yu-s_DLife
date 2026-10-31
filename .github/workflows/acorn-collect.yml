@@ -30,6 +30,8 @@ jobs:
           python-version: "3.12"
       - name: 試し取得（ファイルは書き換えない）
         run: python3 tools/acorn_news.py collect --dry-run
+      - name: 記事の画像の試し取得（ファイルは書き換えない）
+        run: python3 tools/acorn_news.py images --dry-run --limit 8
       - name: タイムラインが最新か確認
         run: python3 tools/acorn_news.py build --check
 

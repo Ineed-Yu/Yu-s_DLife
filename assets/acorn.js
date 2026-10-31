@@ -2,7 +2,7 @@
 // 1. 幕開け：葉っぱの幕が左右に開いて Acorn Club が現れる（このタブで初回だけ・動きを減らす設定なら出さない）
 // 2. タイムライン：/acorn-club/news.json を「グッズ」「パーク（グリーティング・ショー・パレード）」に分け、種類と年で絞り込んで表示。
 //    情報の言語はページ上部の言語切替（JP/EN/FR/ZH）に合わせる（その言語の情報がまだ無いときは全言語を表示）
-// 4. 公式サイト/アカウント一覧：日本・アメリカ・フランス・中国のリージョンごとに切り替えて表示
+// 4. 公式サイト/アカウント一覧：日本・アメリカ・ハワイ・フランス・中国・香港のリージョンごとに切り替えて表示
 // 3. X の投稿：最初はリンクだけ。利用者が「X の投稿を表示する」を押したときだけ X の公式の埋め込みを読み込む
 // 文字はすべて textContent で入れ、HTML として解釈させない。リンクは http / https だけ。
 (function () {
@@ -55,7 +55,9 @@
         region_jp: { ja: '日本', en: 'Japan', fr: 'Japon', zh: '日本' },
         region_us: { ja: 'アメリカ', en: 'USA', fr: 'États-Unis', zh: '美国' },
         region_fr: { ja: 'フランス', en: 'France', fr: 'France', zh: '法国' },
+        region_hi: { ja: 'ハワイ', en: 'Hawaii', fr: 'Hawaï', zh: '夏威夷' },
         region_cn: { ja: '中国', en: 'China', fr: 'Chine', zh: '中国' },
+        region_hk: { ja: '香港', en: 'Hong Kong', fr: 'Hong Kong', zh: '香港' },
         regionLabel: { ja: 'リージョンを選ぶ', en: 'Choose a region', fr: 'Choisir une région', zh: '选择地区' },
         langFallback: {
             ja: '日本語の情報がまだないため、すべての言語の情報を表示しています。',
@@ -107,7 +109,7 @@
     const APPEAR = ['greeting', 'show', 'parade', 'event'];
     const viewOf = item => (APPEAR.includes(item.category) ? 'appear' : 'goods');
     const state = { view: 'goods', category: 'all', year: 'all', limit: 40 };
-    const REGIONS = ['jp', 'us', 'fr', 'cn'];
+    const REGIONS = ['jp', 'us', 'hi', 'fr', 'cn', 'hk'];
     const REGION_OF_LANG = { ja: 'jp', en: 'us', fr: 'fr', zh: 'cn' };
     let region = null;    // 利用者が選んだリージョン（選ぶまではページの言語に合わせる）
     let xEmbed = false;
@@ -254,6 +256,41 @@
     }
 
     // ---------- タイムライン ----------
+    // 記事の画像（1件に1枚）：掲載元が共有用に指定した画像を、掲載元の場所のまま表示する。
+    // 画像が無い・読み込めないときは、どんぐりの印（このサイトのオリジナル）を代わりに表示する。
+    function acornPlaceholder() {
+        const ns = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(ns, 'svg');
+        svg.setAttribute('class', 'playbill-thumb-mark');
+        svg.setAttribute('aria-hidden', 'true');
+        const use = document.createElementNS(ns, 'use');
+        use.setAttribute('href', '#acorn-mark');
+        svg.appendChild(use);
+        return svg;
+    }
+
+    function thumb(item) {
+        const box = el('span', 'playbill-thumb');
+        const src = String(item.image || '');
+        if (/^https:\/\//.test(src) && safeUrl(src)) {
+            const img = document.createElement('img');
+            img.alt = '';
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.referrerPolicy = 'no-referrer';
+            img.addEventListener('error', () => {
+                box.classList.add('is-empty');
+                img.replaceWith(acornPlaceholder());
+            }, { once: true });
+            img.src = src;
+            box.appendChild(img);
+        } else {
+            box.classList.add('is-empty');
+            box.appendChild(acornPlaceholder());
+        }
+        return box;
+    }
+
     function playbill(item) {
         const url = safeUrl(item.url);
         const li = el('li', 'timeline-item');
@@ -264,22 +301,25 @@
             card.target = '_blank';
             card.rel = 'noopener noreferrer';
         }
+        card.appendChild(thumb(item));
+        const body = el('span', 'playbill-body');
+        card.appendChild(body);
         const head = el('span', 'playbill-head');
         const d = new Date(item.date);
         const time = el('time', 'playbill-date', isNaN(d) ? '' : dayLabel(d));
         if (!isNaN(d)) time.dateTime = item.date;
         head.appendChild(time);
         head.appendChild(el('span', 'playbill-kind', t(item.category)));
-        card.appendChild(head);
+        body.appendChild(head);
         const isX = item.origin === 'x' && /^\d+$/.test(String(item.tweet || ''));
         const title = el('span', 'playbill-title', isX ? t('xPost') : (item.title || ''));
         if (item.lang && item.lang !== 'ja') title.lang = item.lang === 'zh' ? 'zh' : item.lang;
-        card.appendChild(title);
+        body.appendChild(title);
         const source = el('span', 'playbill-source', item.source || '');
         if (item.official) source.appendChild(el('span', 'playbill-official', t('official')));
         if (item.origin === 'manual') source.appendChild(document.createTextNode(`（${t('added')}）`));
         source.appendChild(el('span', 'visually-hidden', t('opens')));
-        card.appendChild(source);
+        body.appendChild(source);
         li.appendChild(card);
         if (isX && xEmbed) {
             // X の公式の埋め込み（文字・画像は X が表示し、投稿が消されれば表示されなくなる）
@@ -352,7 +392,7 @@
         renderLinks();
     }
 
-    // 公式サイト/アカウント一覧：リージョン（日本・アメリカ・フランス・中国）を選ぶと、その地域の一覧を表示
+    // 公式サイト/アカウント一覧：リージョン（日本・アメリカ・ハワイ・フランス・中国・香港）を選ぶと、その地域の一覧を表示
     function renderLinks() {
         const ul = document.getElementById('sources-list');
         const tabs = document.getElementById('sources-regions');
