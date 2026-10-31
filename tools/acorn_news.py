@@ -63,7 +63,10 @@ DISNEY = re.compile(r"ディズニー|disney|チップ|デール|chip\s*(?:'n'|n
                     r"迪士尼|奇奇|蒂蒂|HKDL|SHDL|DLP", re.I)
 OTHER_CLARICE = re.compile(r"カリオストロ|ルパン|lupin|cagliostro|starling|スターリング|羊たちの沈黙|silence of the lambs|"
                            r"hannibal|ハンニバル|lispector|リスペクトル|鲁邦|魯邦|卡里奥斯特罗|卡里奧斯特羅|沉默的羔羊|"
-                           r"沉默的羔羊|史达琳|史達琳|silence des agneaux", re.I)
+                           r"沉默的羔羊|史达琳|史達琳|silence des agneaux|"
+                          # 同じ名前の医薬品（クラリス錠＝クラリスロマイシン）
+                          r"クラリス錠|クラリスロマイシン|clarith|clarithromycin|医療用医薬品|医薬品|製薬|薬価|処方|抗菌薬|"
+                          r"添付文書|錠\s*\d+|\d+\s*mg|kegg|japic|ドライシロップ", re.I)
 PIN = re.compile(r"ピンバッ?ジ|ピン(?:トレ|セット|バッチ)|\bpins?\b|pin trading|lanyard|徽章|胸针|胸針|pin's", re.I)
 PLUSH = re.compile(r"ぬいぐるみ|ぬいば|ぬいバッジ|ツムツム|plush|tsum\s*tsum|stuffed|nuimos|毛绒|毛絨|公仔|玩偶|peluche", re.I)
 # プライズ：くじ・ゲームセンター（クレーンゲーム）の景品・カプセルトイなど、買うのではなく「当てる・取る」もの
@@ -379,6 +382,11 @@ def items_from_source(src: dict, data: bytes, now: dt.datetime) -> tuple[list[di
         if src.get("aggregator") and source and title.endswith(f" - {source}"):
             title = title[: -len(source) - 3].strip()
         url = safe_url(unwrap_link(e["url"] or ""))
+        if url and src.get("site"):
+            # サイト内検索（site:）の結果でも、検索エンジンが別のサイトを返すことがあるため、そのサイトのページだけにする
+            host = (urllib.parse.urlparse(url).hostname or "").removeprefix("www.")
+            if not (host == src["site"] or host.endswith("." + src["site"])):
+                continue
         if url and not is_safe_url(url) and not GNEWS_ARTICLE.match(url):
             url = None  # 安全の確認に通らないリンクは載せない
         if not title or not url:
