@@ -317,6 +317,39 @@ def clarice_is_featured(content_html: str) -> bool:
     return any(CLARICE.search(" ".join(g for g in m if g)) for m in HEADING_OR_CAPTION.findall(content_html[:200_000]))
 
 
+ANCHOR = re.compile(r"<a\b[^>]*?href=(?:\"([^\"]+)\"|'([^']+)')[^>]*>(.*?)</a>", re.I | re.S)
+
+
+def page_items(src: dict, final_url: str, page: str, now: dt.datetime) -> tuple[list[dict], int]:
+    """RSS の無いサイトの検索結果・一覧のページから、リンクの文字に「クラリス」を含む記事を拾う（同じサイト内のリンクだけ）。
+    日付は分からないため、初めて見つけた日時にする。"""
+    host = (urllib.parse.urlparse(final_url).hostname or "").removeprefix("www.")
+    out, seen, total = [], set(), 0
+    for h1, h2, inner in ANCHOR.findall(page[:2_000_000]):
+        url = urllib.parse.urljoin(final_url, html.unescape(h1 or h2))
+        title = clean_text(inner, 200)
+        if not title or len(title) < 8 or url in seen:
+            continue
+        uhost = (urllib.parse.urlparse(url).hostname or "").removeprefix("www.")
+        if uhost != host or not is_safe_url(url) or urllib.parse.urlparse(url).path in ("", "/"):
+            continue
+        seen.add(url)
+        total += 1
+        cat = is_relevant(title, "", src.get("topic"), require_disney=not src.get("disney_site"))
+        if not cat:
+            continue
+        item = {"id": item_id(url), "title": title, "url": url, "source": src["name"], "via": src["id"],
+                "lang": src.get("lang", "ja"), "category": cat, "official": bool(src.get("official")),
+                "date": now.isoformat(timespec="minutes"), "origin": "auto"}
+        m = re.search(r"/(20\d\d)[/-](\d{1,2})(?:[/-](\d{1,2}))?/", url)
+        if m:
+            item["date"] = dt.datetime(int(m.group(1)), int(m.group(2)), int(m.group(3) or 1), 12, tzinfo=JST).isoformat(timespec="minutes")
+        else:
+            item["date_unknown"] = True   # 記事のページを開いたとき（画像を調べるとき）に公開日を読む
+        out.append(item)
+    return out, total
+
+
 def unwrap_link(url: str) -> str:
     """Bing ニュースのリンク（bing.com/news/apiclick.aspx?url=元の記事）から元の記事の URL を取り出す。"""
     p = urllib.parse.urlparse(url)
@@ -468,6 +501,11 @@ def add_image(item: dict, get=http_get, post=http_post_form) -> str:
         item["image"] = ""
         return "SNS のため画像は探しません"
     final, page = get(article)
+    if item.pop("date_unknown", None):
+        m = re.search(r'(?:article:published_time|datePublished)["\']?\s*(?:content=|:)\s*["\']([0-9]{4}-[0-9]{2}-[0-9]{2}[^"\']*)', page)
+        d = parse_date(m.group(1)) if m else None
+        if d:
+            item["date"] = d.isoformat(timespec="minutes")
     image = find_share_image(page, final)
     item["image"] = image or ""
     return image or "共有用の画像が指定されていません"
@@ -678,7 +716,11 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search
                 tally.append(f"{src['id']} ×")
             continue
         try:
-            items, total = items_from_source(src, fetcher(src["url"]), now)
+            if src.get("type") == "page":
+                final, page = http_get(src["url"])
+                items, total = page_items(src, final, page, now)
+            else:
+                items, total = items_from_source(src, fetcher(src["url"]), now)
             ok += 1
             found += items
             tally.append(f"{src['id']} {len(items)}/{total}")

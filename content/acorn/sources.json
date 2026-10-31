@@ -281,6 +281,60 @@
       "kind": "search",
       "disney_site": true,
       "site": "dtimes.jp"
+    },
+    {
+      "id": "meritrip",
+      "name": "メリトリップ",
+      "lang": "ja",
+      "url": "https://meri-trip.jp/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&feed=rss2",
+      "kind": "blog",
+      "disney_site": true,
+      "clarice_search": true
+    },
+    {
+      "id": "dmkblog",
+      "name": "Disney Magical Kingdom Blog",
+      "lang": "ja",
+      "type": "page",
+      "url": "https://www.disney-magical-kingdom-blog.com/search?q=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9",
+      "kind": "blog",
+      "disney_site": true
+    },
+    {
+      "id": "disneyworldfan",
+      "name": "ディズニーワールドファン",
+      "lang": "ja",
+      "url": "https://disneyworldfan.jp/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&feed=rss2",
+      "kind": "blog",
+      "disney_site": true,
+      "clarice_search": true
+    },
+    {
+      "id": "ed92",
+      "name": "ed92.org",
+      "lang": "ja",
+      "type": "page",
+      "url": "https://www.ed92.org/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9",
+      "kind": "blog",
+      "disney_site": true
+    },
+    {
+      "id": "disneypinsblog",
+      "name": "Disney Pins Blog",
+      "lang": "en",
+      "type": "page",
+      "url": "https://disneypinsblog.com/search?q=clarice&type=article",
+      "kind": "blog",
+      "disney_site": true
+    },
+    {
+      "id": "disneystore-uk",
+      "name": "Disney Store UK",
+      "lang": "en",
+      "type": "page",
+      "url": "https://www.disneystore.co.uk/search?q=clarice",
+      "kind": "blog",
+      "disney_site": true
     }
   ]
 }
