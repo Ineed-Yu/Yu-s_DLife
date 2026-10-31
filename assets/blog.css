@@ -19,7 +19,7 @@ body {
     display: flex;
     flex-direction: column;
     color: #22201d;
-    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-sans);
     /* 中央ほど明るい、光る台 */
     background:
         radial-gradient(ellipse 70% 60% at 50% 35%, #fbfcfb 0, rgba(251, 252, 251, 0) 100%),
@@ -293,7 +293,7 @@ body {
 }
 .article-body p {
     margin: 0 0 1.4em;
-    font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+    font-family: var(--font-serif);
     font-size: 16.5px;
     line-height: 2;
     letter-spacing: 0.02em;
@@ -336,7 +336,7 @@ body {
 .article-body ol {
     margin: 0 0 1.4em;
     padding-left: 1.4em;
-    font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+    font-family: var(--font-serif);
     font-size: 16.5px;
     line-height: 2;
 }

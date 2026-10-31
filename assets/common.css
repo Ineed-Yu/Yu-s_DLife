@@ -1,3 +1,19 @@
+/* サイト共通のフォント（assets/fonts.css）。どの言語・端末でも同じ見た目で、文字が欠けない（□にならない）ように。
+   中国語の表示では簡体字の字形のフォントに切り替える（<html lang> は assets/lang-attr.js が言語切替に合わせる） */
+:root {
+    --font-sans: "DLife Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Helvetica Neue", Arial, sans-serif;
+    --font-serif: "DLife Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+    --font-display: "DLife Display", "DLife Serif JP", serif;
+}
+:root:lang(zh) {
+    --font-sans: "DLife Sans SC", "DLife Sans JP", "PingFang SC", "Microsoft YaHei", sans-serif;
+    --font-serif: "DLife Serif SC", "DLife Serif JP", serif;
+    --font-display: "DLife Display", "DLife Serif SC", serif;
+}
+body {
+    font-family: var(--font-sans);
+}
+
 /* 全ページ共通の部品（ホームに戻るボタン・フッター）
    各ページの <head> で <link rel="stylesheet" href="/assets/common.css"> として読み込む。
    部品の HTML は tools/partials/ にあり、tools/apply_partials.py で各ページへ反映する。 */
@@ -18,7 +34,7 @@
     background-color: rgba(255, 255, 255, 0.92);
     color: #333;
     text-decoration: none;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-family: var(--font-sans);
     font-size: 14px;
     font-weight: bold;
     white-space: nowrap;
@@ -52,7 +68,7 @@
     padding: 28px 20px 24px;
     background-color: rgba(34, 34, 34, 0.94);
     color: #ddd;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-family: var(--font-sans);
     text-align: center;
 }
 
