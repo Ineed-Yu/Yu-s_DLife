@@ -78,7 +78,7 @@ GOODS = re.compile(r"グッズ|新商品|新作|発売|販売|新登場|コレ�
                    r"ショーツ|マット|きっぷ|切符|フリーきっぷ|スナップフォト|"
                    r"merch|merchandise|collection|release|\bears\b|loungefly|\bmugs?\b|apparel|figure|ornament|"
                    r"spirit jersey|keychain|souvenir|shopdisney|new arrivals?|now available|coming soon|snacks?|treats?|menu|"
-                   r"周边|周邊|商品|新品|上市|发售|發售|限定|精品|产品|產品|美食|"
+                   r"周边|周邊|商品|新品|上市|发售|發售|精品|产品|產品|美食|"
                    r"produits?|boutique|nouveaut[ée]s?|collection|en vente|sortie", re.I)
 # パーク：クラリスに「会う・見る」ための情報だけ（ショー・パレード・グリーティング・貸切や特別営業などでの登場）
 GREETING = re.compile(r"グリーティング|ミート|会える|会おう|会いに|会う方法|meet[\s-]*(?:and|&|'n'|n)?[\s-]*greet|greeting|character dining|"
@@ -96,7 +96,8 @@ PARK_CONTEXT = re.compile(r"ディズニーランド|ディズニーシー|デ�
                           r"グリズリー・?ガルチ|Grizzly Gulch|トゥモローランド|ファンタジーランド|アドベンチャーランド|"
                           r"ウエスタンランド|クリッターカントリー|メインストリート|ワールドバザール|メディテレーニアンハーバー|"
                           r"アメリカンウォーターフロント|ポートディスカバリー|ロストリバーデルタ|マーメイドラグーン|"
-                          r"アラビアンコースト|ミステリアスアイランド|ファンタジースプリングス|Main Street|Toontown|Adventureland", re.I)
+                          r"アラビアンコースト|ミステリアスアイランド|ファンタジースプリングス|Main Street|Toontown|Adventureland|"
+                          r"上海|香港|舞浜", re.I)
 # パークでもグッズでもない話題（映画・配信・書籍の紹介など）
 NOT_PARK = re.compile(r"作品紹介|映画|streaming|tv show|DVD|Blu-ray|小説|絵本|ゲームアプリ", re.I)
 
@@ -131,11 +132,17 @@ def category_of(text: str, topic: str | None = None) -> str | None:
     return None
 
 
+# 記事ではないページ（写真ギャラリーの1枚ごとのページなど）
+NOISE_TITLE = re.compile(r"画像・写真\s*[|｜]|\d+\s*枚目|写真\s*\d+\s*/\s*\d+|photo gallery \d+", re.I)
+
+
 def is_relevant(title: str, summary: str, topic: str | None = None, require_disney: bool = True,
                 require_clarice: bool = True) -> str | None:
     """タイムラインに載せる情報か判定し、載せるなら種類を返す。
     require_clarice=False は「クラリス」でのサイト内検索の結果など、本文にクラリスが出てくることが確かな取得元用。"""
     text = f"{title}\n{summary}"
+    if NOISE_TITLE.search(title):
+        return None
     if OTHER_CLARICE.search(text) or (require_clarice and not CLARICE.search(text)):
         return None
     if require_disney and not DISNEY.search(text) and topic != "pin":
@@ -620,6 +627,8 @@ def build_timeline(collected: list[dict], manual: list[dict], exclude: dict, now
     for it in list(manual) + list(collected):
         if it.get("hidden") or it["url"] in urls or it.get("article") in urls or any(w in it["title"].casefold() for w in words):
             continue
+        if NOISE_TITLE.search(it.get("title", "")):
+            continue
         link = it.get("article") or it["url"]
         if it.get("origin") == "auto" and not (is_safe_url(link) or GNEWS_ARTICLE.match(link)):
             continue
@@ -707,6 +716,8 @@ def dedupe_goods(items: list[dict]) -> list[dict]:
             continue
         members.sort(key=lambda x: x["date"], reverse=True)
         members[0]["others"] = len(members) - 1
+        # 一覧から読む記事を選べるように、まとめた記事の見出し・リンク・掲載元・日付を添える
+        members[0]["dupes"] = [{k: m[k] for k in ("title", "url", "source", "date")} for m in members[1:]]
         drop.update(id(m) for m in members[1:])
     return [i for i in items if id(i) not in drop]
 

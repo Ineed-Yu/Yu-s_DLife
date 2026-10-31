@@ -6,7 +6,7 @@
       "url": "https://disneyparksblog.com/products/disney-store-japan-plush-and-keychains-coming-to-disneystore-com/",
       "source": "Disney Parks Blog",
       "lang": "en",
-      "category": "plush",
+      "category": "other",
       "official": true,
       "date": "2026-10-27T01:00+09:00",
       "origin": "auto",
@@ -54,7 +54,7 @@
       "url": "https://meri-trip.jp/archives/15160025972561.html",
       "source": "メリトリップ",
       "lang": "ja",
-      "category": "other",
+      "category": "event",
       "official": false,
       "date": "2026-06-21T09:00+09:00",
       "origin": "auto",
@@ -107,7 +107,39 @@
       "date": "2026-05-09T21:05+09:00",
       "origin": "auto",
       "image": "https://mezzomiki.jp/wp-content/uploads/2026/05/IMG_8254.jpeg",
-      "others": 5
+      "others": 5,
+      "dupes": [
+        {
+          "title": "＜東京ばな奈＞なかよしコンビ「チップ&デール」と憧れの「クラリス」のバニラショコラサンド発売中！ 夏の新作グッズも",
+          "url": "https://www.disney.co.jp/shopping/itemnews/20260508_01",
+          "source": "Disney.jp",
+          "date": "2026-05-08T16:00+09:00"
+        },
+        {
+          "title": "チップ＆デール×クラリスのバニラチョコレートサンドが新登場！ 東京ばな奈から夏の新作グッズも4月29日より先行販売",
+          "url": "https://www.appbank.net/2026/04/20/casual-food/2977418.php",
+          "source": "AppBank",
+          "date": "2026-04-20T16:00+09:00"
+        },
+        {
+          "title": "チップ＆デール、クラリスが主役のバニラショコラサンド新発売！夏の新作グッズも「Disney SWEETS COLLECTION by 東京ばな奈」",
+          "url": "https://www.cinemacafe.net/article/2026/04/18/108734.html",
+          "source": "cinemacafe.net",
+          "date": "2026-04-18T16:00+09:00"
+        },
+        {
+          "title": "【東京ばな奈】なかよしコンビ「チップ&デール」と憧れの「クラリス」のバニラショコラサンド新発売！夏の新作グッズも",
+          "url": "https://prtimes.jp/main/html/rd/p/000001948.000025606.html",
+          "source": "PR TIMES",
+          "date": "2026-04-16T16:00+09:00"
+        },
+        {
+          "title": "チップ＆デール／バニラチョコレートサンド！ディズニー「Disney SWEETS COLLECTION by 東京ばな奈」",
+          "url": "https://dtimes.jp/post-1210176/",
+          "source": "Dtimes",
+          "date": "2026-04-16T11:33+09:00"
+        }
+      ]
     },
     {
       "id": "592b37573f63ca90",
@@ -179,7 +211,15 @@
       "date": "2026-03-23T16:00+09:00",
       "origin": "auto",
       "image": "https://r2-media.wdwnt.com/2026/03/JapanChipmunkBearPlush_featured.jpg",
-      "others": 1
+      "others": 1,
+      "dupes": [
+        {
+          "title": "Chip, Dale, and Clarice Disney Japan Bear Plush Are Now Available!",
+          "url": "https://piratesandprincesses.net/chip-dale-and-clarice-disney-japan-bear-plush-are-now-available/",
+          "source": "piratesandprincesses.net",
+          "date": "2026-03-23T16:00+09:00"
+        }
+      ]
     },
     {
       "id": "1621c2f40aa6d63a",
@@ -192,7 +232,15 @@
       "date": "2026-03-11T20:48+09:00",
       "origin": "auto",
       "image": "https://mezzomiki.jp/wp-content/uploads/2026/03/IMG_6348.jpeg",
-      "others": 1
+      "others": 1,
+      "dupes": [
+        {
+          "title": "【ディズニーストア】チップとデール誕生日コレクション「Chip ‘n’ Dale COLLECTION」登場｜くまパジャマ姿のぬいぐるみや雑貨を発売",
+          "url": "https://disneyworldfan.jp/2026/03/chip-n-dale-collection-disney-store/",
+          "source": "ディズニーワールドファン",
+          "date": "2026-03-06T15:04+09:00"
+        }
+      ]
     },
     {
       "id": "2d3e29afaa0569bb",
@@ -247,7 +295,7 @@
       "url": "https://meri-trip.jp/archives/15160025966661.html",
       "source": "メリトリップ",
       "lang": "ja",
-      "category": "other",
+      "category": "parade",
       "official": false,
       "date": "2026-02-14T07:30+09:00",
       "origin": "auto",
@@ -275,7 +323,27 @@
       "date": "2026-01-25T19:00+09:00",
       "origin": "auto",
       "image": "https://mezzomiki.jp/wp-content/uploads/2025/12/Z9Y_1569.jpg",
-      "others": 3
+      "others": 3,
+      "dupes": [
+        {
+          "title": "ミニー･デイジー･クラリスの限定プライズ！Disney キャンペーン in ナムコ バレンタイン 2026 ～GO FOR IT!～",
+          "url": "https://dtimes.jp/post-1085834/",
+          "source": "Dtimes",
+          "date": "2026-01-22T17:00+09:00"
+        },
+        {
+          "title": "ミニーマウス、デイジーダック、クラリスが頑張るあなたを応援！ Disney キャンペーン in ナムコ バレンタイン 2026 ～GO FOR IT!～",
+          "url": "https://prtimes.jp/main/html/rd/p/000000262.000159118.html",
+          "source": "PR TIMES",
+          "date": "2026-01-22T17:00+09:00"
+        },
+        {
+          "title": "ミニーマウス＆デイジーダック＆クラリスが応援！「Disney キャンペーン in ナムコ バレンタイン 2026 ～GO FOR IT!～」開催決定",
+          "url": "https://disneyworldfan.jp/2026/01/japan-namco-disney-valentine-2026/",
+          "source": "ディズニーワールドファン",
+          "date": "2026-01-22T11:26+09:00"
+        }
+      ]
     },
     {
       "id": "ec88149a56bcad24",
@@ -538,7 +606,15 @@
       "official": false,
       "date": "2025-03-18T11:00+09:00",
       "origin": "auto",
-      "others": 1
+      "others": 1,
+      "dupes": [
+        {
+          "title": "ポンポンを持った姿がかわいい！東京ディズニーリゾート「Cheer Together！」グッズ・お土産",
+          "url": "https://dtimes.jp/post-991353/",
+          "source": "Dtimes",
+          "date": "2025-03-17T16:46+09:00"
+        }
+      ]
     },
     {
       "id": "665ea651f7a52a87",
@@ -658,7 +734,21 @@
       "date": "2024-05-31T16:41+09:00",
       "origin": "auto",
       "image": "https://app.famitsu.com/wp-content/uploads/2024/05/54fffc1e1bb87f576d561b96adb7a895-120-506x254.jpg",
-      "others": 2
+      "others": 2,
+      "dupes": [
+        {
+          "title": "「LINE：ディズニー ツムツム」RPGの世界を旅する曲付きツム「勇者ミニー」「弓使いデイジー」「魔法使いクラリス」が6月1日に登場！",
+          "url": "https://www.gamer.ne.jp/news/202405310032/",
+          "source": "Gamer",
+          "date": "2024-05-31T16:00+09:00"
+        },
+        {
+          "title": "【LINE GAME】『LINE：ディズニー ツムツム』にRPGの世界を旅する特別な新ツム「勇者ミニー」「弓使いデイジー」「魔法使いクラリス」が新登場",
+          "url": "https://prtimes.jp/main/html/rd/p/000000498.000129774.html",
+          "source": "PR TIMES",
+          "date": "2024-05-31T16:00+09:00"
+        }
+      ]
     },
     {
       "id": "f04a5ac467d47e59",
@@ -725,7 +815,7 @@
       "url": "https://disneyworldfan.jp/2023/11/disneyland-park-holiday-character-greeting/",
       "source": "ディズニーワールドファン",
       "lang": "ja",
-      "category": "other",
+      "category": "event",
       "official": false,
       "date": "2023-11-24T17:30+09:00",
       "origin": "auto"
@@ -934,7 +1024,15 @@
       "date": "2022-03-25T16:00+09:00",
       "origin": "auto",
       "image": "https://emomiu.jp/wp/wp-content/uploads/2022/03/MaisondeFLEUR-クラリス7.jpg",
-      "others": 1
+      "others": 1,
+      "dupes": [
+        {
+          "title": "【Maison de FLEUR】人気のDisney Collectionにチップ&デールのマドンナが登場 ウィンク姿の「クラリス」がバッグを彩るチャームポーチ",
+          "url": "https://prtimes.jp/main/html/rd/p/000000523.000036659.html",
+          "source": "PR TIMES",
+          "date": "2022-03-24T16:00+09:00"
+        }
+      ]
     },
     {
       "id": "6a31f82e0507488a",
@@ -1489,7 +1587,15 @@
       "official": false,
       "date": "2018-02-15T22:30+09:00",
       "origin": "auto",
-      "others": 1
+      "others": 1,
+      "dupes": [
+        {
+          "title": "クラリスやレディたちがプチケーキに！銀座コージーコーナー ＜ディズニー＞ガールズコレクション",
+          "url": "https://dtimes.jp/ginza-cozy-corner-dinsey-girls-collection-2018/",
+          "source": "Dtimes",
+          "date": "2018-02-08T17:00+09:00"
+        }
+      ]
     },
     {
       "id": "e23cd6494d83d7b0",
@@ -1558,17 +1664,6 @@
       "origin": "auto"
     },
     {
-      "id": "c8a0bc08607585b1",
-      "title": "画像・写真 | チップ＆デールのマドンナ“クラリス”がグッズになって登場 4枚目",
-      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFB3b0hrd3pob1E3MWlONU5xMkRQb1R4OGE0NC04ZFZLNXNvdkVhSHR3VWctZjVzVkVlVzN1WmE1c18wYm53UTNHQmctZVBCX2FXLWFhX2FJb2FQUQ?oc=5",
-      "source": "オリコンニュース",
-      "lang": "ja",
-      "category": "other",
-      "official": false,
-      "date": "2017-11-19T00:45+09:00",
-      "origin": "auto"
-    },
-    {
       "id": "bffc24b4e930015a",
       "title": "クラリスを素敵なカフェでおもてなし！ディズニーマジカルファーム「チップとデールのくらくら☆クラリスカフェ＆プレミアムどんぐりタイム！」",
       "url": "https://dtimes.jp/disney-magical-farm-chip-dale-clarice-cafe/",
@@ -1588,17 +1683,6 @@
       "category": "other",
       "official": false,
       "date": "2017-11-05T17:28+09:00",
-      "origin": "auto"
-    },
-    {
-      "id": "5300b68fe9aec398",
-      "title": "画像・写真 | チップ＆デールのマドンナ“クラリス”がグッズになって登場 17枚目",
-      "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE85MU1zTUZueXBlQjRydHFwSURscVdOZ2JFVk5ESUpzUVBkTnFXUVNLT2pjSU0wcE81Q0RYN0lDSjl4ekVIN0FMQnVLTFZ0alJRMEdIY3pBVXJLcDQ?oc=5",
-      "source": "オリコンニュース",
-      "lang": "ja",
-      "category": "other",
-      "official": false,
-      "date": "2017-10-26T13:44+09:00",
       "origin": "auto"
     },
     {
@@ -1678,7 +1762,15 @@
       "official": false,
       "date": "2017-07-25T19:04+09:00",
       "origin": "auto",
-      "others": 1
+      "others": 1,
+      "dupes": [
+        {
+          "title": "チップ・デール・クラリスが登場！バンプレスト「ディズニーキャラクターズ LOVERS MOMENTS-CHIP＆DALE-」",
+          "url": "https://dtimes.jp/banpresto-disney-characters-lovers-moment-chip-dale-clarice/",
+          "source": "Dtimes",
+          "date": "2017-06-29T16:00+09:00"
+        }
+      ]
     },
     {
       "id": "e1445bfe866d3cf8",
@@ -1747,24 +1839,12 @@
       "origin": "auto"
     },
     {
-      "id": "d465561a96ee5cfb",
-      "title": "【ディズニー七夕デイズ】スペシャルグッズ約30種 “光る”グッズやチップとデール&クラリスに注目!【グッズ詳細カタログ33枚】（写真 18/33）",
-      "url": "https://ure.pia.co.jp/articles/gallery/74568?img=5918588a77656163851f0000",
-      "source": "ウレぴあ総研",
-      "lang": "ja",
-      "category": "other",
-      "official": false,
-      "date": "2017-05-15T16:00+09:00",
-      "origin": "auto",
-      "image": "https://urepia.ismcdn.jp/mwimgs/8/7/-/img_87327f6acf75e7847a21838a2308dde11912298.jpg"
-    },
-    {
       "id": "afa2b765b20551ad",
       "title": "かわいく1000体「ぬい撮り」体験！タカラトミーアーツ「ディズニーキャラクター／ちょっこりさん」発売イベント開催",
       "url": "https://dtimes.jp/takaratomy-arts-chokkorisan-event/",
       "source": "Dtimes",
       "lang": "ja",
-      "category": "plush",
+      "category": "other",
       "official": false,
       "date": "2017-04-26T14:48+09:00",
       "origin": "auto"
@@ -2001,7 +2081,15 @@
       "official": false,
       "date": "2016-07-07T19:48+09:00",
       "origin": "auto",
-      "others": 1
+      "others": 1,
+      "dupes": [
+        {
+          "title": "トロピカルフルーツたっぷりなフローズンも☆東京ディズニーシー”ディズニー・サマーフェスティバル2016”カクテルまとめ",
+          "url": "https://mezzomiki.jp/post-67415/",
+          "source": "MezzoMiki",
+          "date": "2016-07-05T21:07+09:00"
+        }
+      ]
     },
     {
       "id": "5417fd32d89462ef",
@@ -2214,18 +2302,6 @@
       "official": false,
       "date": "2015-09-22T21:04+09:00",
       "origin": "auto"
-    },
-    {
-      "id": "5bc0f2d044a28b96",
-      "title": "画像・写真 | チップ＆デールのマドンナ“クラリス”がグッズになって登場 ｜最新ニュース 15枚目｜eltha（エルザ）",
-      "url": "https://beauty.oricon.co.jp/news/2059121/photo/15/",
-      "source": "eltha",
-      "lang": "ja",
-      "category": "other",
-      "official": false,
-      "date": "2015-09-14T16:00+09:00",
-      "origin": "auto",
-      "image": "https://contents.oricon.co.jp/upimg/news/20150914/2059121_201509140913992001442219332c.jpg"
     },
     {
       "id": "d896197a7a1c42cf",

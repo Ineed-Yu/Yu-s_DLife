@@ -102,7 +102,9 @@
         kindLabel: { ja: '種類で絞り込む', en: 'Filter by type', fr: 'Filtrer par type', zh: '按类型筛选' },
         official: { ja: '公式', en: 'Official', fr: 'Officiel', zh: '官方' },
         added: { ja: '手動で追加', en: 'Added by hand', fr: 'Ajouté à la main', zh: '手动添加' },
-        others: { ja: 'ほか{n}件の記事でも紹介', en: 'also covered by {n} more', fr: 'aussi relayé par {n} autres', zh: '另有{n}篇报道' },
+        others: { ja: '{n}件の記事から選ぶ', en: 'Choose from {n} articles', fr: 'Choisir parmi {n} articles', zh: '从{n}篇报道中选择' },
+        pickTitle: { ja: '読む記事を選んでください', en: 'Choose an article to read', fr: 'Choisissez un article à lire', zh: '请选择要阅读的报道' },
+        newest: { ja: '最新', en: 'Latest', fr: 'Le plus récent', zh: '最新' },
         opens: { ja: '（別のサイトが開きます）', en: ' (opens another site)', fr: ' (ouvre un autre site)', zh: '（将打开其他网站）' },
         more: { ja: 'さらに表示', en: 'Show more', fr: 'Afficher plus', zh: '显示更多' },
         empty: {
@@ -321,15 +323,58 @@
         return box;
     }
 
+    // 同じ商品を取り上げた記事が複数あるとき：カードを押すと記事の一覧が開き、読む記事を選べる
+    function articleChoices(item) {
+        const all = [item].concat(Array.isArray(item.dupes) ? item.dupes : [])
+            .filter(a => a && a.title && safeUrl(a.url));
+        return all.length > 1 ? all : [];
+    }
+
+    let pickerSeq = 0;
+    function pickerPanel(choices) {
+        const panel = el('div', 'dupe-panel');
+        panel.id = `dupe-panel-${++pickerSeq}`;
+        panel.hidden = true;
+        panel.appendChild(el('p', 'dupe-heading', t('pickTitle')));
+        const ul = el('ul', 'dupe-list');
+        choices.forEach((a, n) => {
+            const li = el('li');
+            const link = el('a', 'dupe-link');
+            link.href = safeUrl(a.url);
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            const meta = el('span', 'dupe-meta');
+            meta.appendChild(el('span', 'dupe-source', a.source || ''));
+            const d = new Date(a.date);
+            if (!isNaN(d)) meta.appendChild(el('time', 'dupe-date', dayLabel(d)));
+            if (n === 0) meta.appendChild(el('span', 'dupe-new', t('newest')));
+            link.appendChild(meta);
+            link.appendChild(el('span', 'dupe-title', a.title));
+            link.appendChild(el('span', 'visually-hidden', t('opens')));
+            li.appendChild(link);
+            ul.appendChild(li);
+        });
+        panel.appendChild(ul);
+        return panel;
+    }
+
     function playbill(item) {
         const url = safeUrl(item.url);
         const li = el('li', 'timeline-item');
         li.dataset.category = item.category;
-        const card = el(url ? 'a' : 'div', 'playbill');
-        if (url) {
-            card.href = url;
-            card.target = '_blank';
-            card.rel = 'noopener noreferrer';
+        const choices = articleChoices(item);
+        let card;
+        if (choices.length) {
+            card = el('button', 'playbill playbill-group');
+            card.type = 'button';
+            card.setAttribute('aria-expanded', 'false');
+        } else {
+            card = el(url ? 'a' : 'div', 'playbill');
+            if (url) {
+                card.href = url;
+                card.target = '_blank';
+                card.rel = 'noopener noreferrer';
+            }
         }
         card.appendChild(thumb(item));
         const body = el('span', 'playbill-body');
@@ -348,12 +393,24 @@
         const source = el('span', 'playbill-source', item.source || '');
         if (item.official) source.appendChild(el('span', 'playbill-official', t('official')));
         if (item.origin === 'manual') source.appendChild(document.createTextNode(`（${t('added')}）`));
-        // 同じ商品を取り上げたほかの媒体の記事は、いちばん新しい記事にまとめて件数だけ表示
-        const others = parseInt(item.others, 10);
-        if (others > 0) source.appendChild(el('span', 'playbill-others', t('others').replace('{n}', String(others))));
-        source.appendChild(el('span', 'visually-hidden', t('opens')));
+        if (choices.length) {
+            source.appendChild(el('span', 'playbill-others', t('others').replace('{n}', String(choices.length))));
+        } else {
+            source.appendChild(el('span', 'visually-hidden', t('opens')));
+        }
         body.appendChild(source);
         li.appendChild(card);
+        if (choices.length) {
+            const panel = pickerPanel(choices);
+            card.setAttribute('aria-controls', panel.id);
+            card.addEventListener('click', () => {
+                const open = card.getAttribute('aria-expanded') !== 'true';
+                card.setAttribute('aria-expanded', open ? 'true' : 'false');
+                panel.hidden = !open;
+                li.classList.toggle('is-open', open);
+            });
+            li.appendChild(panel);
+        }
         if (isX && xEmbed) {
             // X の公式の埋め込み（文字・画像は X が表示し、投稿が消されれば表示されなくなる）
             const quote = el('blockquote', 'twitter-tweet');
