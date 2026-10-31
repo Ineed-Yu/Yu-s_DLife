@@ -182,20 +182,6 @@
       "kind": "blog"
     },
     {
-      "id": "disneyfoodblog",
-      "name": "Disney Food Blog",
-      "lang": "en",
-      "url": "https://www.disneyfoodblog.com/?s=clarice&feed=rss2",
-      "kind": "blog"
-    },
-    {
-      "id": "allears",
-      "name": "AllEars.Net",
-      "lang": "en",
-      "url": "https://allears.net/?s=clarice&feed=rss2",
-      "kind": "blog"
-    },
-    {
       "id": "insidethemagic",
       "name": "Inside the Magic",
       "lang": "en",
