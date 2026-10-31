@@ -65,42 +65,64 @@ OTHER_CLARICE = re.compile(r"カリオストロ|ルパン|lupin|cagliostro|starl
                            r"沉默的羔羊|史达琳|史達琳|silence des agneaux", re.I)
 PIN = re.compile(r"ピンバッ?ジ|ピン(?:トレ|セット|バッチ)|\bpins?\b|pin trading|lanyard|徽章|胸针|胸針|pin's", re.I)
 PLUSH = re.compile(r"ぬいぐるみ|ぬいば|ぬいバッジ|ツムツム|plush|tsum\s*tsum|stuffed|nuimos|毛绒|毛絨|公仔|玩偶|peluche", re.I)
+# プライズ：くじ・ゲームセンター（クレーンゲーム）の景品・カプセルトイなど、買うのではなく「当てる・取る」もの
+PRIZE = re.compile(r"プライズ|くじ|クジ|ゲームセンター|ゲーセン|クレーンゲーム|UFOキャッチャー|景品|セガプライズ|タイトー|"
+                   r"バンプレスト|ナムコ|ガチャ|カプセルトイ|\bprizes?\b|claw machine|arcade|lottery|kuji|抽奖|扭蛋|娃娃机", re.I)
+# その他の「物」（グッズ・お土産・食べ物・飾り・客室など）。パークで会える情報ではないものは、すべてグッズ側に入れる
 GOODS = re.compile(r"グッズ|新商品|新作|発売|販売|新登場|コレクション|ストア|ショップ|キーチェーン|ストラップ|カチューシャ|"
-                   r"ポーチ|バッグ|マグ|タオル|ステッカー|フィギュア|お菓子|スーベニア|"
+                   r"ポーチ|バッグ|マグ|タオル|ステッカー|フィギュア|お菓子|スーベニア|カンバッジ|缶バッジ|バッジ|アクリル|"
+                   r"メニュー|フード|スイーツ|ケーキ|ドリンク|カクテル|ランチ|ディナーセット|スペシャルセット|おみやげ|お土産|"
+                   r"デコレーション|装飾|客室|ルーム|ポストカード|文具|雑貨|アパレル|Tシャツ|コスチューム|福袋|コラボ|"
+                   r"スリッパ|パズル|ジグソー|パスケース|ショルダー|プラッシー|ダイソー|出店|ポップアップ|ケース|ブランケット|"
+                   r"ショーツ|マット|きっぷ|切符|フリーきっぷ|スナップフォト|"
                    r"merch|merchandise|collection|release|\bears\b|loungefly|\bmugs?\b|apparel|figure|ornament|"
-                   r"spirit jersey|keychain|souvenir|shopdisney|new arrivals?|now available|coming soon|"
-                   r"周边|周邊|商品|新品|上市|发售|發售|限定|精品|产品|產品|"
+                   r"spirit jersey|keychain|souvenir|shopdisney|new arrivals?|now available|coming soon|snacks?|treats?|menu|"
+                   r"周边|周邊|商品|新品|上市|发售|發售|限定|精品|产品|產品|美食|"
                    r"produits?|boutique|nouveaut[ée]s?|collection|en vente|sortie", re.I)
-# 登場情報（グリーティング・ショー・パレード・イベント）
+# パーク：クラリスに「会う・見る」ための情報だけ（ショー・パレード・グリーティング・貸切や特別営業などでの登場）
 GREETING = re.compile(r"グリーティング|ミート|会える|会おう|会いに|会う方法|meet[\s-]*(?:and|&|'n'|n)?[\s-]*greet|greeting|character dining|"
                       r"キャラクターダイニング|キャラダイ|见面|見面|合影|rencontre", re.I)
 PARADE = re.compile(r"パレード|parade|巡游|巡遊|défilé|cavalcade", re.I)
-SHOW = re.compile(r"ショー|\bshows?\b|spectacle|表演|演出|ステージ|\bstage\b|花火|fireworks|ナイトタイム", re.I)
-EVENT = re.compile(r"イベント|\bevents?\b|パーティ|\bpart(?:y|ies)\b|アニバーサリー|セレブレーション|celebration|フェスティバル|festival|ハロウィ[ー]?ン|クリスマス|お正月|イースター|七夕|halloween|christmas|easter|"
-                   r"周年|anniversary|万圣|萬聖|圣诞|聖誕|新年|初登場|登場|出演|衣装|コスチューム|costume|debut|デビュー|"
-                   r"appear(?:s|ance)?|returns?", re.I)
+SHOW = re.compile(r"ショー(?![ツトケ])|\bshows?\b|spectacle|表演|ステージ|\bstage\b|花火|fireworks|ナイトタイム", re.I)
+EVENT = re.compile(r"貸切|貸し切り|特別営業|プライベート・?イブニング|アフター6|スペシャルナイト|ナイトパーティ|パーティ|"
+                   r"\bpart(?:y|ies)\b|after hours|celebration|セレブレーション|fan ?daze|D23|ファンイベント|"
+                   r"エンターテイメントプログラム|活动|活動", re.I)
+APPEAR_WORD = re.compile(r"登場|出演|デビュー|debut|appear(?:s|ance)?|会え", re.I)   # 弱い言葉（グッズの見出しにもよく使われる）
+# パークの話題であることの手がかり。特別イベント・「登場」はこれがあるときだけパーク側にする
+PARK_CONTEXT = re.compile(r"ディズニーランド|ディズニーシー|ディズニーリゾート|ＴＤＲ|TDR|TDL|TDS|パーク|トゥーンタウン|"
+                          r"Disneyland|DisneySea|Disney World|Magic Kingdom|Epcot|Hollywood Studios|Animal Kingdom|"
+                          r"California Adventure|\bparks?\b|\bresort\b|乐园|樂園|度假区|度假區|parc", re.I)
+# パークでもグッズでもない話題（映画・配信・書籍の紹介など）
+NOT_PARK = re.compile(r"作品紹介|映画|streaming|tv show|DVD|Blu-ray|小説|絵本|ゲームアプリ", re.I)
 
-GOODS_CATEGORIES = ("pin", "plush", "goods", "other")           # グッズ・新商品のタイムライン
-APPEAR_CATEGORIES = ("greeting", "show", "parade", "event")     # 「パーク」のタイムライン
+GOODS_CATEGORIES = ("plush", "pin", "prize", "other", "goods")  # グッズのタイムライン（goods は古い分類。表示は「その他」）
+APPEAR_CATEGORIES = ("show", "parade", "greeting", "event")     # 「パーク」のタイムライン
 CATEGORIES = GOODS_CATEGORIES + APPEAR_CATEGORIES
 
 
 def category_of(text: str, topic: str | None = None) -> str | None:
-    """種類を返す。グッズの話題を優先（pin / plush / goods）、次に登場情報（greeting / parade / show / event）。"""
+    """種類を返す。「物」の話題（プライズ・ピンバッジ・ぬいぐるみ・その他）を優先し、
+    物の話題が無いときだけパーク（グリーティング・パレード・ショー・特別イベント）にする。"""
+    if PRIZE.search(text):
+        return "prize"
     if PIN.search(text) or topic == "pin":
         return "pin"
     if PLUSH.search(text):
         return "plush"
     if GOODS.search(text):
-        return "goods"
+        return "other"
+    park = PARK_CONTEXT.search(text)
+    if NOT_PARK.search(text) and not park:
+        return None
     if GREETING.search(text):
         return "greeting"
     if PARADE.search(text):
         return "parade"
     if SHOW.search(text):
         return "show"
-    if EVENT.search(text):
-        return "event"
+    if EVENT.search(text) or APPEAR_WORD.search(text):
+        # パークの手がかりがあれば特別イベント。無ければ「物」の紹介（〇〇も登場！など）とみなしてグッズの「その他」
+        return "event" if park else "other"
     return None
 
 
@@ -122,9 +144,9 @@ def pick_category(by_title: str | None, by_text: str | None) -> str | None:
     見出しが「グッズ」で全体がピンバッジ・ぬいぐるみなら、より詳しい方を使う。"""
     if not by_title:
         return by_text
-    if by_title == "event" and by_text in GOODS_CATEGORIES:
-        return by_text
-    if by_title == "goods" and by_text in ("pin", "plush"):
+    if by_title in APPEAR_CATEGORIES and by_text in GOODS_CATEGORIES:
+        return by_text   # 見出しが「登場」等でも、本文の要約が物の話題ならグッズ側
+    if by_title == "other" and by_text in ("pin", "plush", "prize"):
         return by_text
     return by_title
 
@@ -286,6 +308,7 @@ def clarice_is_featured(content_html: str) -> bool:
     """本文（HTML）の中で、クラリスが主な話題のひとつか（小見出し・画像の説明に出てくる、または本文に2回以上）。"""
     if not content_html:
         return False
+    content_html = re.sub(r"<a\b[^>]*>.*?</a>", " ", content_html[:300_000], flags=re.I | re.S)  # 関連記事などのリンクは数えない
     text = clean_text(content_html, 200_000)
     if OTHER_CLARICE.search(text):
         return False
@@ -817,7 +840,7 @@ FORM_FIELDS = {
     "掲載をやめる": "hide",
     "入稿の確認": "approval",
 }
-CATEGORY_LABELS = {"ピンバッジ": "pin", "ぬいぐるみ": "plush", "グッズ": "goods", "その他（グッズ）": "other", "その他": "other",
+CATEGORY_LABELS = {"ピンバッジ": "pin", "ぬいぐるみ": "plush", "プライズ": "prize", "グッズ": "other", "その他（グッズ）": "other", "その他": "other",
                    "グリーティング": "greeting", "ショー": "show", "パレード": "parade", "特別イベント": "event",
                    "イベント・その他の登場": "event"}
 LANG_LABELS = {"日本語": "ja", "English": "en"}
