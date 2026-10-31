@@ -63,7 +63,7 @@ DISNEY = re.compile(r"ディズニー|disney|チップ|デール|chip\s*(?:'n'|n
                     r"迪士尼|奇奇|蒂蒂|HKDL|SHDL|DLP", re.I)
 OTHER_CLARICE = re.compile(r"カリオストロ|ルパン|lupin|cagliostro|starling|スターリング|羊たちの沈黙|silence of the lambs|"
                            r"hannibal|ハンニバル|lispector|リスペクトル|鲁邦|魯邦|卡里奥斯特罗|卡里奧斯特羅|沉默的羔羊|"
-                           r"沉默的羔羊|史达琳|史達琳|silence des agneaux|"
+                           r"沉默的羔羊|史达琳|史達琳|silence des agneaux|お化け退治|"
                           # 同じ名前の医薬品（クラリス錠＝クラリスロマイシン）
                           r"クラリス錠|クラリスロマイシン|clarith|clarithromycin|医療用医薬品|医薬品|製薬|薬価|処方|抗菌薬|"
                           r"添付文書|錠\s*\d+|\d+\s*mg|kegg|japic|ドライシロップ", re.I)
@@ -103,6 +103,9 @@ PARK_CONTEXT = re.compile(r"ディズニーランド|ディズニーシー|デ�
                           r"上海|香港|舞浜", re.I)
 # パークでもグッズでもない話題（映画・配信・書籍の紹介など）
 NOT_PARK = re.compile(r"作品紹介|映画|streaming|tv show|DVD|Blu-ray|小説|絵本|ゲームアプリ", re.I)
+# 映像配信・番組の紹介（グッズでもパークでもない）。例：「ディズニープラス注目作品まとめ」
+MEDIA = re.compile(r"ディズニープラス|ディズニー\+|Disney\s*\+|Disney Plus|注目作品|配信作品|配信開始|作品まとめ|放送予定|新作映画|"
+                   r"streaming|now streaming|episode guide|迪士尼\+", re.I)
 
 GOODS_CATEGORIES = ("plush", "pin", "prize", "other", "goods")  # グッズのタイムライン（goods は古い分類。表示は「その他」）
 APPEAR_CATEGORIES = ("show", "parade", "greeting", "event")     # 「パーク」のタイムライン
@@ -111,7 +114,10 @@ CATEGORIES = GOODS_CATEGORIES + APPEAR_CATEGORIES
 
 def category_of(text: str, topic: str | None = None) -> str | None:
     """種類を返す。「物」の話題（プライズ・ピンバッジ・ぬいぐるみ・その他）を優先し、
-    物の話題が無いときだけパーク（グリーティング・パレード・ショー・特別イベント）にする。"""
+    物の話題が無いときだけパーク（グリーティング・パレード・ショー・特別イベント）にする。
+    映像配信・番組の紹介はどちらでもないので載せない。"""
+    if MEDIA.search(text):
+        return None
     if PRIZE.search(text):
         return "prize"
     if PIN.search(text) or topic == "pin":
