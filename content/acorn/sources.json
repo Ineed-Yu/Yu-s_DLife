@@ -295,19 +295,19 @@
       "id": "mickeynet",
       "name": "ミッキーネット",
       "lang": "ja",
-      "url": "https://www.bing.com/search?q=site%3Ajp.mickeynet.com+%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&format=rss&mkt=ja-JP",
-      "kind": "search",
-      "disney_site": true,
-      "site": "jp.mickeynet.com"
+      "type": "page",
+      "url": "https://jp.mickeynet.com/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9",
+      "kind": "blog",
+      "disney_site": true
     },
     {
       "id": "dmkblog",
       "name": "Disney Magical Kingdom Blog",
       "lang": "ja",
-      "url": "https://www.bing.com/search?q=site%3Adisney-magical-kingdom-blog.com+%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&format=rss&mkt=ja-JP",
-      "kind": "search",
-      "disney_site": true,
-      "site": "disney-magical-kingdom-blog.com"
+      "type": "page",
+      "url": "https://www.disney-magical-kingdom-blog.com/search?q=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9",
+      "kind": "blog",
+      "disney_site": true
     },
     {
       "id": "disneyworldfan",
@@ -322,38 +322,38 @@
       "id": "ed92",
       "name": "ed92.org",
       "lang": "ja",
-      "url": "https://www.bing.com/search?q=site%3Aed92.org+%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&format=rss&mkt=ja-JP",
-      "kind": "search",
-      "disney_site": true,
-      "site": "ed92.org"
+      "type": "page",
+      "url": "https://www.ed92.org/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9",
+      "kind": "blog",
+      "disney_site": true
     },
     {
-      "id": "bing-site-disneypinsblog",
+      "id": "disneypinsblog",
       "name": "Disney Pins Blog",
       "lang": "en",
-      "url": "https://www.bing.com/search?q=site%3Adisneypinsblog.com+Clarice&format=rss&mkt=en-US",
-      "kind": "search",
-      "disney_site": true,
-      "site": "disneypinsblog.com"
+      "type": "page",
+      "url": "https://disneypinsblog.com/search?q=clarice&type=article",
+      "kind": "blog",
+      "disney_site": true
     },
     {
-      "id": "bing-site-tdr",
+      "id": "tdr-official",
       "name": "東京ディズニーリゾート公式サイト",
       "lang": "ja",
-      "url": "https://www.bing.com/search?q=site%3Atokyodisneyresort.jp+%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&format=rss&mkt=ja-JP",
-      "kind": "search",
+      "type": "page",
+      "url": "https://www.tokyodisneyresort.jp/tdl/news/",
+      "kind": "blog",
       "disney_site": true,
-      "site": "tokyodisneyresort.jp",
       "official": true
     },
     {
-      "id": "bing-site-disneystore-uk",
+      "id": "disneystore-uk",
       "name": "Disney Store UK",
       "lang": "en",
-      "url": "https://www.bing.com/search?q=site%3Adisneystore.co.uk+Clarice&format=rss&mkt=en-GB",
-      "kind": "search",
-      "disney_site": true,
-      "site": "disneystore.co.uk"
+      "type": "page",
+      "url": "https://www.disneystore.co.uk/search?q=clarice",
+      "kind": "blog",
+      "disney_site": true
     }
   ]
 }
