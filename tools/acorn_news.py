@@ -679,7 +679,7 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search
 
 # ---------------------------------------------------------------- 過去分の取り込み（backfill）
 # Google ニュースの検索は新しい順の上位しか返さないため、期間（after: / before:）を区切って過去の記事を探す。
-# 手動の実行（Actions の「Acorn Club の自動収集」で backfill を選ぶ）で1回だけ動かす想定。
+# 2時間ごとの自動収集のたびに少しずつ（1回4分まで）進め、どこまで調べたかを残して続きから調べる。
 BACKFILL_SINCE = 2004         # 東京ディズニーランドにクラリスが登場した 2005 年の前年から
 BACKFILL_MONTHS = 3            # 1回の検索で区切る期間（月）
 
@@ -703,37 +703,60 @@ def windowed_url(url: str, after: str, before: str) -> str:
     return urllib.parse.urlunparse(p._replace(query=urllib.parse.urlencode({k: v[0] for k, v in q.items()})))
 
 
-def paged_url(url: str, page: int) -> str:
-    return url if page == 1 else f"{url}{'&' if '?' in url else '?'}paged={page}"
+BACKFILL_STATE = DATA_DIR / "backfill_state.json"
+BACKFILL_MAX_PAGES = 40
 
 
-def backfill_pages(src: dict, now: dt.datetime, fetcher, max_pages: int, pause: float) -> list[dict]:
-    """WordPress のサイト内検索の配信を、2ページ目、3ページ目…とさかのぼって読む（配信は新しい10件ほどしか返さないため）。"""
-    out = []
-    for page in range(1, max_pages + 1):
-        try:
-            items, total = items_from_source(src, fetcher(paged_url(src["url"], page)), now)
-        except Exception:
-            break  # ページの終わり（404 など）
-        if not total:
-            break
-        out += items
-        time.sleep(pause)
-    return out
-
-
-def backfill(dry_run: bool, now: dt.datetime, windows: int | None = None, fetcher=fetch, pause: float = 1.0) -> int:
+def backfill(dry_run: bool, now: dt.datetime, windows: int | None = None, fetcher=fetch, pause: float = 1.0,
+             budget: float = 240.0, reset: bool = False, clock=time.monotonic) -> int:
+    """過去分を少しずつ取り込む。1回の実行は budget 秒まで。どこまで調べたかを backfill_state.json に残し、
+    次の実行（2時間ごとの自動収集）で続きから調べる。取得元が増えたときも、その取得元の過去分を自動で調べる。
+    windows を指定したとき（PR の試し取得）は、直近の期間だけを状態に関係なく調べる。"""
     all_sources = load_json(DATA_DIR / "sources.json", {}).get("sources", [])
-    sources = [s for s in all_sources if s.get("backfill") and "news.google.com/rss/search" in s.get("url", "")]
+    gnews = [s for s in all_sources if s.get("backfill") and "news.google.com/rss/search" in s.get("url", "")]
     site_search = [s for s in all_sources if s.get("clarice_search") and "feed=rss2" in s.get("url", "")]
     spans = backfill_windows(now)
-    if windows:
+    trial = bool(windows)
+    if trial:
         spans = spans[-windows:]
+    state = {} if (reset or trial) else load_json(BACKFILL_STATE, {})
+    state.setdefault("windows", {})   # Google ニュース：取得元ごとに、調べ終えた期間の数（古い順）
+    state.setdefault("pages", {})     # サイト内検索：取得元ごとに、読み終えたページ数（"done" なら最後まで）
+    start = clock()
     found: list[dict] = []
-    fails = 0
     per_source: dict[str, int] = {}
-    for src in sources:
-        for after, before in spans:
+    fails = 0
+    out_of_time = False
+
+    def time_left() -> bool:
+        return trial or clock() - start < budget
+
+    # 件数の多いサイト内検索（ページをさかのぼる）を先に、Google ニュースの期間ごとの検索を後に
+    for src in site_search:
+        done = state["pages"].get(src["id"], 0)
+        if done == "done" and not trial:
+            continue
+        page = 1 if trial else int(done) + 1
+        last = 3 if trial else BACKFILL_MAX_PAGES
+        while page <= last and time_left():
+            try:
+                items, total = items_from_source(src, fetcher(paged_url(src["url"], page)), now)
+            except Exception:
+                total, items = 0, []   # ページの終わり（404 など）
+            if not total:
+                page = None
+                break
+            found += items
+            per_source[src["id"]] = per_source.get(src["id"], 0) + len(items)
+            page += 1
+            time.sleep(pause)
+        if not trial:
+            state["pages"][src["id"]] = "done" if page is None or page > last else page - 1
+        out_of_time |= page is not None and page <= last
+    for src in gnews:
+        i = 0 if trial else int(state["windows"].get(src["id"], 0))
+        while i < len(spans) and time_left():
+            after, before = spans[i]
             try:
                 items, _ = items_from_source(src, fetcher(windowed_url(src["url"], after, before)), now)
                 found += items
@@ -741,17 +764,20 @@ def backfill(dry_run: bool, now: dt.datetime, windows: int | None = None, fetche
             except Exception as e:
                 fails += 1
                 print(f"{src['id']} {after}〜{before}: 取得できませんでした（{type(e).__name__}）")
+            i += 1
             time.sleep(pause)
-    for src in site_search:
-        items = backfill_pages(src, now, fetcher, 3 if windows else 40, pause)
-        found += items
-        per_source[src["id"]] = len(items)
+        if not trial:
+            state["windows"][src["id"]] = i
+        out_of_time |= i < len(spans)
+    complete = not out_of_time
     summary = "、".join(f"{k} {v}" for k, v in per_source.items())
-    print(f"::notice title=過去分::{len(sources)} 件の検索 × {len(spans)} 期間 → 候補 {len(found)} 件（失敗 {fails} 回）: {summary}")
-    for it in sorted(found, key=lambda x: x["date"])[:8]:
+    print(f"::notice title=過去分::候補 {len(found)} 件（失敗 {fails} 回）{'・すべて調べ終えました' if complete else '・続きは次回'}: {summary}")
+    for it in sorted(found, key=lambda x: x["date"])[:5]:
         print(f"::notice title=過去分の例::{it['date'][:10]} {it['title'][:50]}")
     if dry_run:
         return 0
+    if not trial:
+        write_if_changed(BACKFILL_STATE, dump(state))
     collected = merge_collected(load_json(DATA_DIR / "collected.json", []), found)
     collected.sort(key=lambda x: x["date"], reverse=True)
     collected = collected[: MAX_ITEMS * 2]
@@ -759,6 +785,10 @@ def backfill(dry_run: bool, now: dt.datetime, windows: int | None = None, fetche
     changed |= write_if_changed(OUT_FILE, timeline_json(now))
     print("更新しました" if changed else "変更なし")
     return 0
+
+
+def paged_url(url: str, page: int) -> str:
+    return url if page == 1 else f"{url}{'&' if '?' in url else '?'}paged={page}"
 
 
 # ---------------------------------------------------------------- 入力フォーム（手動で追加）
@@ -982,6 +1012,8 @@ def main() -> int:
     bf = sub.add_parser("backfill")
     bf.add_argument("--dry-run", action="store_true")
     bf.add_argument("--windows", type=int, help="新しい方から、この数の期間だけ調べる（試し用）")
+    bf.add_argument("--budget", type=float, default=240.0, help="1回に使う時間（秒）。続きは次回")
+    bf.add_argument("--reset", action="store_true", help="どこまで調べたかを消して、最初から調べ直す")
     im = sub.add_parser("images")
     im.add_argument("--dry-run", action="store_true")
     im.add_argument("--limit", type=int, default=8)
@@ -1000,7 +1032,7 @@ def main() -> int:
     if args.cmd == "collect":
         return collect(args.dry_run, now)
     if args.cmd == "backfill":
-        return backfill(args.dry_run, now, args.windows)
+        return backfill(args.dry_run, now, args.windows, budget=args.budget, reset=args.reset)
     if args.cmd == "images":
         # 試し：まだ画像を調べていない情報のうち新しいものを、ファイルを書き換えずに調べて結果を表示する
         items = load_json(DATA_DIR / "manual.json", []) + load_json(DATA_DIR / "collected.json", [])
