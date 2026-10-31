@@ -5,11 +5,13 @@
   content/acorn/collected.json … 自動で集めた情報（取得元の配信から消えても残す）
   content/acorn/manual.json    … 入力フォームから手動で追加した情報（SNS の投稿など）
   content/acorn/exclude.json   … 表示しない情報（URL・言葉）
+  content/acorn/x_state.json   … X の検索の続きの位置と、今月読んだ件数（従量課金の上限管理）
         ↓
   acorn-club/news.json         … ページに表示するタイムライン（新しい順）
 
 - 取り込むのは「タイトル・リンク・掲載元・日付」だけ。記事の本文や写真は保存も表示もしない（著作権への配慮）。
-- 「クラリス / Clarice」と、ディズニーの話題であること、グッズの話題であることの3つがそろう情報だけを残す。
+- 「クラリス / Clarice」と、ディズニーの話題であること、グッズ（ピンバッジ・ぬいぐるみ等）または登場情報
+  （グリーティング・ショー・パレード・イベント）の話題であることの3つがそろう情報だけを残す。
   同じ名前の別作品（『カリオストロの城』のクラリス、『羊たちの沈黙』のクラリス など）は除く。
 - リンクは http / https だけ。
 
@@ -59,30 +61,49 @@ PIN = re.compile(r"ピンバッ?ジ|ピン(?:トレ|セット|バッチ)|\bpins?
 PLUSH = re.compile(r"ぬいぐるみ|ぬいば|ぬいバッジ|ツムツム|plush|tsum\s*tsum|stuffed|nuimos|毛绒|毛絨|公仔|玩偶|peluche", re.I)
 GOODS = re.compile(r"グッズ|新商品|新作|発売|販売|新登場|コレクション|ストア|ショップ|キーチェーン|ストラップ|カチューシャ|"
                    r"ポーチ|バッグ|マグ|タオル|ステッカー|フィギュア|お菓子|スーベニア|"
-                   r"merch|merchandise|collection|release|ears|loungefly|mug|apparel|figure|ornament|"
+                   r"merch|merchandise|collection|release|\bears\b|loungefly|\bmugs?\b|apparel|figure|ornament|"
                    r"spirit jersey|keychain|souvenir|shopdisney|new arrivals?|now available|coming soon|"
                    r"周边|周邊|商品|新品|上市|发售|發售|限定|精品|产品|產品|"
                    r"produits?|boutique|nouveaut[ée]s?|collection|en vente|sortie", re.I)
-CATEGORIES = ("pin", "plush", "goods", "other")
+# 登場情報（グリーティング・ショー・パレード・イベント）
+GREETING = re.compile(r"グリーティング|ミート|meet[\s-]*(?:and|&|'n'|n)?[\s-]*greet|greeting|character dining|"
+                      r"キャラクターダイニング|キャラダイ|见面|見面|合影|rencontre", re.I)
+PARADE = re.compile(r"パレード|parade|巡游|巡遊|défilé|cavalcade", re.I)
+SHOW = re.compile(r"ショー|\bshows?\b|spectacle|表演|演出|ステージ|\bstage\b|花火|fireworks|ナイトタイム", re.I)
+EVENT = re.compile(r"イベント|\bevents?\b|ハロウィ[ー]?ン|クリスマス|お正月|イースター|七夕|halloween|christmas|easter|"
+                   r"周年|anniversary|万圣|萬聖|圣诞|聖誕|新年|初登場|登場|出演|衣装|コスチューム|costume|debut|デビュー|"
+                   r"appear(?:s|ance)?|returns?", re.I)
+
+GOODS_CATEGORIES = ("pin", "plush", "goods", "other")           # グッズ・新商品のタイムライン
+APPEAR_CATEGORIES = ("greeting", "show", "parade", "event")     # グリーティング・ショーのタイムライン
+CATEGORIES = GOODS_CATEGORIES + APPEAR_CATEGORIES
 
 
 def category_of(text: str, topic: str | None = None) -> str | None:
-    """グッズの話題なら種類（pin / plush / goods）、そうでなければ None。"""
+    """種類を返す。グッズの話題を優先（pin / plush / goods）、次に登場情報（greeting / parade / show / event）。"""
     if PIN.search(text) or topic == "pin":
         return "pin"
     if PLUSH.search(text):
         return "plush"
     if GOODS.search(text):
         return "goods"
+    if GREETING.search(text):
+        return "greeting"
+    if PARADE.search(text):
+        return "parade"
+    if SHOW.search(text):
+        return "show"
+    if EVENT.search(text):
+        return "event"
     return None
 
 
-def is_relevant(title: str, summary: str, topic: str | None = None) -> str | None:
+def is_relevant(title: str, summary: str, topic: str | None = None, require_disney: bool = True) -> str | None:
     """タイムラインに載せる情報か判定し、載せるなら種類を返す。"""
     text = f"{title}\n{summary}"
     if not CLARICE.search(text) or OTHER_CLARICE.search(text):
         return None
-    if not DISNEY.search(text) and topic != "pin":
+    if require_disney and not DISNEY.search(text) and topic != "pin":
         return None
     return category_of(text, topic)
 
@@ -237,6 +258,60 @@ def items_from_source(src: dict, data: bytes, now: dt.datetime) -> tuple[list[di
     return out, len(entries)
 
 
+# ---------------------------------------------------------------- X（旧 Twitter）の投稿
+# 有料の X API（読んだ投稿の件数に応じた従量課金）を使う。キー（Secrets の X_BEARER_TOKEN）が無ければ何もしない。
+# - 検索は「最近の投稿の検索」。前回の続きから読む（since_id）。1回に読むのは取得元ごとに最大 50 件
+# - 月に読む件数の上限（Variables の X_MONTHLY_POST_LIMIT。既定 1300 件 ≒ 約1,000円）を超えないよう止める
+# - 保存するのは投稿の ID・日付・言語・種類だけ（本文・画像・投稿者情報は保存しない）。表示は X の公式の埋め込み
+X_SEARCH_URL = "https://api.x.com/2/tweets/search/recent"
+X_STATE_FILE = DATA_DIR / "x_state.json"
+X_DEFAULT_MONTHLY_LIMIT = 1300
+X_LANGS = {"ja": "ja", "en": "en", "fr": "fr", "zh": "zh", "zh-cn": "zh", "zh-tw": "zh"}
+
+
+def x_search(query: str, token: str, since_id: str | None, max_results: int) -> dict:
+    params = {"query": query, "max_results": str(max_results), "tweet.fields": "created_at,lang"}
+    if since_id:
+        params["since_id"] = since_id
+    req = urllib.request.Request(f"{X_SEARCH_URL}?{urllib.parse.urlencode(params)}",
+                                 headers={"Authorization": f"Bearer {token}", "User-Agent": USER_AGENT})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        return json.loads(r.read(MAX_FEED_BYTES).decode("utf-8"))
+
+
+def collect_x(src: dict, token: str, state: dict, limit: int, now: dt.datetime, search=x_search) -> tuple[list[dict], int]:
+    """X の検索結果から載せる投稿を取り出す。state（月・読んだ件数・前回の位置）を更新する。"""
+    month = now.strftime("%Y-%m")
+    if state.get("month") != month:
+        state["month"], state["reads"] = month, 0
+    remaining = limit - state.get("reads", 0)
+    if remaining < 10:
+        raise RuntimeError(f"今月の上限（{limit} 件）に達したため停止中です")
+    since = (state.setdefault("since", {})).get(src["id"])
+    res = search(src["query"], token, since, max(10, min(50, remaining)))
+    tweets = res.get("data") or []
+    state["reads"] = state.get("reads", 0) + len(tweets)
+    newest = (res.get("meta") or {}).get("newest_id")
+    if newest:
+        state["since"][src["id"]] = newest
+    out = []
+    for t in tweets:
+        tid = str(t.get("id", ""))
+        if not tid.isdigit():
+            continue
+        cat = is_relevant(t.get("text", ""), "", src.get("topic"), require_disney=False)
+        if not cat:
+            continue
+        date = parse_date(t.get("created_at")) or now
+        url = f"https://x.com/i/status/{tid}"
+        out.append({
+            "id": item_id(url), "title": "", "url": url, "source": "X", "via": src["id"],
+            "lang": X_LANGS.get((t.get("lang") or "").lower(), "other"), "category": cat, "official": False,
+            "date": date.isoformat(timespec="minutes"), "origin": "x", "tweet": tid,
+        })
+    return out, len(tweets)
+
+
 # ---------------------------------------------------------------- 保存とタイムラインの組み立て
 def load_json(path: Path, default):
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
@@ -252,10 +327,11 @@ def merge_collected(collected: list[dict], new: list[dict]) -> list[dict]:
     titles = {(c["title"].casefold(), c["lang"]) for c in collected}
     for n in new:
         key = (n["title"].casefold(), n["lang"])
-        if n["id"] in by_id or key in titles:
+        if n["id"] in by_id or (n["title"] and key in titles):  # 見出しの無いもの（X の投稿）は ID だけで比べる
             continue
         by_id[n["id"]] = n
-        titles.add(key)
+        if n["title"]:
+            titles.add(key)
     return list(by_id.values())
 
 
@@ -270,7 +346,10 @@ def build_timeline(collected: list[dict], manual: list[dict], exclude: dict, now
         d = dt.datetime.fromisoformat(it["date"])
         if d < oldest and it.get("origin") != "manual":
             continue
-        items.append({k: it[k] for k in ("id", "title", "url", "source", "lang", "category", "official", "date", "origin")})
+        item = {k: it[k] for k in ("id", "title", "url", "source", "lang", "category", "official", "date", "origin")}
+        if it.get("tweet"):
+            item["tweet"] = it["tweet"]
+        items.append(item)
     seen, unique = set(), []
     for it in sorted(items, key=lambda x: x["date"], reverse=True):
         if it["id"] in seen:
@@ -297,11 +376,32 @@ def write_if_changed(path: Path, text: str) -> bool:
     return True
 
 
-def collect(dry_run: bool, now: dt.datetime, fetcher=fetch) -> int:
+def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search) -> int:
     sources = load_json(DATA_DIR / "sources.json", {}).get("sources", [])
     found: list[dict] = []
     ok = 0
+    x_token = os.environ.get("X_BEARER_TOKEN", "").strip()
+    try:
+        x_limit = int(os.environ.get("X_MONTHLY_POST_LIMIT") or X_DEFAULT_MONTHLY_LIMIT)
+    except ValueError:
+        x_limit = X_DEFAULT_MONTHLY_LIMIT
+    x_state = load_json(X_STATE_FILE, {})
     for src in sources:
+        if src.get("type") == "x":
+            if not x_token:
+                print(f"::notice title={src['id']}::{src['name']}: X のキー（X_BEARER_TOKEN）が未登録のため停止中")
+                continue
+            if dry_run:  # 試し取得では課金されないよう、X は読まない
+                print(f"::notice title={src['id']}::{src['name']}: 試し取得では X を読みません（費用がかかるため）")
+                continue
+            try:
+                items, total = collect_x(src, x_token, x_state, x_limit, now, x_search_fn)
+                ok += 1
+                found += items
+                print(f"::notice title={src['id']}::{src['name']}: 投稿 {total} 件 → 掲載 {len(items)} 件（今月 {x_state.get('reads', 0)}/{x_limit} 件）")
+            except Exception as e:
+                print(f"::warning title={src['id']}::{src['name']}: 取得できませんでした（{type(e).__name__}: {str(e)[:120]}）")
+            continue
         try:
             items, total = items_from_source(src, fetcher(src["url"]), now)
             ok += 1
@@ -317,6 +417,8 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch) -> int:
     collected.sort(key=lambda x: x["date"], reverse=True)
     collected = collected[: MAX_ITEMS * 2]
     changed = write_if_changed(DATA_DIR / "collected.json", dump(collected))
+    if x_state:
+        changed |= write_if_changed(X_STATE_FILE, dump(x_state))
     changed |= write_if_changed(OUT_FILE, timeline_json(now))
     print(f"取得元 {ok}/{len(sources)} 件、新しい候補 {len(found)} 件、{'更新しました' if changed else '変更なし'}")
     return 0 if ok or not sources else 1
@@ -332,7 +434,8 @@ FORM_FIELDS = {
     "掲載をやめる": "hide",
     "入稿の確認": "approval",
 }
-CATEGORY_LABELS = {"ピンバッジ": "pin", "ぬいぐるみ": "plush", "グッズ": "goods", "その他": "other"}
+CATEGORY_LABELS = {"ピンバッジ": "pin", "ぬいぐるみ": "plush", "グッズ": "goods", "その他（グッズ）": "other", "その他": "other",
+                   "グリーティング": "greeting", "ショー": "show", "パレード": "parade", "イベント・その他の登場": "event"}
 LANG_LABELS = {"日本語": "ja", "English": "en"}
 ALLOWED_ASSOCIATIONS = {"OWNER", "COLLABORATOR", "MEMBER"}
 

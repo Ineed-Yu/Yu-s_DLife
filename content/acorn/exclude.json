@@ -1,7 +1,5 @@
 {
   "_説明": "タイムラインに出したくない情報（関係ない記事など）。urls に URL を、keywords にタイトルに含まれる言葉を書くと、その情報は表示されません。",
-  "urls": [
-    "https://news.google.com/rss/articles/CBMiREFVX3lxTE5qdWNQOVVkLXlqRHUyMWNxblNMMlJ5SjNQYmJidW9qcDdkWDhqRUVJc0NBYlZ5UWN1ZkN1QjdSR2FTeWdk?oc=5"
-  ],
+  "urls": [],
   "keywords": []
 }

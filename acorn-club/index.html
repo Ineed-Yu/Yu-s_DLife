@@ -490,6 +490,8 @@
     <!-- Acorn Club：クラリスの新着グッズ情報のタイムライン（非公式・非営利のファンページ）
          データは /acorn-club/news.json（tools/acorn_news.py が自動で集める）。記事の本文・写真は載せず、見出しとリンクだけ -->
     <main class="club" id="acorn-main">
+        <!-- PC では左に看板・切り替え・絞り込み・公式の情報源、右にタイムライン。スマホでは上から順に1列 -->
+        <div class="club-side">
         <header class="marquee">
             <div class="marquee-inner">
                 <svg class="marquee-acorn" aria-hidden="true"><use href="#acorn-mark"/></svg>
@@ -502,11 +504,17 @@
             </div>
         </header>
 
+        <div class="club-views" id="club-views" role="tablist"></div>
+
         <nav class="filters" aria-label="絞り込み">
             <div class="filter-row" id="filter-category" role="group"></div>
             <div class="filter-row filter-year" id="filter-year" role="group"></div>
             <div class="filter-row filter-lang" id="filter-lang" role="group"></div>
+            <div class="x-embed" id="x-embed" hidden></div>
         </nav>
+        </div>
+
+        <div class="club-main">
 
         <section class="timeline" aria-labelledby="timeline-title">
             <h2 class="visually-hidden" id="timeline-title"
@@ -514,6 +522,9 @@
             <ol class="timeline-list" id="timeline-list"></ol>
             <p class="timeline-empty" id="timeline-empty" hidden></p>
         </section>
+        </div>
+
+        <div class="club-side club-side-end">
 
         <section class="sources" aria-labelledby="sources-title">
             <h2 class="sources-title" id="sources-title"
@@ -531,6 +542,7 @@
            data-en="* An unofficial, non-commercial fan page made by an individual, not affiliated with The Walt Disney Company or its affiliates. Please check each linked page for product details."
            data-fr="* Page de fans non officielle et non commerciale, sans lien avec The Walt Disney Company ni ses filiales. Consultez chaque page liée pour le détail des produits."
            data-zh="※ 本页面为个人制作的非官方、非营利粉丝页面，与华特迪士尼公司及其关联公司无任何关系。商品详情请查看各链接页面。">※ 個人による非公式・非営利のファンページです。ウォルト・ディズニー・カンパニーおよび関連会社とは一切関係ありません。商品の詳細は各リンク先でご確認ください。</p>
+        </div>
     </main>
 
     <!-- partial:footer -->

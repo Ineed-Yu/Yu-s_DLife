@@ -49,7 +49,11 @@ jobs:
         with:
           python-version: "3.12"
 
+      # X（有料の API）はキーを登録するまで動かない。月の上限は Variables の X_MONTHLY_POST_LIMIT（未設定なら 1300 件）
       - name: 新着情報を集める
+        env:
+          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+          X_MONTHLY_POST_LIMIT: ${{ vars.X_MONTHLY_POST_LIMIT }}
         run: python3 tools/acorn_news.py collect
 
       - name: main に保存

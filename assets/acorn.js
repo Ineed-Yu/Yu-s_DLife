@@ -1,6 +1,7 @@
 // Acorn Club（/acorn-club/）の表示処理
 // 1. 幕開け：葉っぱの幕が左右に開いて Acorn Club が現れる（このタブで初回だけ・動きを減らす設定なら出さない）
-// 2. タイムライン：/acorn-club/news.json（tools/acorn_news.py が自動で集めたもの）を、種類・言語で絞り込んで表示
+// 2. タイムライン：/acorn-club/news.json を「グッズ・新商品」「グリーティング・ショー」に分け、種類・年・言語で絞り込んで表示
+// 3. X の投稿：最初はリンクだけ。利用者が「X の投稿を表示する」を押したときだけ X の公式の埋め込みを読み込む
 // 文字はすべて textContent で入れ、HTML として解釈させない。リンクは http / https だけ。
 (function () {
     'use strict';
@@ -43,6 +44,22 @@
         plush: { ja: 'ぬいぐるみ', en: 'Plush', fr: 'Peluches', zh: '毛绒玩偶' },
         goods: { ja: 'グッズ', en: 'Merchandise', fr: 'Produits', zh: '周边' },
         other: { ja: 'その他', en: 'Other', fr: 'Autres', zh: '其他' },
+        greeting: { ja: 'グリーティング', en: 'Greetings', fr: 'Rencontres', zh: '见面会' },
+        show: { ja: 'ショー', en: 'Shows', fr: 'Spectacles', zh: '表演' },
+        parade: { ja: 'パレード', en: 'Parades', fr: 'Parades', zh: '巡游' },
+        event: { ja: 'イベント', en: 'Events', fr: 'Événements', zh: '活动' },
+        view_goods: { ja: 'グッズ・新商品', en: 'Merchandise', fr: 'Produits', zh: '周边新品' },
+        view_appear: { ja: 'グリーティング・ショー', en: 'Greetings & shows', fr: 'Rencontres et spectacles', zh: '见面会与表演' },
+        viewLabel: { ja: '表示する情報', en: 'What to show', fr: 'Informations affichées', zh: '显示内容' },
+        xPost: { ja: 'X の投稿', en: 'Post on X', fr: 'Publication sur X', zh: 'X 上的帖子' },
+        xShow: { ja: 'X の投稿を表示する', en: 'Show posts from X', fr: 'Afficher les publications X', zh: '显示 X 帖子' },
+        xHide: { ja: 'X の投稿をリンクだけにする', en: 'Show X posts as links only', fr: 'Liens seulement pour X', zh: 'X 帖子仅显示链接' },
+        xNote: {
+            ja: '表示すると X（旧 Twitter）のサービスに接続し、画像付きで投稿を表示します。',
+            en: 'Showing posts connects to X (formerly Twitter) and displays them with images.',
+            fr: 'L’affichage se connecte à X (ex-Twitter) et montre les publications avec leurs images.',
+            zh: '显示时将连接 X（原 Twitter）服务，并带图片显示帖子。'
+        },
         allLang: { ja: 'すべての言語', en: 'All languages', fr: 'Toutes les langues', zh: '所有语言' },
         lang_ja: { ja: '日本語の情報', en: 'In Japanese', fr: 'En japonais', zh: '日语' },
         lang_en: { ja: '英語の情報', en: 'In English', fr: 'En anglais', zh: '英语' },
@@ -80,7 +97,17 @@
     // ---------- データ ----------
     let data = null;      // { items: [...], links: [...] }
     let failed = false;
-    const state = { category: 'all', lang: 'all', year: 'all', limit: 40 };
+    const GOODS = ['pin', 'plush', 'goods', 'other'];
+    const APPEAR = ['greeting', 'show', 'parade', 'event'];
+    const viewOf = item => (APPEAR.includes(item.category) ? 'appear' : 'goods');
+    const state = { view: 'goods', category: 'all', lang: 'all', year: 'all', limit: 40 };
+    let xEmbed = false;
+    try {
+        xEmbed = localStorage.getItem('acornXEmbed') === '1';
+    } catch (e) {}
+    try {
+        if (new URLSearchParams(location.search).get('view') === 'appear') state.view = 'appear';
+    } catch (e) {}
     const yearOf = item => String(item.date || '').slice(0, 4);
 
     function safeUrl(url) {
@@ -116,6 +143,69 @@
         return b;
     }
 
+    // 「グッズ・新商品」「グリーティング・ショー」の切り替え（タブ）
+    function renderViews() {
+        const box = document.getElementById('club-views');
+        if (!box) return;
+        box.setAttribute('aria-label', t('viewLabel'));
+        box.replaceChildren();
+        ['goods', 'appear'].forEach(v => {
+            const b = el('button', 'view-tab', t('view_' + v));
+            b.type = 'button';
+            b.setAttribute('role', 'tab');
+            b.setAttribute('aria-selected', state.view === v ? 'true' : 'false');
+            b.setAttribute('aria-controls', 'timeline-list');
+            b.addEventListener('click', () => {
+                if (state.view === v) return;
+                state.view = v;
+                Object.assign(state, { category: 'all', year: 'all', lang: 'all', limit: 40 });
+                try {
+                    const q = new URLSearchParams(location.search);
+                    if (v === 'appear') q.set('view', 'appear'); else q.delete('view');
+                    history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
+                } catch (e) {}
+                render();
+            });
+            box.appendChild(b);
+        });
+    }
+
+    // X の投稿の埋め込み（押したときだけ X のスクリプトを読み込む）
+    function renderXToggle(items) {
+        const box = document.getElementById('x-embed');
+        if (!box) return;
+        const hasX = items.some(i => i.origin === 'x');
+        box.hidden = !hasX;
+        if (!hasX) return;
+        box.replaceChildren();
+        const b = el('button', 'filter-chip x-toggle', xEmbed ? t('xHide') : t('xShow'));
+        b.type = 'button';
+        b.setAttribute('aria-pressed', xEmbed ? 'true' : 'false');
+        b.addEventListener('click', () => {
+            xEmbed = !xEmbed;
+            try {
+                localStorage.setItem('acornXEmbed', xEmbed ? '1' : '0');
+            } catch (e) {}
+            render();
+        });
+        box.appendChild(b);
+        box.appendChild(el('p', 'x-note', t('xNote')));
+    }
+
+    let xScript = null;
+    function loadXWidgets(container) {
+        const run = () => window.twttr && window.twttr.widgets && window.twttr.widgets.load(container);
+        if (window.twttr && window.twttr.widgets) return run();
+        if (!xScript) {
+            xScript = document.createElement('script');
+            xScript.src = 'https://platform.twitter.com/widgets.js';
+            xScript.async = true;
+            xScript.charset = 'utf-8';
+            document.head.appendChild(xScript);
+        }
+        xScript.addEventListener('load', run, { once: true });
+    }
+
     function renderFilters(items) {
         const catRow = document.getElementById('filter-category');
         const langRow = document.getElementById('filter-lang');
@@ -123,7 +213,7 @@
         catRow.setAttribute('aria-label', t('kindLabel'));
         langRow.setAttribute('aria-label', t('langLabel'));
         catRow.replaceChildren(chip(t('all'), state.category === 'all', () => setState({ category: 'all' })));
-        ['pin', 'plush', 'goods', 'other'].forEach(c => {
+        (state.view === 'appear' ? APPEAR : GOODS).forEach(c => {
             if (items.some(i => i.category === c)) {
                 catRow.appendChild(chip(t(c), state.category === c, () => setState({ category: c })));
             }
@@ -173,7 +263,8 @@
         head.appendChild(time);
         head.appendChild(el('span', 'playbill-kind', t(item.category)));
         card.appendChild(head);
-        const title = el('span', 'playbill-title', item.title || '');
+        const isX = item.origin === 'x' && /^\d+$/.test(String(item.tweet || ''));
+        const title = el('span', 'playbill-title', isX ? t('xPost') : (item.title || ''));
         if (item.lang && item.lang !== 'ja') title.lang = item.lang === 'zh' ? 'zh' : item.lang;
         card.appendChild(title);
         const source = el('span', 'playbill-source', item.source || '');
@@ -182,6 +273,19 @@
         source.appendChild(el('span', 'visually-hidden', t('opens')));
         card.appendChild(source);
         li.appendChild(card);
+        if (isX && xEmbed) {
+            // X の公式の埋め込み（文字・画像は X が表示し、投稿が消されれば表示されなくなる）
+            const quote = el('blockquote', 'twitter-tweet');
+            quote.dataset.dnt = 'true';
+            quote.dataset.lang = currentLang === 'zh' ? 'zh-cn' : currentLang;
+            const a = el('a', '', t('xPost'));
+            a.href = `https://twitter.com/i/status/${item.tweet}`;
+            quote.appendChild(a);
+            const wrap = el('div', 'x-embed-wrap');
+            wrap.appendChild(quote);
+            li.appendChild(wrap);
+            li.classList.add('has-embed');
+        }
         return li;
     }
 
@@ -196,7 +300,9 @@
             return;
         }
         if (!data) return;
-        const items = data.items;
+        renderViews();
+        renderXToggle(data.items);
+        const items = data.items.filter(i => viewOf(i) === state.view);
         renderFilters(items);
         const shown = items.filter(i =>
             (state.category === 'all' || i.category === state.category) &&
@@ -223,6 +329,7 @@
         }
         empty.hidden = shown.length > 0;
         empty.textContent = items.length === 0 ? t('empty') : t('noMatch');
+        if (xEmbed && list.querySelector('.twitter-tweet')) loadXWidgets(list);
         renderLinks();
     }
 
@@ -251,7 +358,8 @@
             })
             .then(json => {
                 data = {
-                    items: (Array.isArray(json.items) ? json.items : []).filter(i => i && i.title && safeUrl(i.url)),
+                    items: (Array.isArray(json.items) ? json.items : [])
+                        .filter(i => i && (i.title || i.origin === 'x') && safeUrl(i.url)),
                     links: Array.isArray(json.links) ? json.links : []
                 };
                 render();

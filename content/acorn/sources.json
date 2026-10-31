@@ -1,5 +1,5 @@
 {
-  "_説明": "Acorn Club のタイムラインに載せる情報の取得元。RSS / Atom の配信だけを使う（記事のタイトル・リンク・掲載元・日付だけを取り込み、本文や写真は保存しない）。追加・削除したら PR にすると、PR 上で試し取得の結果が出ます。",
+  "_説明": "Acorn Club のタイムラインに載せる情報の取得元。RSS / Atom の配信（記事のタイトル・リンク・掲載元・日付だけを取り込み、本文や写真は保存しない）と、type が x のものは有料の X API の検索（キー X_BEARER_TOKEN を登録するまでは動かない。保存は投稿 ID などだけで、表示は X の公式の埋め込み）。追加・削除したら PR にすると、PR 上で試し取得の結果が出ます（X は費用がかかるため試し取得しない）。",
   "sources": [
     {
       "id": "gnews-ja",
@@ -75,6 +75,32 @@
       "name": "Laughing Place",
       "lang": "en",
       "url": "https://www.laughingplace.com/feed/"
+    },
+    {
+      "id": "gnews-ja-appear",
+      "name": "Google ニュース（日本語・グリーティング等）",
+      "lang": "ja",
+      "aggregator": true,
+      "url": "https://news.google.com/rss/search?q=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9+%28%E3%82%B0%E3%83%AA%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0+OR+%E3%83%91%E3%83%AC%E3%83%BC%E3%83%89+OR+%E3%82%B7%E3%83%A7%E3%83%BC+OR+%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%29+%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC&hl=ja&gl=JP&ceid=JP%3Aja"
+    },
+    {
+      "id": "gnews-en-appear",
+      "name": "Google News (English, greetings & shows)",
+      "lang": "en",
+      "aggregator": true,
+      "url": "https://news.google.com/rss/search?q=%22Clarice%22+Disney+%28greeting+OR+%22meet+and+greet%22+OR+parade+OR+show%29&hl=en-US&gl=US&ceid=US%3Aen"
+    },
+    {
+      "id": "x-goods",
+      "type": "x",
+      "name": "X（グッズ・新商品）",
+      "query": "(クラリス OR Clarice OR 克拉莉丝) (新商品 OR 新作 OR グッズ OR 発売 OR ぬいぐるみ OR ピンバッジ OR ぬいば OR merch OR plush OR pin) has:images -is:retweet"
+    },
+    {
+      "id": "x-appear",
+      "type": "x",
+      "name": "X（グリーティング・ショー）",
+      "query": "(クラリス OR Clarice OR 克拉莉丝) (グリーティング OR パレード OR ショー OR greeting OR parade) has:images -is:retweet"
     }
   ]
 }

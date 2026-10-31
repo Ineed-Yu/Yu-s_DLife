@@ -2,7 +2,7 @@
 # 送信した時点で管理者の承認とみなします（ブログの入稿と同じ。2026-10-31）。
 # 仕組み: .github/workflows/acorn-intake.yml → tools/acorn_news.py add
 name: Acorn Club に情報を追加する
-description: SNS の投稿など、クラリスの新着グッズ情報のリンクをタイムラインに追加します
+description: SNS の投稿など、クラリスのグッズ情報や、グリーティング・ショーへの登場情報のリンクをタイムラインに追加します
 title: "[Acorn] "
 body:
   - type: markdown
@@ -33,11 +33,16 @@ body:
     id: category
     attributes:
       label: 種類
+      description: 上の4つは「グッズ・新商品」、下の4つは「グリーティング・ショー」のタイムラインに載ります。
       options:
         - ピンバッジ
         - ぬいぐるみ
         - グッズ
-        - その他
+        - その他（グッズ）
+        - グリーティング
+        - ショー
+        - パレード
+        - イベント・その他の登場
       default: 2
     validations:
       required: true

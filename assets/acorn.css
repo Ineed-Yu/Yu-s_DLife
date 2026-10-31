@@ -195,9 +195,40 @@ html.acorn-intro body {
 .marquee-lead {
     max-width: 30em;
     margin: 0 auto;
+    text-wrap: balance;
+    word-break: auto-phrase;
     font-size: 14px;
     line-height: 1.8;
     color: #f3e3c3;
+}
+
+/* ---------- 「グッズ・新商品」「グリーティング・ショー」の切り替え ---------- */
+.club-views {
+    display: flex;
+    gap: 0;
+    margin: 24px 0 0;
+    border-bottom: 2px solid rgba(245, 196, 94, 0.35);
+}
+.view-tab {
+    flex: 1;
+    padding: 10px 8px 9px;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    background: none;
+    color: #e9d6b2;
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+}
+.view-tab[aria-selected="true"] {
+    border-bottom-color: var(--bulb);
+    color: var(--bulb);
+    font-weight: 700;
+}
+.view-tab:focus-visible {
+    outline: 2px solid var(--playbill);
+    outline-offset: -2px;
 }
 
 /* ---------- 絞り込み ---------- */
@@ -232,6 +263,28 @@ html.acorn-intro body {
     outline: 2px solid var(--playbill);
     outline-offset: 2px;
 }
+.x-embed {
+    margin-top: 4px;
+}
+.x-embed[hidden] {
+    display: none;
+}
+.x-note {
+    margin: 6px 0 0;
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: #cdb999;
+}
+.x-embed-wrap {
+    margin-top: 8px;
+}
+.x-embed-wrap .twitter-tweet {
+    margin: 0 !important;
+}
+.timeline-item[data-category="greeting"]::before { background: #8fc7e0; }
+.timeline-item[data-category="show"]::before { background: #e8a0d0; }
+.timeline-item[data-category="parade"]::before { background: #f08a5d; }
+.timeline-item[data-category="event"]::before { background: #c9b6ff; }
 .filter-year .filter-chip {
     font-variant-numeric: tabular-nums;
 }
@@ -412,12 +465,107 @@ body.acorn-page .site-footer {
     margin-top: 0;
 }
 
+/* ---------- 画面の大きさに合わせた配置 ----------
+   スマホ：1列（看板 → 切り替え → 絞り込み → タイムライン → 公式の情報源 → 注記）
+   タブレット：1列のまま横幅を広げる
+   PC：左に看板・操作・情報源（スクロールしても見える）、右にタイムライン。読む行の長さは広げすぎない */
+.club-side,
+.club-main {
+    display: contents;
+}
+@media (min-width: 760px) {
+    .club {
+        max-width: 820px;
+        padding: 36px 32px 56px;
+    }
+    .playbill-title {
+        font-size: 16px;
+    }
+}
+@media (min-width: 1080px) {
+    .club {
+        display: grid;
+        grid-template-columns: minmax(300px, 360px) minmax(0, 720px);
+        grid-template-rows: auto 1fr;
+        column-gap: 48px;
+        justify-content: center;
+        max-width: 1220px;
+        padding: 40px 40px 64px;
+    }
+    .club-side,
+    .club-main {
+        display: block;
+    }
+    .club-side {
+        grid-column: 1;
+        grid-row: 1;
+        position: sticky;
+        top: 24px;
+        align-self: start;
+    }
+    .club-side-end {
+        grid-row: 2;
+        position: static;
+    }
+    .club-main {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+    }
+    .marquee-name {
+        font-size: 52px;
+    }
+    .timeline-list {
+        margin-top: 4px;
+    }
+    .sources {
+        margin-top: 28px;
+    }
+}
+
 @media (max-width: 600px) {
     .club {
         padding: 64px 14px 40px;
     }
+    /* スマホでは看板を小さくして、タイムラインまでの距離を短くする */
+    .marquee {
+        padding: 9px;
+        border-radius: 20px;
+        background-size: 15px 15px, auto;
+    }
     .marquee-inner {
-        padding: 18px 14px 20px;
+        padding: 12px 12px 14px;
+    }
+    .marquee-acorn {
+        width: 28px;
+        height: 35px;
+    }
+    .marquee-name {
+        margin: 2px 0 6px;
+        font-size: 38px;
+    }
+    .marquee-lead {
+        font-size: 13px;
+        line-height: 1.7;
+    }
+    .club-views {
+        margin-top: 16px;
+    }
+    .filters {
+        margin-top: 16px;
+    }
+    /* 年のボタンは1行に並べ、横にスクロールして選ぶ */
+    .filter-year {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        margin: 0 -14px;
+        padding: 2px 14px 6px;
+        scrollbar-width: none;
+    }
+    .filter-year::-webkit-scrollbar {
+        display: none;
+    }
+    .filter-year .filter-chip {
+        flex: none;
     }
 }
 
