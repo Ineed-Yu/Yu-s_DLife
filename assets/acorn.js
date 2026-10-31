@@ -1,6 +1,6 @@
 // Acorn Club（/acorn-club/）の表示処理
 // 1. 幕開け：葉っぱの幕が左右に開いて Acorn Club が現れる（このタブで初回だけ・動きを減らす設定なら出さない）
-// 2. タブは「クラリス年表」「グッズ」「パーク」の3つ。
+// 2. タブは「クラリス年表」「グッズ」「パーク」「その他」の4つ（その他＝映像作品・ゲームの中のクラリス）。
 //    クラリス年表：/acorn-club/history.json（プロフィールと、作品・各パークでの登場の歴史。出典つき）を西暦順に表示し、パークで絞り込む
 //    グッズ・パーク：/acorn-club/news.json を分け、種類と年で絞り込んで表示。パークは「ショー」「パレード」「グリーティング」「特別イベント」
 //    情報の言語はページ上部の言語切替（JP/EN/FR/ZH）に合わせる（その言語の情報がまだ無いときは全言語を表示）
@@ -75,6 +75,9 @@
         },
         view_goods: { ja: 'グッズ', en: 'Merchandise', fr: 'Produits', zh: '周边' },
         view_appear: { ja: 'パーク', en: 'Parks', fr: 'Parcs', zh: '乐园' },
+        view_misc: { ja: 'その他', en: 'More', fr: 'Autres', zh: '其他' },
+        video: { ja: '映像作品', en: 'Films & series', fr: 'Films et séries', zh: '影视作品' },
+        game: { ja: 'ゲーム', en: 'Games', fr: 'Jeux', zh: '游戏' },
         region_jp: { ja: '日本', en: 'Japan', fr: 'Japon', zh: '日本' },
         region_us: { ja: 'アメリカ', en: 'USA', fr: 'États-Unis', zh: '美国' },
         region_fr: { ja: 'フランス', en: 'France', fr: 'France', zh: '法国' },
@@ -133,12 +136,13 @@
     let failed = false;
     const GOODS = ['plush', 'pin', 'prize', 'other'];   // すべて／ぬいぐるみ／ピンバッジ／プライズ／その他
     const APPEAR = ['show', 'parade', 'greeting', 'event'];
-    const VIEWS = ['history', 'goods', 'appear'];
+    const MISC = ['video', 'game'];   // その他：映像作品・ゲーム（作品の中のクラリス）
+    const VIEWS = ['history', 'goods', 'appear', 'misc'];
     const PARKS = ['film', 'tdl', 'tds', 'dl', 'wdw', 'dlp', 'shdl', 'hkdl', 'aulani'];
     let chron = null;     // クラリス年表（/acorn-club/history.json）
     let historyFailed = false;
     let historyPark = 'all';
-    const viewOf = item => (APPEAR.includes(item.category) ? 'appear' : 'goods');
+    const viewOf = item => (APPEAR.includes(item.category) ? 'appear' : MISC.includes(item.category) ? 'misc' : 'goods');
     const state = { view: 'goods', category: 'all', year: 'all', limit: 40 };
     const REGIONS = ['jp', 'us', 'hi', 'fr', 'cn', 'hk'];
     const REGION_OF_LANG = { ja: 'jp', en: 'us', fr: 'fr', zh: 'cn' };
@@ -151,6 +155,7 @@
         const v = new URLSearchParams(location.search).get('view');
         if (v === 'park' || v === 'appear') state.view = 'appear';
         if (v === 'history') state.view = 'history';
+        if (v === 'other' || v === 'misc') state.view = 'misc';
     } catch (e) {}
     const yearOf = item => String(item.date || '').slice(0, 4);
 
@@ -207,6 +212,7 @@
                     const q = new URLSearchParams(location.search);
                     if (v === 'appear') q.set('view', 'park');
                     else if (v === 'history') q.set('view', 'history');
+                    else if (v === 'misc') q.set('view', 'other');
                     else q.delete('view');
                     window.history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
                 } catch (e) {}
@@ -257,7 +263,7 @@
         if (!catRow) return;
         catRow.setAttribute('aria-label', t('kindLabel'));
         catRow.replaceChildren(chip(t('all'), state.category === 'all', () => setState({ category: 'all' })));
-        (state.view === 'appear' ? APPEAR : GOODS).forEach(c => {
+        (state.view === 'appear' ? APPEAR : state.view === 'misc' ? MISC : GOODS).forEach(c => {
             // グッズの4つ・パークの4つは、情報が無くても常に並べる（迷わないように分け方を固定）
             catRow.appendChild(chip(t(c), state.category === c, () => setState({ category: c })));
         });

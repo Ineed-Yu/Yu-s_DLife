@@ -103,21 +103,34 @@ PARK_CONTEXT = re.compile(r"ディズニーランド|ディズニーシー|デ�
                           r"上海|香港|舞浜", re.I)
 # パークでもグッズでもない話題（映画・配信・書籍の紹介など）
 NOT_PARK = re.compile(r"作品紹介|映画|streaming|tv show|DVD|Blu-ray|小説|絵本|ゲームアプリ", re.I)
-# 映像配信・番組の紹介（グッズでもパークでもない）。例：「ディズニープラス注目作品まとめ」
+# 「その他」タブ：映像作品（配信・番組・映画）とゲーム。グッズ（物）でもパーク（会う・見る）でもない、作品の中のクラリス
 MEDIA = re.compile(r"ディズニープラス|ディズニー\+|Disney\s*\+|Disney Plus|注目作品|配信作品|配信開始|作品まとめ|放送予定|新作映画|"
-                   r"streaming|now streaming|episode guide|迪士尼\+", re.I)
+                   r"番組|アニメ|短編|映像|streaming|now streaming|episode|迪士尼\+|"
+                   r"パークライフ|Park Life|リス君は歌姫がお好き|Two Chips and a Miss", re.I)
+GAME = re.compile(r"ツムツム(?!ぬいぐるみ)|新ツム|Tsum ?Tsum|マジックキャッスル|Magic Castle|マイリトルドール|My Little Doll|"
+                  r"キングダム ?ハーツ|Kingdom Hearts|Disney Magical World|ディズニー ?マジカルワールド|ミラーウォリアーズ|"
+                  r"ドリームライトバレー|Dreamlight Valley|ツイステ|ディズニー ?ソラリウム|LINE ?GAME|ゲームアプリ|スマホゲーム|"
+                  r"アプリゲーム|ゲーム内|イベント開催中.*ゲーム|\bgame\b|\bapp\b", re.I)
+# 物としてのグッズの言葉（ゲームの名前が入っていても、ぬいぐるみ等の商品の記事はグッズ）
+PHYSICAL = re.compile(r"ぬいぐるみ|ぬいば|マスコット|プライズ|くじ|グッズ|フィギュア|発売|販売|plush|merch", re.I)
+# 映像作品として載せるのは、作品の中のクラリス（チップとデールのマドンナ）だと分かるときだけ
+CLARICE_WORK = re.compile(r"クラリス|clarice|クラリス|チップ|デール|chip|dale|パークライフ|Park Life|リス君は歌姫がお好き|Two Chips and a Miss", re.I)
 
 GOODS_CATEGORIES = ("plush", "pin", "prize", "other", "goods")  # グッズのタイムライン（goods は古い分類。表示は「その他」）
 APPEAR_CATEGORIES = ("show", "parade", "greeting", "event")     # 「パーク」のタイムライン
-CATEGORIES = GOODS_CATEGORIES + APPEAR_CATEGORIES
+MISC_CATEGORIES = ("video", "game")                              # 「その他」のタイムライン（映像作品・ゲーム）
+CATEGORIES = GOODS_CATEGORIES + APPEAR_CATEGORIES + MISC_CATEGORIES
 
 
 def category_of(text: str, topic: str | None = None) -> str | None:
     """種類を返す。「物」の話題（プライズ・ピンバッジ・ぬいぐるみ・その他）を優先し、
     物の話題が無いときだけパーク（グリーティング・パレード・ショー・特別イベント）にする。
-    映像配信・番組の紹介はどちらでもないので載せない。"""
-    if MEDIA.search(text):
-        return None
+    ゲーム・映像作品は「その他」（game / video）。"""
+    physical = PHYSICAL.search(text) or PRIZE.search(text) or PIN.search(text)
+    if GAME.search(text) and not physical:
+        return "game"
+    if MEDIA.search(text) and not physical:
+        return "video" if CLARICE_WORK.search(text) else None
     if PRIZE.search(text):
         return "prize"
     if PIN.search(text) or topic == "pin":
@@ -705,7 +718,8 @@ def same_product(a: dict, b: dict) -> bool:
 
 def dedupe_goods(items: list[dict]) -> list[dict]:
     """新しい順の items から、同じ商品の記事をまとめ、いちばん新しい記事に「ほか n 件」を付けて残す。"""
-    goods = [i for i in items if i.get("category") in GOODS_CATEGORIES and i.get("title") and i.get("origin") != "manual"]
+    goods = [i for i in items if i.get("category") in GOODS_CATEGORIES + MISC_CATEGORIES
+             and i.get("title") and i.get("origin") != "manual"]   # グッズと「その他」（映像作品・ゲーム）
     parent = {id(i): id(i) for i in goods}
 
     def find(x):
@@ -977,7 +991,7 @@ FORM_FIELDS = {
     "入稿の確認": "approval",
 }
 CATEGORY_LABELS = {"ピンバッジ": "pin", "ぬいぐるみ": "plush", "プライズ": "prize", "グッズ": "other", "その他（グッズ）": "other", "その他": "other",
-                   "グリーティング": "greeting", "ショー": "show", "パレード": "parade", "特別イベント": "event",
+                   "映像作品": "video", "ゲーム": "game", "グリーティング": "greeting", "ショー": "show", "パレード": "parade", "特別イベント": "event",
                    "イベント・その他の登場": "event"}
 LANG_LABELS = {"日本語": "ja", "English": "en"}
 ALLOWED_ASSOCIATIONS = {"OWNER", "COLLABORATOR", "MEMBER"}

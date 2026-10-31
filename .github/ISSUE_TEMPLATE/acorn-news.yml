@@ -33,7 +33,7 @@ body:
     id: category
     attributes:
       label: 種類
-      description: 上の4つは「グッズ」、下の4つは「パーク」のタイムラインに載ります。
+      description: 上の4つは「グッズ」、次の4つは「パーク」、最後の2つは「その他」のタイムラインに載ります。
       options:
         - ぬいぐるみ
         - ピンバッジ
@@ -43,6 +43,8 @@ body:
         - パレード
         - グリーティング
         - 特別イベント
+        - 映像作品
+        - ゲーム
       default: 3
     validations:
       required: true
