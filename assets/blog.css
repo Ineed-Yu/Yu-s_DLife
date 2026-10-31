@@ -492,7 +492,8 @@ body {
 }
 
 /* フッターはフィルムから少し離し、ページが短いときも画面の下端にそろえる */
-body > main {
+body > main,
+body > main.film {
     margin-bottom: 56px;
 }
 .site-footer {
