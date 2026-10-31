@@ -85,6 +85,7 @@
         region_cn: { ja: '中国', en: 'China', fr: 'Chine', zh: '中国' },
         region_hk: { ja: '香港', en: 'Hong Kong', fr: 'Hong Kong', zh: '香港' },
         regionLabel: { ja: 'リージョンを選ぶ', en: 'Choose a region', fr: 'Choisir une région', zh: '选择地区' },
+        machineTranslated: { ja: '見出しは自動翻訳', en: 'Headline auto-translated', fr: 'Titre traduit automatiquement', zh: '标题为自动翻译' },
         langFallback: {
             ja: '日本語の情報がまだないため、すべての言語の情報を表示しています。',
             en: 'There is no news in English here yet, so news in all languages is shown.',
@@ -393,8 +394,14 @@
         head.appendChild(el('span', 'playbill-kind', t(item.category)));
         body.appendChild(head);
         const isX = item.origin === 'x' && /^\d+$/.test(String(item.tweet || ''));
-        const title = el('span', 'playbill-title', isX ? t('xPost') : (item.title || ''));
-        if (item.lang && item.lang !== 'ja') title.lang = item.lang === 'zh' ? 'zh' : item.lang;
+        const h = headline(item);
+        const title = el('span', 'playbill-title', isX ? t('xPost') : h.text);
+        if (h.translated) {
+            title.lang = currentLang === 'zh' ? 'zh-CN' : currentLang;
+            title.title = item.title || '';   // 元の見出し（長押し・マウスを重ねると見える）
+        } else if (item.lang && item.lang !== 'ja') {
+            title.lang = item.lang === 'zh' ? 'zh' : item.lang;
+        }
         body.appendChild(title);
         const source = el('span', 'playbill-source', item.source || '');
         if (item.official) source.appendChild(el('span', 'playbill-official', t('official')));
@@ -404,6 +411,7 @@
         } else {
             source.appendChild(el('span', 'visually-hidden', t('opens')));
         }
+        if (h.translated && !isX) source.appendChild(el('span', 'playbill-mt', t('machineTranslated')));
         body.appendChild(source);
         li.appendChild(card);
         if (choices.length) {
@@ -433,10 +441,12 @@
         return li;
     }
 
-    // 情報の言語：ページの言語に合わせる。その言語の情報がこの切り替え（グッズ／パーク）に1件も無いときは全言語
-    function byPageLanguage(items) {
-        const mine = items.filter(i => i.lang === currentLang);
-        return { items: mine.length ? mine : items, fallback: mine.length === 0 && items.length > 0 };
+    // 見出しの表示：ページの言語の訳（自動翻訳。news.json の t）があれば訳を、無ければ元の見出しを出す
+    // 情報はどの言語のページでも、すべての言語のものを表示する（2026-10-31 管理者）
+    function headline(item) {
+        const tr = item.t && typeof item.t === 'object' ? item.t[currentLang] : '';
+        if (tr && item.lang !== currentLang) return { text: tr, translated: true };
+        return { text: item.title || '', translated: false };
     }
 
     // 年表と、グッズ・パークのタイムラインで、使う部品を切り替える
@@ -598,13 +608,7 @@
         }
         if (!data) return;
         renderXToggle(data.items);
-        const picked = byPageLanguage(data.items.filter(i => viewOf(i) === state.view));
-        const items = picked.items;
-        const note = document.getElementById('lang-note');
-        if (note) {
-            note.textContent = t('langFallback');
-            note.hidden = !picked.fallback;
-        }
+        const items = data.items.filter(i => viewOf(i) === state.view);
         renderFilters(items);
         const shown = items.filter(i =>
             (state.category === 'all' || i.category === state.category) &&

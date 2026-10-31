@@ -65,6 +65,11 @@ jobs:
         env:
           X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
           X_MONTHLY_POST_LIMIT: ${{ vars.X_MONTHLY_POST_LIMIT }}
+          # 見出しの自動翻訳（Claude API。ブログの翻訳と共通のキー。未登録なら翻訳しない）。月の上限は ACORN_TRANSLATE_MONTHLY_LIMIT（既定 2000 件）
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ACORN_TRANSLATE_MODEL: ${{ vars.ACORN_TRANSLATE_MODEL }}
+          BLOG_TRANSLATE_MODEL: ${{ vars.BLOG_TRANSLATE_MODEL }}
+          ACORN_TRANSLATE_MONTHLY_LIMIT: ${{ vars.ACORN_TRANSLATE_MONTHLY_LIMIT }}
         run: python3 tools/acorn_news.py collect
 
       # 過去の記事は毎回4分まで少しずつ調べ、どこまで調べたかを残して次回に続ける（取得元が増えたときもその分を自動で）

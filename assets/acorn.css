@@ -664,6 +664,11 @@ button.playbill-group {
     line-height: 1.55;
     overflow-wrap: anywhere;
 }
+.playbill-mt {
+    margin-left: 8px;
+    font-size: 11px;
+    color: #8a7258;
+}
 .playbill-official {
     margin-left: 6px;
     padding: 0 6px;
