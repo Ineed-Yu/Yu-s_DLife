@@ -10,16 +10,5 @@
     "gnews-ja-tdr": 0,
     "gnews-en-merch": 0
   },
-  "pages": {
-    "tdrexplorer": "done",
-    "wdwinfo": "done",
-    "disneyparksblog": "done",
-    "dtimes": "done",
-    "dpost": "done",
-    "mezzomiki": "done",
-    "wdwnt": "done",
-    "insidethemagic": "done",
-    "mickeyblog": "done",
-    "dlptips": "done"
-  }
+  "pages": {}
 }
