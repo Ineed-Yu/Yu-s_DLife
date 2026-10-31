@@ -1,5 +1,5 @@
 {
-  "_説明": "Acorn Club のタイムラインに載せる情報の取得元。RSS / Atom の配信（記事のタイトル・リンク・掲載元・日付だけを取り込み、本文や写真は保存しない）と、type が x のものは有料の X API の検索（キー X_BEARER_TOKEN を登録するまでは動かない。保存は投稿 ID などだけで、表示は X の公式の埋め込み）。追加・削除したら PR にすると、PR 上で試し取得の結果が出ます（X は費用がかかるため試し取得しない）。 backfill: true の Google ニュースは、過去分の取り込み（backfill）で期間を区切って検索する。",
+  "_説明": "Acorn Club のタイムラインに載せる情報の取得元。RSS / Atom の配信（記事のタイトル・リンク・掲載元・日付だけを取り込み、本文や写真は保存しない）と、type が x のものは有料の X API の検索（キー X_BEARER_TOKEN を登録するまでは動かない。保存は投稿 ID などだけで、表示は X の公式の埋め込み）。追加・削除したら PR にすると、PR 上で試し取得の結果が出ます（X は費用がかかるため試し取得しない）。 backfill: true の Google ニュースは、過去分の取り込み（backfill）で期間を区切って検索する。 kind: blog=情報サイト・ブログ、search=検索（ブログ・個人サイト・ショップなど幅広い）、sns=掲示板など。安全の確認（is_safe_url）はすべての情報に行う。",
   "sources": [
     {
       "id": "gnews-ja",
@@ -152,6 +152,102 @@
       "lang": "en",
       "url": "https://www.bing.com/news/search?q=%22Clarice%22+Disney+chipmunk&format=rss&mkt=en-US",
       "aggregator": true
+    },
+    {
+      "id": "dtimes",
+      "name": "Dtimes（ディズニー情報サイト）",
+      "lang": "ja",
+      "url": "https://dtimes.jp/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&feed=rss2",
+      "kind": "blog"
+    },
+    {
+      "id": "dpost",
+      "name": "Dpost（ディズニー情報サイト）",
+      "lang": "ja",
+      "url": "https://dpost.jp/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&feed=rss2",
+      "kind": "blog"
+    },
+    {
+      "id": "mezzomiki",
+      "name": "MezzoMiki（ディズニー情報サイト）",
+      "lang": "ja",
+      "url": "https://mezzomiki.jp/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&feed=rss2",
+      "kind": "blog"
+    },
+    {
+      "id": "wdwnt",
+      "name": "WDW News Today",
+      "lang": "en",
+      "url": "https://wdwnt.com/?s=clarice&feed=rss2",
+      "kind": "blog"
+    },
+    {
+      "id": "disneyfoodblog",
+      "name": "Disney Food Blog",
+      "lang": "en",
+      "url": "https://www.disneyfoodblog.com/?s=clarice&feed=rss2",
+      "kind": "blog"
+    },
+    {
+      "id": "allears",
+      "name": "AllEars.Net",
+      "lang": "en",
+      "url": "https://allears.net/?s=clarice&feed=rss2",
+      "kind": "blog"
+    },
+    {
+      "id": "insidethemagic",
+      "name": "Inside the Magic",
+      "lang": "en",
+      "url": "https://insidethemagic.net/?s=clarice&feed=rss2",
+      "kind": "blog"
+    },
+    {
+      "id": "mickeyblog",
+      "name": "MickeyBlog",
+      "lang": "en",
+      "url": "https://mickeyblog.com/?s=clarice&feed=rss2",
+      "kind": "blog"
+    },
+    {
+      "id": "dlptips",
+      "name": "DLP Tips（ディズニーランド・パリの情報サイト）",
+      "lang": "en",
+      "url": "https://dlptips.com/?s=clarice&feed=rss2",
+      "kind": "blog"
+    },
+    {
+      "id": "hatena-ja",
+      "name": "はてなブックマーク（ブログ・個人サイト）",
+      "lang": "ja",
+      "url": "https://b.hatena.ne.jp/search/text?q=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9+%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC&mode=rss&sort=recent",
+      "aggregator": false,
+      "kind": "search",
+      "safe_check": true
+    },
+    {
+      "id": "bing-web-ja",
+      "name": "Bing ウェブ検索（日本語）",
+      "lang": "ja",
+      "url": "https://www.bing.com/search?q=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9+%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC+%E3%82%B0%E3%83%83%E3%82%BA&format=rss&mkt=ja-JP",
+      "kind": "search",
+      "safe_check": true
+    },
+    {
+      "id": "bing-web-en",
+      "name": "Bing web search (English)",
+      "lang": "en",
+      "url": "https://www.bing.com/search?q=%22Clarice%22+Disney+chipmunk+merchandise&format=rss&mkt=en-US",
+      "kind": "search",
+      "safe_check": true
+    },
+    {
+      "id": "reddit-en",
+      "name": "Reddit（英語の掲示板）",
+      "lang": "en",
+      "url": "https://www.reddit.com/search.rss?q=clarice%20disney&sort=new",
+      "kind": "sns",
+      "safe_check": true
     }
   ]
 }
