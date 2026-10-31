@@ -1,0 +1,59 @@
+# Acorn Club の情報を集めるサイト（取得元）を、管理者が手で追加するフォーム
+# 送信した時点で管理者の承認とみなします。配信（RSS / Atom）を自動で探し、安全の確認と試し取得をしてから追加します。
+# 仕組み: .github/workflows/acorn-source-intake.yml → tools/acorn_news.py source
+name: Acorn Club の取得元を追加する
+description: 信頼できる情報サイト・ブログなどを、Acorn Club の自動収集の取得元に加えます
+title: "[取得元] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        サイトの URL を入れると、そのサイトの配信（RSS / Atom）を自動で探して取得元に加えます。
+        **https で始まる URL だけ**使えます。短縮 URL・IP アドレス・ファイル配布のリンクなど、安全の確認に通らないものは追加しません。
+        追加した後も、集めるのは「クラリス・ディズニー・グッズ／パーク」の条件に合う情報だけです。
+
+  - type: input
+    id: name
+    attributes:
+      label: サイト名
+      description: タイムラインの掲載元として表示する名前です
+      placeholder: 例）Dtimes
+    validations:
+      required: true
+
+  - type: input
+    id: site
+    attributes:
+      label: サイトの URL
+      description: トップページの URL か、RSS の URL が分かればそれを入れてください
+      placeholder: https://
+    validations:
+      required: true
+
+  - type: input
+    id: search
+    attributes:
+      label: 検索語（任意）
+      description: WordPress のサイトなら、この言葉のサイト内検索の結果を配信として使います（例：クラリス / clarice）。空ならサイト全体の新着
+      placeholder: クラリス
+
+  - type: dropdown
+    id: srclang
+    attributes:
+      label: 情報の言語
+      options:
+        - 日本語
+        - English
+        - 中文
+        - Français
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: srcapproval
+    attributes:
+      label: 追加の確認
+      options:
+        - label: 信頼できるサイトであることを確認しました（送信した時点で承認とみなします）
+          required: true

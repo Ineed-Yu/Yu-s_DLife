@@ -155,21 +155,21 @@
     },
     {
       "id": "dtimes",
-      "name": "Dtimes（ディズニー情報サイト）",
+      "name": "Dtimes",
       "lang": "ja",
       "url": "https://dtimes.jp/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&feed=rss2",
       "kind": "blog"
     },
     {
       "id": "dpost",
-      "name": "Dpost（ディズニー情報サイト）",
+      "name": "Dpost",
       "lang": "ja",
       "url": "https://dpost.jp/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&feed=rss2",
       "kind": "blog"
     },
     {
       "id": "mezzomiki",
-      "name": "MezzoMiki（ディズニー情報サイト）",
+      "name": "MezzoMiki",
       "lang": "ja",
       "url": "https://mezzomiki.jp/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&feed=rss2",
       "kind": "blog"
@@ -197,7 +197,7 @@
     },
     {
       "id": "dlptips",
-      "name": "DLP Tips（ディズニーランド・パリの情報サイト）",
+      "name": "DLP Tips",
       "lang": "en",
       "url": "https://dlptips.com/?s=clarice&feed=rss2",
       "kind": "blog"

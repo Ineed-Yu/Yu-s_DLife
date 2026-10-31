@@ -25,6 +25,7 @@
   python3 tools/acorn_news.py build --check       # タイムラインが最新か・クラリス年表の書き方が正しいか確認する（CI 用）
   python3 tools/acorn_news.py add イベントのJSON   # 入力フォームの内容を手動の情報として追加（自動実行用）
   python3 tools/acorn_news.py comment 結果のJSON  # 入力フォームへのコメント文を作る
+  python3 tools/acorn_news.py source イベントのJSON  # 取得元の入力フォームから、取得元を追加（自動実行用）
 """
 from __future__ import annotations
 
@@ -50,7 +51,7 @@ OUT_FILE = ROOT / "acorn-club" / "news.json"
 JST = dt.timezone(dt.timedelta(hours=9))
 
 MAX_ITEMS = 1000              # タイムラインに残す最大件数（年ごとに選んで見られるよう、過去の分も残す）
-MAX_AGE_DAYS = 3650           # これより古い情報は載せない（約10年）
+MAX_AGE_DAYS = 365 * 30       # これより古い情報は載せない（約30年。クラリスのパーク登場の歴史をさかのぼれるように）
 MAX_FEED_BYTES = 3 * 1024 * 1024
 USER_AGENT = "AcornClubTimeline/1.0 (+https://divaclarice321.com/acorn-club/; unofficial fan page)"
 
@@ -110,7 +111,20 @@ def is_relevant(title: str, summary: str, topic: str | None = None, require_disn
         return None
     if require_disney and not DISNEY.search(text) and topic != "pin":
         return None
-    return category_of(text, topic)
+    return pick_category(category_of(title, topic), category_of(text, topic))
+
+
+def pick_category(by_title: str | None, by_text: str | None) -> str | None:
+    """見出しで種類が決まるときは見出しを優先する（要約に関連記事の言葉が混ざって種類がずれるのを防ぐ）。
+    ただし見出しの「登場」などの弱い言葉だけで特別イベントにはせず、グッズの話題なら全体の判定を使う。
+    見出しが「グッズ」で全体がピンバッジ・ぬいぐるみなら、より詳しい方を使う。"""
+    if not by_title:
+        return by_text
+    if by_title == "event" and by_text in GOODS_CATEGORIES:
+        return by_text
+    if by_title == "goods" and by_text in ("pin", "plush"):
+        return by_text
+    return by_title
 
 
 # ---------------------------------------------------------------- 文字の整え
@@ -650,7 +664,7 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search
 # ---------------------------------------------------------------- 過去分の取り込み（backfill）
 # Google ニュースの検索は新しい順の上位しか返さないため、期間（after: / before:）を区切って過去の記事を探す。
 # 手動の実行（Actions の「Acorn Club の自動収集」で backfill を選ぶ）で1回だけ動かす想定。
-BACKFILL_SINCE = 2016
+BACKFILL_SINCE = 2004         # 東京ディズニーランドにクラリスが登場した 2005 年の前年から
 BACKFILL_MONTHS = 3            # 1回の検索で区切る期間（月）
 
 
@@ -709,6 +723,11 @@ def backfill(dry_run: bool, now: dt.datetime, windows: int | None = None, fetche
 
 # ---------------------------------------------------------------- 入力フォーム（手動で追加）
 FORM_FIELDS = {
+    "サイト名": "name",
+    "サイトの URL": "site",
+    "検索語（任意）": "search",
+    "情報の言語": "srclang",
+    "追加の確認": "srcapproval",
     "リンク（URL）": "url",
     "ひとこと（タイトル）": "title",
     "種類": "category",
@@ -791,6 +810,102 @@ def add_manual(event: dict, now: dt.datetime) -> dict:
     return {"status": "hidden" if hidden else "added", "title": title, "url": url, "errors": []}
 
 
+# ---------------------------------------------------------------- 取得元の手動追加（入力フォーム）
+# 管理者がフォームでサイトを指定 → 配信（RSS / Atom）を探す → 安全の確認と試し取得 → 取得元に追加（送信＝承認）
+SRC_LANGS = {"日本語": "ja", "English": "en", "中文": "zh", "Français": "fr"}
+FEED_LINK = re.compile(r"<link\b[^>]*>", re.I)
+
+
+def find_feed(site: str, search: str, fetcher=fetch, getter=http_get) -> tuple[str, bytes]:
+    """サイトの URL から配信を探す。戻り値: (配信の URL, 中身)。見つからなければ ValueError。"""
+    candidates = []
+    try:
+        data = fetcher(site)
+        parse_feed(data)
+        return site, data            # URL がそのまま配信だった
+    except Exception:
+        pass
+    final, page = getter(site)
+    wordpress = "wp-content" in page or "wordpress" in page.lower()
+    if search and wordpress:
+        root = f"{urllib.parse.urlparse(final).scheme}://{urllib.parse.urlparse(final).netloc}"
+        candidates.append(f"{root}/?s={urllib.parse.quote(search)}&feed=rss2")
+    for tag in FEED_LINK.findall(page[:300_000]):
+        attrs = {k.lower(): (v1 or v2) for k, v1, v2 in META_ATTR.findall(tag)}
+        if "alternate" in attrs.get("rel", "").lower() and re.search(r"(rss|atom)\+xml", attrs.get("type", "")) and attrs.get("href"):
+            candidates.append(urllib.parse.urljoin(final, html.unescape(attrs["href"])))
+    root = f"{urllib.parse.urlparse(final).scheme}://{urllib.parse.urlparse(final).netloc}"
+    candidates += [f"{root}/feed/", f"{root}/rss", f"{root}/index.xml"]
+    for url in dict.fromkeys(candidates):
+        if not is_safe_url(url):
+            continue
+        try:
+            data = fetcher(url)
+            if parse_feed(data):
+                return url, data
+        except Exception:
+            continue
+    raise ValueError("RSS / Atom の配信が見つかりませんでした")
+
+
+def add_source(event: dict, now: dt.datetime, fetcher=fetch, getter=http_get) -> dict:
+    issue = event.get("issue") or {}
+    if issue.get("author_association") not in ALLOWED_ASSOCIATIONS:
+        return {"skipped": "追加できるのはリポジトリの管理者だけです。"}
+    form = parse_form(issue.get("body") or "")
+    if "site" not in form:
+        return {"skipped": "取得元の入力フォームではありません。"}
+    errors = []
+    site = (form.get("site") or "").split()[0] if form.get("site") else ""
+    name = clean_text(form.get("name", ""), 60)
+    search = clean_text(form.get("search", ""), 60)
+    lang = SRC_LANGS.get(form.get("srclang", "").strip(), "ja")
+    if not name:
+        errors.append("サイト名を入れてください。")
+    if not is_safe_url(site):
+        errors.append("サイトの URL は https:// から始まる、安全の確認に通る URL にしてください"
+                      "（短縮 URL・IP アドレス・ファイル配布のリンクなどは使えません）。")
+    if not checked(form.get("srcapproval", "")):
+        errors.append("「追加の確認」にチェックが入っていません。")
+    if errors:
+        return {"status": "error", "errors": errors}
+    try:
+        feed_url, data = find_feed(site, search, fetcher, getter)
+    except Exception as e:
+        return {"status": "error", "errors": [f"このサイトの配信（RSS / Atom）を見つけられませんでした（{str(e)[:100]}）。"
+                                              "RSS の URL が分かれば、それを「サイトの URL」に入れてください。"]}
+    src = {"id": "user-" + re.sub(r"[^a-z0-9]+", "-", (urllib.parse.urlparse(feed_url).hostname or "site").lower()).strip("-"),
+           "name": name, "lang": lang, "url": feed_url, "kind": "blog", "added_by_issue": int(issue["number"])}
+    items, total = items_from_source(src, data, now)
+    data_all = load_json(DATA_DIR / "sources.json", {})
+    sources = data_all.get("sources", [])
+    others = [s for s in sources if s.get("added_by_issue") != src["added_by_issue"]]
+    if any(s.get("url") == feed_url for s in others):
+        return {"status": "exists", "feed": feed_url, "total": total, "matched": len(items), "errors": []}
+    while any(s["id"] == src["id"] for s in others):
+        src["id"] += "-2"
+    data_all["sources"] = others + [src]
+    write_if_changed(DATA_DIR / "sources.json", dump(data_all))
+    return {"status": "added", "feed": feed_url, "name": name, "total": total, "matched": len(items),
+            "examples": [i["title"][:60] for i in items[:3]], "errors": []}
+
+
+def source_comment(result: dict) -> str:
+    if result.get("errors"):
+        return "⚠️ **取得元に追加できませんでした。** 次の点を直して、このページを「Edit」で保存し直してください。\n\n" + \
+            "\n".join(f"- {e}" for e in result["errors"])
+    if result.get("status") == "exists":
+        return f"ℹ️ この配信（{result['feed']}）はすでに取得元に入っています。"
+    lines = [f"✅ **取得元に追加しました。** 次の自動収集（2時間ごと）から、このサイトの新しい情報も集めます。",
+             "", f"- 配信: {result['feed']}",
+             f"- 試し取得: 配信 {result['total']} 件のうち、条件（クラリス・ディズニー・グッズ／パーク）に合う情報 {result['matched']} 件"]
+    lines += [f"  - {t}" for t in result.get("examples", [])]
+    if not result["matched"]:
+        lines += ["", "今は条件に合う情報がありませんが、新しい記事が出たときに拾います。"]
+    lines += ["", "取得元から外すときは、開発エージェントに伝えてください。"]
+    return "\n".join(lines)
+
+
 def comment_for(result: dict) -> str:
     if result.get("errors"):
         return "⚠️ **追加できませんでした。** 次の点を直して、このページを「Edit」で保存し直してください。\n\n" + \
@@ -819,6 +934,10 @@ def main() -> int:
     b.add_argument("--check", action="store_true")
     a = sub.add_parser("add")
     a.add_argument("event")
+    so = sub.add_parser("source")
+    so.add_argument("event")
+    sc = sub.add_parser("source-comment")
+    sc.add_argument("result")
     m = sub.add_parser("comment")
     m.add_argument("result")
     args = parser.parse_args()
@@ -852,6 +971,12 @@ def main() -> int:
     if args.cmd == "add":
         result = add_manual(json.loads(Path(args.event).read_text(encoding="utf-8")), now)
         print(json.dumps(result, ensure_ascii=False))
+        return 0
+    if args.cmd == "source":
+        print(json.dumps(add_source(json.loads(Path(args.event).read_text(encoding="utf-8")), now), ensure_ascii=False))
+        return 0
+    if args.cmd == "source-comment":
+        print(source_comment(json.loads(Path(args.result).read_text(encoding="utf-8"))))
         return 0
     if args.cmd == "comment":
         print(comment_for(json.loads(Path(args.result).read_text(encoding="utf-8"))))
