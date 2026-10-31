@@ -566,13 +566,103 @@ html.acorn-intro .club {
     overflow-wrap: anywhere;
 }
 .playbill-others {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     margin-left: 8px;
-    color: #8a7258;
+    padding: 1px 9px;
+    border-radius: 10px;
+    background: rgba(122, 74, 42, 0.12);
+    color: var(--heartwood);
+    font-weight: 700;
 }
-.playbill-others::before {
-    content: "／";
-    margin-right: 8px;
-    color: #b9a487;
+.playbill-others::after {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform 0.2s ease;
+}
+.timeline-item.is-open .playbill-others::after {
+    transform: translateY(1px) rotate(-135deg);
+}
+/* まとめたカード（押すと記事の一覧が開く） */
+button.playbill-group {
+    width: 100%;
+    border: 0;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+.timeline-item.is-open .playbill-group {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.dupe-panel {
+    padding: 10px 14px 12px;
+    border-top: 1px dashed rgba(122, 74, 42, 0.35);
+    border-radius: 0 0 6px 6px;
+    background: #f6ead1;
+    color: var(--ink);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.28);
+}
+.dupe-panel[hidden] {
+    display: none;
+}
+.dupe-heading {
+    margin: 0 0 6px;
+    font-size: 12px;
+    color: #6b5643;
+}
+.dupe-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.dupe-list li + li {
+    border-top: 1px solid rgba(122, 74, 42, 0.15);
+}
+.dupe-link {
+    display: block;
+    padding: 8px 2px;
+    color: var(--ink);
+    text-decoration: none;
+}
+.dupe-link:hover .dupe-title,
+.dupe-link:focus-visible .dupe-title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+.dupe-link:focus-visible {
+    outline: 2px solid var(--heartwood);
+    outline-offset: 2px;
+}
+.dupe-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    font-size: 12px;
+    color: #6b5643;
+}
+.dupe-source {
+    font-weight: 700;
+    color: var(--heartwood);
+}
+.dupe-new {
+    padding: 0 6px;
+    border: 1px solid var(--leaf);
+    border-radius: 8px;
+    color: var(--leaf-dark);
+    font-size: 11px;
+}
+.dupe-title {
+    display: block;
+    margin-top: 2px;
+    font-size: 14px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
 }
 .playbill-official {
     margin-left: 6px;
