@@ -1,6 +1,8 @@
 // Acorn Club（/acorn-club/）の表示処理
 // 1. 幕開け：葉っぱの幕が左右に開いて Acorn Club が現れる（このタブで初回だけ・動きを減らす設定なら出さない）
-// 2. タイムライン：/acorn-club/news.json を「グッズ」「パーク（グリーティング・ショー・パレード）」に分け、種類と年で絞り込んで表示。
+// 2. タブは「クラリス年表」「グッズ」「パーク」の3つ。
+//    クラリス年表：/acorn-club/history.json（プロフィールと、作品・各パークでの登場の歴史。出典つき）を西暦順に表示し、パークで絞り込む
+//    グッズ・パーク：/acorn-club/news.json を分け、種類と年で絞り込んで表示。パークは「ショー」「パレード」「グリーティング」「特別イベント」
 //    情報の言語はページ上部の言語切替（JP/EN/FR/ZH）に合わせる（その言語の情報がまだ無いときは全言語を表示）
 // 4. 公式サイト/アカウント一覧：日本・アメリカ・ハワイ・フランス・中国・香港のリージョンごとに切り替えて表示
 // 3. X の投稿：最初はリンクだけ。利用者が「X の投稿を表示する」を押したときだけ X の公式の埋め込みを読み込む
@@ -49,7 +51,27 @@
         greeting: { ja: 'グリーティング', en: 'Greetings', fr: 'Rencontres', zh: '见面会' },
         show: { ja: 'ショー', en: 'Shows', fr: 'Spectacles', zh: '表演' },
         parade: { ja: 'パレード', en: 'Parades', fr: 'Parades', zh: '巡游' },
-        event: { ja: 'イベント', en: 'Events', fr: 'Événements', zh: '活动' },
+        event: { ja: '特別イベント', en: 'Special events', fr: 'Événements spéciaux', zh: '特别活动' },
+        work: { ja: '作品', en: 'Works', fr: 'Œuvres', zh: '作品' },
+        view_history: { ja: 'クラリス年表', en: 'Clarice timeline', fr: 'Chronologie de Clarice', zh: '克拉丽丝年表' },
+        profile: { ja: 'プロフィール', en: 'Profile', fr: 'Profil', zh: '简介' },
+        source: { ja: '出典', en: 'Source', fr: 'Source', zh: '出处' },
+        allParks: { ja: 'すべてのパーク・作品', en: 'All parks and works', fr: 'Tous les parcs et œuvres', zh: '全部乐园与作品' },
+        park_film: { ja: '作品（映画・シリーズ）', en: 'Films and series', fr: 'Films et séries', zh: '电影与剧集' },
+        park_tdl: { ja: '東京ディズニーランド', en: 'Tokyo Disneyland', fr: 'Tokyo Disneyland', zh: '东京迪士尼乐园' },
+        park_tds: { ja: '東京ディズニーシー', en: 'Tokyo DisneySea', fr: 'Tokyo DisneySea', zh: '东京迪士尼海洋' },
+        park_dl: { ja: 'ディズニーランド・リゾート（カリフォルニア）', en: 'Disneyland Resort (California)', fr: 'Disneyland Resort (Californie)', zh: '迪士尼乐园度假区（加州）' },
+        park_wdw: { ja: 'ウォルト・ディズニー・ワールド', en: 'Walt Disney World', fr: 'Walt Disney World', zh: '华特迪士尼世界' },
+        park_dlp: { ja: 'ディズニーランド・パリ', en: 'Disneyland Paris', fr: 'Disneyland Paris', zh: '巴黎迪士尼乐园' },
+        park_shdl: { ja: '上海ディズニーリゾート', en: 'Shanghai Disney Resort', fr: 'Shanghai Disney Resort', zh: '上海迪士尼度假区' },
+        park_hkdl: { ja: '香港ディズニーランド', en: 'Hong Kong Disneyland', fr: 'Hong Kong Disneyland', zh: '香港迪士尼乐园' },
+        park_aulani: { ja: 'アウラニ（ハワイ）', en: 'Aulani (Hawaii)', fr: 'Aulani (Hawaï)', zh: '奥拉尼（夏威夷）' },
+        historyError: {
+            ja: '年表を読み込めませんでした。通信状況を確認して、ページを再読み込みしてください。',
+            en: "The timeline couldn't be loaded. Check your connection and reload the page.",
+            fr: 'Impossible de charger la chronologie. Vérifiez votre connexion et rechargez la page.',
+            zh: '无法加载年表。请检查网络连接后重新加载页面。'
+        },
         view_goods: { ja: 'グッズ', en: 'Merchandise', fr: 'Produits', zh: '周边' },
         view_appear: { ja: 'パーク', en: 'Parks', fr: 'Parcs', zh: '乐园' },
         region_jp: { ja: '日本', en: 'Japan', fr: 'Japon', zh: '日本' },
@@ -106,7 +128,12 @@
     let data = null;      // { items: [...], links: [...] }
     let failed = false;
     const GOODS = ['pin', 'plush', 'goods', 'other'];
-    const APPEAR = ['greeting', 'show', 'parade', 'event'];
+    const APPEAR = ['show', 'parade', 'greeting', 'event'];
+    const VIEWS = ['history', 'goods', 'appear'];
+    const PARKS = ['film', 'tdl', 'tds', 'dl', 'wdw', 'dlp', 'shdl', 'hkdl', 'aulani'];
+    let chron = null;     // クラリス年表（/acorn-club/history.json）
+    let historyFailed = false;
+    let historyPark = 'all';
     const viewOf = item => (APPEAR.includes(item.category) ? 'appear' : 'goods');
     const state = { view: 'goods', category: 'all', year: 'all', limit: 40 };
     const REGIONS = ['jp', 'us', 'hi', 'fr', 'cn', 'hk'];
@@ -119,6 +146,7 @@
     try {
         const v = new URLSearchParams(location.search).get('view');
         if (v === 'park' || v === 'appear') state.view = 'appear';
+        if (v === 'history') state.view = 'history';
     } catch (e) {}
     const yearOf = item => String(item.date || '').slice(0, 4);
 
@@ -155,13 +183,13 @@
         return b;
     }
 
-    // 「グッズ」「パーク」の切り替え（タブ）
+    // 「クラリス年表」「グッズ」「パーク」の切り替え（タブ）
     function renderViews() {
         const box = document.getElementById('club-views');
         if (!box) return;
         box.setAttribute('aria-label', t('viewLabel'));
         box.replaceChildren();
-        ['goods', 'appear'].forEach(v => {
+        VIEWS.forEach(v => {
             const b = el('button', 'view-tab', t('view_' + v));
             b.type = 'button';
             b.setAttribute('role', 'tab');
@@ -173,8 +201,10 @@
                 Object.assign(state, { category: 'all', year: 'all', limit: 40 });
                 try {
                     const q = new URLSearchParams(location.search);
-                    if (v === 'appear') q.set('view', 'park'); else q.delete('view');
-                    history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
+                    if (v === 'appear') q.set('view', 'park');
+                    else if (v === 'history') q.set('view', 'history');
+                    else q.delete('view');
+                    window.history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
                 } catch (e) {}
                 render();
             });
@@ -222,10 +252,11 @@
         const catRow = document.getElementById('filter-category');
         if (!catRow) return;
         catRow.setAttribute('aria-label', t('kindLabel'));
-        if (state.category !== 'all' && !items.some(i => i.category === state.category)) state.category = 'all';
+        if (state.category !== 'all' && state.view !== 'appear' && !items.some(i => i.category === state.category)) state.category = 'all';
         catRow.replaceChildren(chip(t('all'), state.category === 'all', () => setState({ category: 'all' })));
         (state.view === 'appear' ? APPEAR : GOODS).forEach(c => {
-            if (items.some(i => i.category === c)) {
+            // パークの4つ（ショー・パレード・グリーティング・特別イベント）は、情報が無くても常に並べる
+            if (state.view === 'appear' || items.some(i => i.category === c)) {
                 catRow.appendChild(chip(t(c), state.category === c, () => setState({ category: c })));
             }
         });
@@ -343,10 +374,157 @@
         return { items: mine.length ? mine : items, fallback: mine.length === 0 && items.length > 0 };
     }
 
+    // 年表と、グッズ・パークのタイムラインで、使う部品を切り替える
+    function showSections() {
+        const isHistory = state.view === 'history';
+        const toggle = (id, hidden) => {
+            const node = document.getElementById(id);
+            if (node) node.hidden = hidden;
+        };
+        toggle('history', !isHistory);
+        toggle('timeline', isHistory);
+        toggle('filter-park', !isHistory || !chron || !chron.entries.length);
+        if (isHistory) {
+            toggle('filter-category', true);
+            toggle('filter-year', true);
+            toggle('x-embed', true);
+        }
+    }
+
+    // ---------- クラリス年表 ----------
+    const loc = o => (o && typeof o === 'object' ? (o[currentLang] || o.en || o.ja || '') : String(o || ''));
+
+    function historyDate(date) {
+        const m = String(date || '').match(/^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?$/);
+        if (!m) return { year: '', label: '' };
+        if (!m[2]) return { year: m[1], label: '' };
+        const d = new Date(Date.UTC(+m[1], +m[2] - 1, +(m[3] || 1)));
+        const opts = m[3] ? { month: 'short', day: 'numeric', timeZone: 'UTC' } : { month: 'long', timeZone: 'UTC' };
+        return { year: m[1], label: new Intl.DateTimeFormat(LOCALES[currentLang], opts).format(d) };
+    }
+
+    function sourceLink(src) {
+        const url = safeUrl(src && src.url);
+        if (!url) return null;
+        const a = el('a', 'history-source', `${t('source')}：${loc(src.name) || url}`);
+        a.href = url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.appendChild(el('span', 'visually-hidden', t('opens')));
+        return a;
+    }
+
+    function renderHistory() {
+        const prof = document.getElementById('history-profile');
+        const list = document.getElementById('history-list');
+        const empty = document.getElementById('history-empty');
+        if (!prof || !list || !empty) return;
+        if (!chron) {
+            prof.replaceChildren();
+            list.replaceChildren();
+            empty.hidden = !historyFailed;
+            empty.textContent = t('historyError');
+            if (!historyFailed) loadHistory();
+            return;
+        }
+        // プロフィール
+        prof.replaceChildren();
+        const p = chron.profile;
+        if (p) {
+            const card = el('div', 'playbill history-card');
+            card.appendChild(el('h3', 'history-card-title', `${t('profile')}｜${loc(p.name)}`));
+            const dl = el('dl', 'history-facts');
+            (p.items || []).forEach(it => {
+                dl.appendChild(el('dt', '', loc(it.label)));
+                dl.appendChild(el('dd', '', loc(it.value)));
+            });
+            card.appendChild(dl);
+            const srcs = el('p', 'history-sources');
+            (p.sources || []).forEach(src => {
+                const a = sourceLink(src);
+                if (a) srcs.appendChild(a);
+            });
+            card.appendChild(srcs);
+            prof.appendChild(card);
+        }
+        // パークの絞り込み（登録があるパークだけ）
+        const select = document.getElementById('park-select');
+        const parks = PARKS.filter(k => chron.entries.some(e => e.park === k));
+        if (historyPark !== 'all' && !parks.includes(historyPark)) historyPark = 'all';
+        if (select) {
+            select.replaceChildren();
+            [['all', t('allParks')], ...parks.map(k => [k, t('park_' + k)])].forEach(([v, label]) => {
+                const o = el('option', '', label);
+                o.value = v;
+                select.appendChild(o);
+            });
+            select.value = historyPark;
+        }
+        // 年表（古い順。西暦ごとに見出し）
+        const shown = chron.entries
+            .filter(e => historyPark === 'all' || e.park === historyPark)
+            .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+        list.replaceChildren();
+        let year = '';
+        shown.forEach(e => {
+            const d = historyDate(e.date);
+            if (d.year && d.year !== year) {
+                year = d.year;
+                list.appendChild(el('li', 'timeline-month', year));
+            }
+            const li = el('li', 'timeline-item');
+            li.dataset.category = e.kind === 'work' ? 'work' : e.kind;
+            const card = el('div', 'playbill history-entry');
+            const head = el('span', 'playbill-head');
+            if (d.label) head.appendChild(el('span', 'playbill-date', d.label));
+            head.appendChild(el('span', 'playbill-kind', t(e.kind)));
+            head.appendChild(el('span', 'history-park', t('park_' + e.park)));
+            card.appendChild(head);
+            card.appendChild(el('span', 'playbill-title', loc(e.title)));
+            if (loc(e.note)) card.appendChild(el('span', 'history-note', loc(e.note)));
+            const a = sourceLink(e.source);
+            if (a) card.appendChild(a);
+            li.appendChild(card);
+            list.appendChild(li);
+        });
+        empty.hidden = shown.length > 0;
+        if (!shown.length) empty.textContent = t('noMatch');
+    }
+
+    let historyLoading = false;
+    function loadHistory() {
+        if (historyLoading) return;
+        historyLoading = true;
+        fetch('/acorn-club/history.json', { cache: 'no-cache' })
+            .then(r => {
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                return r.json();
+            })
+            .then(json => {
+                chron = {
+                    profile: json.profile || null,
+                    entries: (Array.isArray(json.entries) ? json.entries : []).filter(e => e && e.title && PARKS.includes(e.park))
+                };
+                render();
+            })
+            .catch(err => {
+                console.error('クラリス年表を読み込めませんでした:', err);
+                historyFailed = true;
+                render();
+            });
+    }
+
     function render() {
         const list = document.getElementById('timeline-list');
         const empty = document.getElementById('timeline-empty');
         if (!list || !empty) return;
+        renderViews();
+        showSections();
+        if (state.view === 'history') {
+            renderHistory();
+            renderLinks();
+            return;
+        }
         if (failed) {
             list.replaceChildren();
             empty.textContent = t('loadError');
@@ -354,7 +532,6 @@
             return;
         }
         if (!data) return;
-        renderViews();
         renderXToggle(data.items);
         const picked = byPageLanguage(data.items.filter(i => viewOf(i) === state.view));
         const items = picked.items;
@@ -492,6 +669,8 @@
         });
         const saved = getSavedLanguage();
         if (saved !== 'ja') switchLanguage(saved);
+        const parkSelect = document.getElementById('park-select');
+        if (parkSelect) parkSelect.addEventListener('change', () => { historyPark = parkSelect.value; render(); });
         const yearSelect = document.getElementById('year-select');
         if (yearSelect) yearSelect.addEventListener('change', () => setState({ year: yearSelect.value }));
         load();

@@ -21,7 +21,7 @@
   python3 tools/acorn_news.py collect --dry-run   # 書き換えずに、取得元ごとの結果を表示（PR での確認用）
   python3 tools/acorn_news.py images --dry-run    # 書き換えずに、記事の画像が見つかるかを試す（PR での確認用）
   python3 tools/acorn_news.py build               # 集めた情報からタイムラインだけ作り直す
-  python3 tools/acorn_news.py build --check       # タイムラインが最新か確認する（CI 用）
+  python3 tools/acorn_news.py build --check       # タイムラインが最新か・クラリス年表の書き方が正しいか確認する（CI 用）
   python3 tools/acorn_news.py add イベントのJSON   # 入力フォームの内容を手動の情報として追加（自動実行用）
   python3 tools/acorn_news.py comment 結果のJSON  # 入力フォームへのコメント文を作る
 """
@@ -498,6 +498,33 @@ def timeline_json(now: dt.datetime) -> str:
     return dump({"items": items, "links": links})
 
 
+HISTORY_FILE = ROOT / "acorn-club" / "history.json"
+HISTORY_PARKS = {"film", "tdl", "tds", "dl", "wdw", "dlp", "shdl", "hkdl", "aulani"}
+HISTORY_KINDS = {"work", "show", "parade", "greeting", "event"}
+
+
+def check_history(data: dict) -> list[str]:
+    """クラリス年表（acorn-club/history.json）の書き方を確かめる。問題の一覧を返す（空なら OK）。"""
+    problems = []
+    for n, e in enumerate(data.get("entries") or [], 1):
+        where = f"{n}件目（{(e.get('title') or {}).get('ja', '')}）"
+        if not re.fullmatch(r"\d{4}(-\d{2}(-\d{2})?)?", str(e.get("date", ""))):
+            problems.append(f"{where}: date は YYYY / YYYY-MM / YYYY-MM-DD で書いてください")
+        if e.get("park") not in HISTORY_PARKS:
+            problems.append(f"{where}: park が不明です（{e.get('park')}）")
+        if e.get("kind") not in HISTORY_KINDS:
+            problems.append(f"{where}: kind が不明です（{e.get('kind')}）")
+        if not (e.get("title") or {}).get("ja") or not (e.get("title") or {}).get("en"):
+            problems.append(f"{where}: title は ja と en の両方が必要です")
+        src = e.get("source") or {}
+        if not src.get("name") or not (src.get("url") or "").startswith("https://"):
+            problems.append(f"{where}: 出典（source の name と https の url）が必要です")
+    for src in (data.get("profile") or {}).get("sources") or []:
+        if not (src.get("url") or "").startswith("https://"):
+            problems.append("プロフィールの出典の url は https で書いてください")
+    return problems
+
+
 def write_if_changed(path: Path, text: str) -> bool:
     if path.exists() and path.read_text(encoding="utf-8") == text:
         return False
@@ -572,7 +599,8 @@ FORM_FIELDS = {
     "入稿の確認": "approval",
 }
 CATEGORY_LABELS = {"ピンバッジ": "pin", "ぬいぐるみ": "plush", "グッズ": "goods", "その他（グッズ）": "other", "その他": "other",
-                   "グリーティング": "greeting", "ショー": "show", "パレード": "parade", "イベント・その他の登場": "event"}
+                   "グリーティング": "greeting", "ショー": "show", "パレード": "parade", "特別イベント": "event",
+                   "イベント・その他の登場": "event"}
 LANG_LABELS = {"日本語": "ja", "English": "en"}
 ALLOWED_ASSOCIATIONS = {"OWNER", "COLLABORATOR", "MEMBER"}
 
@@ -691,7 +719,10 @@ def main() -> int:
             ok = saved is not None and saved["links"] == fresh["links"] and \
                 {i["id"] for i in fresh["items"]} <= {i["id"] for i in saved["items"]}
             print("確認OK" if ok else "⚠ acorn-club/news.json が最新ではありません（python3 tools/acorn_news.py build を実行してください）")
-            return 0 if ok else 1
+            problems = check_history(load_json(HISTORY_FILE, {}))
+            for msg in problems:
+                print(f"::error title=クラリス年表::{msg}")
+            return 0 if ok and not problems else 1
         print("更新しました" if write_if_changed(OUT_FILE, text) else "変更はありません")
         return 0
     if args.cmd == "add":

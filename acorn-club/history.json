@@ -1,0 +1,318 @@
+{
+  "_説明": "Acorn Club の「クラリス年表」タブの内容。出典（source）で確かめられたことだけを載せる。date は YYYY / YYYY-MM / YYYY-MM-DD。park は film（作品）・tdl・tds・dl（ディズニーランド・リゾート）・wdw・dlp・hkdl・shdl・aulani。kind は work・show・parade・greeting・event。文章は出典を書き写さず、自分の言葉で短く。",
+  "profile": {
+    "name": {
+      "ja": "クラリス",
+      "en": "Clarice"
+    },
+    "items": [
+      {
+        "label": {
+          "ja": "初登場",
+          "en": "Debut"
+        },
+        "value": {
+          "ja": "短編アニメーション『リス君は歌姫がお好き』（Two Chips and a Miss）／1952年",
+          "en": "The animated short Two Chips and a Miss (1952)"
+        }
+      },
+      {
+        "label": {
+          "ja": "役どころ",
+          "en": "Role"
+        },
+        "value": {
+          "ja": "ナイトクラブ「エイコーン・クラブ」で歌う歌姫。チップとデールのあこがれの存在",
+          "en": "The singing star of the Acorn Club nightclub, admired by Chip and Dale"
+        }
+      },
+      {
+        "label": {
+          "ja": "映画作品",
+          "en": "Films"
+        },
+        "value": {
+          "ja": "劇場用の短編はデビュー作の1本だけ。その後はおもにテーマパークで活躍",
+          "en": "Her debut is her only theatrical short; since then she has appeared mostly in the parks"
+        }
+      },
+      {
+        "label": {
+          "ja": "近年の作品",
+          "en": "Recent series"
+        },
+        "value": {
+          "ja": "Disney+ のシリーズ『チップとデールのパークライフ』（2021年〜）に新しいデザインで登場",
+          "en": "Appears with a new design in the Disney+ series Chip 'n' Dale: Park Life (2021–)"
+        }
+      }
+    ],
+    "sources": [
+      {
+        "name": "ディズニー公式「クラリス｜ミッキー＆フレンズ」",
+        "url": "https://www.disney.co.jp/fc/mickey-friends/character/clarice"
+      },
+      {
+        "name": "Wikipedia「クラリス (ディズニーキャラクター)」",
+        "url": "https://ja.wikipedia.org/wiki/%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9_(%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC)"
+      }
+    ]
+  },
+  "entries": [
+    {
+      "date": "1952-03-21",
+      "park": "film",
+      "kind": "work",
+      "title": {
+        "ja": "『リス君は歌姫がお好き』（Two Chips and a Miss）",
+        "en": "Two Chips and a Miss"
+      },
+      "note": {
+        "ja": "デビュー作。エイコーン・クラブの歌姫として登場し、チップとデールの2人に招待状を送る。",
+        "en": "Her debut: the Acorn Club's singing star sends invitations to both Chip and Dale."
+      },
+      "source": {
+        "name": "ディズニー公式「クラリス」",
+        "url": "https://www.disney.co.jp/fc/mickey-friends/character/clarice"
+      }
+    },
+    {
+      "date": "2005-04-15",
+      "park": "tdl",
+      "kind": "show",
+      "title": {
+        "ja": "ディズニー・ロック・アラウンド・ザ・マウス",
+        "en": "Disney's Rock Around the Mouse"
+      },
+      "note": {
+        "ja": "東京ディズニーランドで、クラリスが初めて登場したショー（2005年8月31日まで）。",
+        "en": "The first show at Tokyo Disneyland to feature Clarice (until August 31, 2005)."
+      },
+      "source": {
+        "name": "Wikipedia「クラリス (ディズニーキャラクター)」",
+        "url": "https://ja.wikipedia.org/wiki/%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9_(%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC)"
+      }
+    },
+    {
+      "date": "2008-02",
+      "park": "wdw",
+      "kind": "greeting",
+      "title": {
+        "ja": "ディズニー・ハリウッド・スタジオでのグリーティング",
+        "en": "Meet-and-greet at Disney's Hollywood Studios"
+      },
+      "note": {
+        "ja": "デビュー作の衣装で、パーク内を歩くキャラクターとして会えると紹介された。",
+        "en": "Reported as a walk-around character wearing her original Acorn Club costume."
+      },
+      "source": {
+        "name": "2719 Hyperion（2008年2月12日）",
+        "url": "https://www.2719hyperion.com/2008/02/from-mailroom-star-of-acorn-club.html"
+      }
+    },
+    {
+      "date": "2009-03-27",
+      "park": "dl",
+      "kind": "parade",
+      "title": {
+        "ja": "セレブレイト！ア・ストリート・パーティ",
+        "en": "Celebrate! A Street Party"
+      },
+      "note": {
+        "ja": "ディズニーランド（カリフォルニア）のストリート・パーティに出演。",
+        "en": "Featured in the street party at Disneyland in California."
+      },
+      "source": {
+        "name": "AllEars.Net",
+        "url": "https://green.allears.net/dlr/tp/dl/celebrate.htm"
+      }
+    },
+    {
+      "date": "2009-09",
+      "park": "tds",
+      "kind": "greeting",
+      "title": {
+        "ja": "ミート＆スマイル",
+        "en": "Meet & Smile"
+      },
+      "note": {
+        "ja": "メディテレーニアンハーバーのグリーティングに2009年9月から加わる（2011年まで）。",
+        "en": "Joined the Mediterranean Harbor greeting from September 2009 (until 2011)."
+      },
+      "source": {
+        "name": "Wikipedia「クラリス (ディズニーキャラクター)」",
+        "url": "https://ja.wikipedia.org/wiki/%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9_(%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC)"
+      }
+    },
+    {
+      "date": "2011-04-28",
+      "park": "tds",
+      "kind": "show",
+      "title": {
+        "ja": "ファンタズミック！",
+        "en": "Fantasmic!"
+      },
+      "note": {
+        "ja": "夜のハーバーショーのフィナーレに、バージに乗って登場（2020年まで）。",
+        "en": "Rode a barge in the finale of the nighttime harbor show (until 2020)."
+      },
+      "source": {
+        "name": "Wikipedia「クラリス (ディズニーキャラクター)」",
+        "url": "https://ja.wikipedia.org/wiki/%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9_(%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC)"
+      }
+    },
+    {
+      "date": "2011-05-09",
+      "park": "tdl",
+      "kind": "parade",
+      "title": {
+        "ja": "ナイトフォール・グロウ",
+        "en": "Nightfall Glow"
+      },
+      "note": {
+        "ja": "雨の日の夜のパレードに出演。",
+        "en": "Appeared in the rainy-night parade."
+      },
+      "source": {
+        "name": "Wikipedia「クラリス (ディズニーキャラクター)」",
+        "url": "https://ja.wikipedia.org/wiki/%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9_(%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC)"
+      }
+    },
+    {
+      "date": "2016-03-21",
+      "park": "tdl",
+      "kind": "show",
+      "title": {
+        "ja": "ミッキーのレインボー・ルアウ",
+        "en": "Mickey's Rainbow Luau"
+      },
+      "note": {
+        "ja": "ポリネシアンテラス・レストランのディナーショーに出演。",
+        "en": "Joined the dinner show at the Polynesian Terrace Restaurant."
+      },
+      "source": {
+        "name": "Wikipedia「クラリス (ディズニーキャラクター)」",
+        "url": "https://ja.wikipedia.org/wiki/%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9_(%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC)"
+      }
+    },
+    {
+      "date": "2016-04-15",
+      "park": "tds",
+      "kind": "show",
+      "title": {
+        "ja": "クリスタル・ウィッシュ・ジャーニー",
+        "en": "Crystal Wishes Journey"
+      },
+      "note": {
+        "ja": "東京ディズニーシー15周年のハーバーショーに出演（2017年3月17日まで）。",
+        "en": "Part of the harbor show for Tokyo DisneySea's 15th anniversary (until March 17, 2017)."
+      },
+      "source": {
+        "name": "オリエンタルランド 報道資料（2016年4月19日）",
+        "url": "https://www.olc.co.jp/ja/news/news_tdr/news_tdr2329436717055820930/main/0/link/20160419_05.pdf"
+      }
+    },
+    {
+      "date": "2018-04-15",
+      "park": "tdl",
+      "kind": "parade",
+      "title": {
+        "ja": "ドリーミング・アップ！",
+        "en": "Dreaming Up!"
+      },
+      "note": {
+        "ja": "東京ディズニーリゾート35周年のお昼のパレードに、徒歩で出演。",
+        "en": "Walked in the daytime parade for Tokyo Disney Resort's 35th anniversary."
+      },
+      "source": {
+        "name": "Wikipedia「クラリス (ディズニーキャラクター)」",
+        "url": "https://ja.wikipedia.org/wiki/%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9_(%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC)"
+      }
+    },
+    {
+      "date": "2018-07-10",
+      "park": "tdl",
+      "kind": "show",
+      "title": {
+        "ja": "レッツ・パーティグラ！",
+        "en": "Let's Party Gras!"
+      },
+      "note": {
+        "ja": "シアターオーリンズのショーに出演。",
+        "en": "Performed in the show at Theater Orleans."
+      },
+      "source": {
+        "name": "Wikipedia「クラリス (ディズニーキャラクター)」",
+        "url": "https://ja.wikipedia.org/wiki/%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9_(%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC)"
+      }
+    },
+    {
+      "date": "2021-07-28",
+      "park": "film",
+      "kind": "work",
+      "title": {
+        "ja": "『チップとデールのパークライフ』",
+        "en": "Chip 'n' Dale: Park Life"
+      },
+      "note": {
+        "ja": "Disney+ で配信開始。新しいデザインで登場し、2021年9月22日配信の回には「An Evening with Clarice」も。",
+        "en": "Premiered on Disney+. Clarice appears with a new design, including the segment “An Evening with Clarice” (September 22, 2021)."
+      },
+      "source": {
+        "name": "Wikipedia「List of Chip 'n' Dale: Park Life episodes」",
+        "url": "https://en.wikipedia.org/wiki/List_of_Chip_%27n%27_Dale:_Park_Life_episodes"
+      }
+    },
+    {
+      "date": "2021-11-08",
+      "park": "shdl",
+      "kind": "event",
+      "title": {
+        "ja": "初のチップとデールのイベント",
+        "en": "First-ever Chip 'n' Dale Celebration"
+      },
+      "note": {
+        "ja": "上海ディズニーリゾートで11月24日まで開催。クラリスが出演する新しい屋外ショーと、ショー後のグリーティング。",
+        "en": "Ran until November 24 at Shanghai Disney Resort, with a new outdoor show featuring Clarice and photos with her afterwards."
+      },
+      "source": {
+        "name": "Laughing Place（2021年9月24日）",
+        "url": "https://www.laughingplace.com/w/news/2021/09/24/shanghai-disney-resort-fall-events-2021/"
+      }
+    },
+    {
+      "date": "2023-02",
+      "park": "wdw",
+      "kind": "greeting",
+      "title": {
+        "ja": "ディズニー・ハリウッド・スタジオの期間限定グリーティング",
+        "en": "Limited-time meet-and-greet at Disney's Hollywood Studios"
+      },
+      "note": {
+        "ja": "チップとデールと一緒に、2月14日までの期間限定で登場。",
+        "en": "Appeared with Chip and Dale for a limited time, through February 14."
+      },
+      "source": {
+        "name": "Attractions Magazine（2023年2月1日）",
+        "url": "https://attractionsmagazine.com/confirmed-clarice-chipmunk-coming-to-disneys-hollywood-studios"
+      }
+    },
+    {
+      "date": "2026-04",
+      "park": "hkdl",
+      "kind": "event",
+      "title": {
+        "ja": "グリズリー・ガルチのお祝い",
+        "en": "Celebration in Grizzly Gulch"
+      },
+      "note": {
+        "ja": "香港ディズニーランドで、探検家の衣装のクラリスがチップとデールと一緒にお祝いを盛り上げる。",
+        "en": "At Hong Kong Disneyland, Clarice in an explorer outfit leads a town-wide celebration with Chip and Dale."
+      },
+      "source": {
+        "name": "TDR Explorer（2026年4月16日）",
+        "url": "https://tdrexplorer.com/chip-n-dale-bring-a-town-wide-celebration-to-grizzly-gulch-at-hong-kong-disneyland/"
+      }
+    }
+  ]
+}
