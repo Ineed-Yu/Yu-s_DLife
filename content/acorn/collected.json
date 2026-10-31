@@ -23,7 +23,22 @@
     "category": "goods",
     "official": false,
     "date": "2026-06-17T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://prtimes.jp/main/html/rd/p/000002040.000025606.html",
+    "image": "https://prcdn.freetls.fastly.net/release_image/25606/2040/25606-2040-1b90bcf0a40befbd034c8751b60aa6c7-1000x692.jpg?format=jpeg&auto=webp&fit=bounds&width=2400&height=1260"
+  },
+  {
+    "id": "d85daf4724c4d523",
+    "title": "クラリスもデザイン！「Disney SWEETS COLLECTION by 東京ばな奈」ディズニー「チップ＆デール／バニラチョコレートサンド」＆オリジナルグッズ",
+    "url": "https://mezzomiki.jp/post-332754/",
+    "source": "MezzoMiki（ディズニー情報サイト）",
+    "via": "mezzomiki",
+    "lang": "ja",
+    "category": "goods",
+    "official": false,
+    "date": "2026-05-09T21:05+09:00",
+    "origin": "auto",
+    "image": "https://mezzomiki.jp/wp-content/uploads/2026/05/IMG_8254.jpeg"
   },
   {
     "id": "9feb393d31dcc785",
@@ -51,7 +66,8 @@
     "date": "2026-04-27T16:00+09:00",
     "origin": "auto",
     "article": "https://news.yahoo.co.jp/articles/8edb177e5f3f1d4292ae5e93194d43933121cfed",
-    "image_tries": 2
+    "image_tries": 3,
+    "image": ""
   },
   {
     "id": "249216466f345a2c",
@@ -124,6 +140,19 @@
     "image": "https://prcdn.freetls.fastly.net/release_image/25606/1948/25606-1948-ad35d3dbf90f6cc0e5bb6ee76ca07ad3-1000x692.jpg?format=jpeg&auto=webp&fit=bounds&width=2400&height=1260"
   },
   {
+    "id": "6571a8dd0bdbda47",
+    "title": "チップ＆デール／バニラチョコレートサンド！ディズニー「Disney SWEETS COLLECTION by 東京ばな奈」",
+    "url": "https://dtimes.jp/post-1210176/",
+    "source": "Dtimes（ディズニー情報サイト）",
+    "via": "dtimes",
+    "lang": "ja",
+    "category": "goods",
+    "official": false,
+    "date": "2026-04-16T11:33+09:00",
+    "origin": "auto",
+    "image": "https://dtimes.jp/wp-content/uploads/2026/04/main-73.jpg"
+  },
+  {
     "id": "952632b0dc7fe32b",
     "title": "Chip, Dale & Clarice Don Pastel Bear Suits for Latest Japanese Plush Drop on Disney Store",
     "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNMEVtS29LNjBrT2dNMk5KS0t5ZmVfaG14WUNwNU5kd1AzYmtka1ZFX2FBRXpOVlNLSjF4MGU2azdrS3BpOXpPMWZ1eUZkbkE3Nkt6R3NWWXhSUlI2V09hcXIzRnktZUZUaVZGWlBRQzhabHBERVhQOVp5TjZ5ZU5ZYm9VVzJLd1dQTTlEb0dLMzZJMDBDZGx6MHRYTmp3OHNHRkljb2xwaEhMSjAwOTBFYS1VOA?oc=5",
@@ -150,6 +179,19 @@
     "origin": "auto",
     "article": "https://piratesandprincesses.net/chip-dale-and-clarice-disney-japan-bear-plush-are-now-available/",
     "image": "https://piratesandprincesses.net/wp-content/uploads/2026/03/japan-plush.png"
+  },
+  {
+    "id": "1621c2f40aa6d63a",
+    "title": "ふわふわクマデザインのパジャマ姿！ディズニーストア チップ＆デール＆クラリスグッズ",
+    "url": "https://mezzomiki.jp/post-328777/",
+    "source": "MezzoMiki（ディズニー情報サイト）",
+    "via": "mezzomiki",
+    "lang": "ja",
+    "category": "goods",
+    "official": false,
+    "date": "2026-03-11T20:48+09:00",
+    "origin": "auto",
+    "image": "https://mezzomiki.jp/wp-content/uploads/2026/03/IMG_6348.jpeg"
   },
   {
     "id": "2d3e29afaa0569bb",
@@ -190,7 +232,8 @@
     "date": "2026-03-06T17:00+09:00",
     "origin": "auto",
     "article": "https://news.nicovideo.jp/watch/nw19005029",
-    "image_tries": 2
+    "image_tries": 3,
+    "image": ""
   },
   {
     "id": "a9c002f8445ff0c2",
@@ -207,6 +250,45 @@
     "image": "https://image.news.livedoor.com/newsimage/stf/8/3/83b3a_1838_a5e8fb8573cf0468e40432853d416438.jpg"
   },
   {
+    "id": "cca74d508159da16",
+    "title": "Disney Store Japan Urupocha-chan Clarice Palm-Sized Cute Plush Toy Discontinued",
+    "url": "https://www.reddit.com/r/u_EuphoricRiver3057/comments/1r2ubfk/disney_store_japan_urupochachan_clarice_palmsized/",
+    "source": "Reddit（英語の掲示板）",
+    "via": "reddit-en",
+    "lang": "en",
+    "category": "plush",
+    "official": false,
+    "date": "2026-02-12T23:06+09:00",
+    "origin": "auto",
+    "image_tries": 1
+  },
+  {
+    "id": "9dfb1ca1f1e9c854",
+    "title": "3人揃えて飾りたい！ナムコ「ミニーマウス＆デイジーダック＆クラリス 赤いほっぺ マスコット ～GO FOR IT!～」",
+    "url": "https://mezzomiki.jp/post-324930/",
+    "source": "MezzoMiki（ディズニー情報サイト）",
+    "via": "mezzomiki",
+    "lang": "ja",
+    "category": "event",
+    "official": false,
+    "date": "2026-01-25T19:00+09:00",
+    "origin": "auto",
+    "image": "https://mezzomiki.jp/wp-content/uploads/2025/12/Z9Y_1569.jpg"
+  },
+  {
+    "id": "ec88149a56bcad24",
+    "title": "刺繍デザインがかわいい！ナムコ「ミニーマウス＆デイジーダック＆クラリス プラチナムザッカリボンポーチ ～GO FOR IT!～」",
+    "url": "https://mezzomiki.jp/post-324936/",
+    "source": "MezzoMiki（ディズニー情報サイト）",
+    "via": "mezzomiki",
+    "lang": "ja",
+    "category": "goods",
+    "official": false,
+    "date": "2026-01-23T19:00+09:00",
+    "origin": "auto",
+    "image": "https://mezzomiki.jp/wp-content/uploads/2025/12/Z9Y_1571.jpg"
+  },
+  {
     "id": "51a57c96c9797778",
     "title": "ミニー･デイジー･クラリスの限定プライズ！Disney キャンペーン in ナムコ バレンタイン 2026 ～GO FOR IT!～",
     "url": "https://news.google.com/rss/articles/CBMiRkFVX3lxTE9xUTVweTZOVU4tNkJ6WkZrMVM1dEJjZm5abnBIMEdiOG9XODBXT1d6ZHFCc2NPSnlTZFVHbHM5ZndCWktoMGc?oc=5",
@@ -221,6 +303,19 @@
     "image": "https://dtimes.jp/wp-content/uploads/2025/12/②lineup.jpg"
   },
   {
+    "id": "1f4a35f2e1c40cf4",
+    "title": "アップリケと刺繍がかわいい！セガプライズ ディズニー「チップ&デール&クラリス」 プラチナムザッカふわふわバッグ",
+    "url": "https://dtimes.jp/post-1062736/",
+    "source": "Dtimes（ディズニー情報サイト）",
+    "via": "dtimes",
+    "lang": "ja",
+    "category": "goods",
+    "official": false,
+    "date": "2025-12-01T10:36+09:00",
+    "origin": "auto",
+    "image": "https://dtimes.jp/wp-content/uploads/2025/10/チップ＆デール＆クラリスPtZふわふわバッグFluffy-Cuties.jpg"
+  },
+  {
     "id": "65218b4e5fb7fa9f",
     "title": "クラリスたちが登場！高見え確実なディズニー『ファーショルダー』は優秀な2WAY仕様で秋冬の主役！",
     "url": "https://news.google.com/rss/articles/CBMiR0FVX3lxTE9zNTd4cndCZXpuSGJGT2w1WnV6UFJ6VkY0eHdFUHd6cTlqeVRMVzkycWpNTEYyUTlySWltZVRwLWRsTVdSb1VF?oc=5",
@@ -233,6 +328,32 @@
     "origin": "auto",
     "article": "https://newscast.jp/news/9863669",
     "image": "https://www.atpress.ne.jp/attachments/P5cxV5gR0IOq27vyzghX.gif"
+  },
+  {
+    "id": "e332b13642e04e24",
+    "title": "チップ＆デール＆クラリスのクリア窓付ポーチ！セガプライズ ディズニー「Fluffy Cuties」",
+    "url": "https://dtimes.jp/post-1054348/",
+    "source": "Dtimes（ディズニー情報サイト）",
+    "via": "dtimes",
+    "lang": "ja",
+    "category": "goods",
+    "official": false,
+    "date": "2025-11-21T14:01+09:00",
+    "origin": "auto",
+    "image": "https://dtimes.jp/wp-content/uploads/2025/09/D122802_01.jpg"
+  },
+  {
+    "id": "51d3247a247ed907",
+    "title": "マフラーやケープで冬支度！セガプライズ ディズニー「チップ&デール&クラリス」 マスコット ～Fluffy Cuties～",
+    "url": "https://dtimes.jp/post-1059879/",
+    "source": "Dtimes（ディズニー情報サイト）",
+    "via": "dtimes",
+    "lang": "ja",
+    "category": "event",
+    "official": false,
+    "date": "2025-11-19T15:51+09:00",
+    "origin": "auto",
+    "image": "https://dtimes.jp/wp-content/uploads/2025/10/チップ＆デール＆クラリスマスコットFluffyCuties.jpg"
   },
   {
     "id": "25688c1dce154a03",
@@ -272,6 +393,19 @@
     "date": "2025-03-31T23:30+09:00",
     "origin": "auto",
     "image": "https://preresearch.image.itmedia.co.jp/nl/articles/2504/01/cover_news037.jpg"
+  },
+  {
+    "id": "f93340147f16b559",
+    "title": "短編作品『リス君は歌姫がお好き』のコスチューム姿！セガプライズ ディズニー「チップ&デール&クラリス」 ぬいぐるみ",
+    "url": "https://dtimes.jp/post-972883/",
+    "source": "Dtimes（ディズニー情報サイト）",
+    "via": "dtimes",
+    "lang": "ja",
+    "category": "plush",
+    "official": false,
+    "date": "2025-03-28T09:30+09:00",
+    "origin": "auto",
+    "image": "https://dtimes.jp/wp-content/uploads/2025/01/B121785_01.jpg"
   },
   {
     "id": "665ea651f7a52a87",
@@ -352,7 +486,9 @@
     "category": "plush",
     "official": false,
     "date": "2024-05-31T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://www.gamer.ne.jp/news/202405310032/",
+    "image_tries": 1
   },
   {
     "id": "48ce0f1fe5abfc53",
@@ -364,7 +500,9 @@
     "category": "plush",
     "official": false,
     "date": "2024-05-31T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://prtimes.jp/main/html/rd/p/000000498.000129774.html",
+    "image": "https://prcdn.freetls.fastly.net/release_image/129774/498/129774-498-85fd15f49fb97d10bcd7571272a9460a-1040x1040.png?format=jpeg&auto=webp&fit=bounds&width=2400&height=1260"
   },
   {
     "id": "f04a5ac467d47e59",
@@ -394,6 +532,19 @@
     "image": "https://dtimes.jp/wp-content/uploads/2024/01/B120956_01.jpg"
   },
   {
+    "id": "046d406ab5ec3767",
+    "title": "チップ＆デール、クラリス、ダンボ、ティモシー！フリュー「ディズニーキャラクター【FDT】ウフフィマスコット 第2弾」",
+    "url": "https://dtimes.jp/post-740107/",
+    "source": "Dtimes（ディズニー情報サイト）",
+    "via": "dtimes",
+    "lang": "ja",
+    "category": "goods",
+    "official": false,
+    "date": "2023-05-23T11:00+09:00",
+    "origin": "auto",
+    "image": "https://dtimes.jp/wp-content/uploads/2023/04/597aade37917b2ec2e7e7c7ff5890309.jpg"
+  },
+  {
     "id": "72afe86d431fa5e9",
     "title": "『LINE：ディズニー ツムツム』、バレンタインイベントに合わせたハートモチーフの可愛らしい新ツム「ラブリースティッチ＆エンジェル」「ラブリークラリス」「ラブリーティンク」の３種類が登場！",
     "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBadUhERzNfUzZZdnFpZXR1ZndabFBldDRQcnN5ZjRRZzdFUTV6WjZRTndaSGFHZHhzbVBlS0JMdXp5aFpvLS12VTF5NjhvcmVGRFE5OExUelBMakFfdkpMT3diaXNFdm9pQXc?oc=5",
@@ -420,6 +571,19 @@
     "origin": "auto",
     "article": "https://disneyworldfan.jp/2023/01/where-can-i-mett-clarice-in-wdw/",
     "image": ""
+  },
+  {
+    "id": "5f290584930729a2",
+    "title": "かわいいドレス姿！セガプライズ ディズニー「クラリス」 メガジャンボぬいぐるみ",
+    "url": "https://dtimes.jp/post-667027/",
+    "source": "Dtimes（ディズニー情報サイト）",
+    "via": "dtimes",
+    "lang": "ja",
+    "category": "plush",
+    "official": false,
+    "date": "2022-12-30T10:00+09:00",
+    "origin": "auto",
+    "image": "https://dtimes.jp/wp-content/uploads/2022/10/Y104005_01.jpg"
   },
   {
     "id": "12a580238e57e55c",
@@ -459,7 +623,9 @@
     "category": "goods",
     "official": false,
     "date": "2022-03-24T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://prtimes.jp/main/html/rd/p/000000523.000036659.html",
+    "image": "https://prcdn.freetls.fastly.net/release_image/36659/523/36659-523-f6dfcf37ebf6b2d1b13413d857c738db-960x480.jpg?format=jpeg&auto=webp&fit=bounds&width=2400&height=1260"
   },
   {
     "id": "b9da4689f5a79606",
@@ -499,7 +665,9 @@
     "category": "event",
     "official": false,
     "date": "2021-09-17T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://bg-mania.jp/2021/09/17425335.html",
+    "image": "https://cdn.bg-mania.jp/images/2021/09/tbm_20210915175417.jpg"
   },
   {
     "id": "aff6fa3136afc82d",
@@ -639,7 +807,8 @@
     "date": "2016-11-15T17:00+09:00",
     "origin": "auto",
     "article": "http://www.gamer.ne.jp/news/201611150059/image/4/",
-    "image_tries": 1
+    "image_tries": 1,
+    "image": ""
   },
   {
     "id": "ef252cdd3df7e79d",
@@ -734,7 +903,8 @@
     "category": "plush",
     "official": false,
     "date": "2015-03-26T13:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "image": "https://www.j-cast.com/trend/images/origin/2015/03/trend_20150324172850.jpg"
   },
   {
     "id": "0d9dc254b95e2738",
@@ -746,7 +916,9 @@
     "category": "event",
     "official": false,
     "date": "2015-03-23T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://beauty.oricon.co.jp/news/2050465/full/",
+    "image": "https://contents.oricon.co.jp/upimg/news/20150323/2050465_201503230433756001427097651c.jpg"
   },
   {
     "id": "895c926327932db6",
@@ -758,7 +930,9 @@
     "category": "goods",
     "official": false,
     "date": "2013-06-21T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://youpouch.com/2013/06/21/125045/",
+    "image": "https://youpouch.com/wp-content/uploads/sites/4/2013/06/tdl1-e1371797961988.jpg?w=580&h=305&crop=1"
   },
   {
     "id": "668bfa7b722e5d59",
@@ -770,6 +944,8 @@
     "category": "event",
     "official": false,
     "date": "2013-06-19T16:00+09:00",
-    "origin": "auto"
+    "origin": "auto",
+    "article": "https://mdpr.jp/disney/detail/1253394",
+    "image": "https://img-mdpr.freetls.fastly.net/article/LwaL/nm/LwaL5U6_JaBlJu9CQ0rzI40DMNONdy4a0iKAt0dKi9s.jpg?width=700&disable=upscale&auto=webp&quality=80"
   }
 ]
