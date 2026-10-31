@@ -1,0 +1,76 @@
+# Acorn Club：クラリスの新着グッズ情報を自動で集める
+# - 2時間ごと（と手動）：取得元（content/acorn/sources.json）から集め、タイムライン（acorn-club/news.json）を更新して main に保存
+# - 収集の仕組みや取得元を変える PR：実際の取得元から「試し取得」だけを行い、取得元ごとの結果を表示（書き換えない）
+name: Acorn Club の自動収集
+
+on:
+  schedule:
+    - cron: "37 */2 * * *"   # 2時間ごと（混み合う0分を避ける）
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "tools/acorn_news.py"
+      - "content/acorn/sources.json"
+      - ".github/workflows/acorn-collect.yml"
+
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('acorn-check-{0}', github.ref) || 'blog-publish' }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: 試し取得（ファイルは書き換えない）
+        run: python3 tools/acorn_news.py collect --dry-run
+      - name: タイムラインが最新か確認
+        run: python3 tools/acorn_news.py build --check
+
+  collect:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: 新着情報を集める
+        run: python3 tools/acorn_news.py collect
+
+      - name: main に保存
+        id: push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for path in content/acorn acorn-club/news.json; do
+            if [ -e "$path" ]; then git add -A -- "$path"; fi
+          done
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -q -m "acorn: 新着情報を更新"
+          for i in 1 2 3; do
+            git pull -q --rebase origin main && git push -q origin HEAD:main && break
+            sleep 5
+          done
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: サイトの再構築を依頼
+        if: steps.push.outputs.changed == 'true'
+        run: gh api -X POST "repos/${GITHUB_REPOSITORY}/pages/builds" --silent || echo "::warning::再構築の依頼に失敗しました。"

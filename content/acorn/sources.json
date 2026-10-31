@@ -1,0 +1,23 @@
+{
+  "_説明": "Acorn Club のタイムラインに載せる情報の取得元。RSS / Atom の配信だけを使う（記事のタイトル・リンク・掲載元・日付だけを取り込み、本文や写真は保存しない）。追加・削除したら PR にすると、PR 上で試し取得の結果が出ます。",
+  "sources": [
+    {"id": "gnews-ja", "name": "Google ニュース（日本語）", "lang": "ja",
+     "url": "https://news.google.com/rss/search?q=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9+%E3%83%87%E3%82%A3%E3%82%BA%E3%83%8B%E3%83%BC&hl=ja&gl=JP&ceid=JP:ja",
+     "aggregator": true},
+    {"id": "gnews-en", "name": "Google News (English)", "lang": "en",
+     "url": "https://news.google.com/rss/search?q=%22Clarice%22+Disney&hl=en-US&gl=US&ceid=US:en",
+     "aggregator": true},
+    {"id": "castel", "name": "キャステル", "lang": "ja",
+     "url": "https://castel.jp/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&feed=rss2"},
+    {"id": "tdrexplorer", "name": "TDR Explorer", "lang": "en",
+     "url": "https://tdrexplorer.com/?s=clarice&feed=rss2"},
+    {"id": "disneypinsblog", "name": "Disney Pins Blog", "lang": "en", "topic": "pin",
+     "url": "https://disneypinsblog.com/?s=clarice&feed=rss2"},
+    {"id": "laughingplace", "name": "Laughing Place", "lang": "en",
+     "url": "https://www.laughingplace.com/?s=clarice&feed=rss2"},
+    {"id": "wdwinfo", "name": "WDWInfo", "lang": "en",
+     "url": "https://www.wdwinfo.com/?s=clarice&feed=rss2"},
+    {"id": "disneyparksblog", "name": "Disney Parks Blog", "lang": "en", "official": true,
+     "url": "https://disneyparksblog.com/?s=clarice&feed=rss2"}
+  ]
+}

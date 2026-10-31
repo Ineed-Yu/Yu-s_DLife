@@ -1,0 +1,74 @@
+# Acorn Club のタイムラインに、自動では集められない情報（SNS の投稿など）を手で追加するフォーム
+# 送信した時点で管理者の承認とみなします（ブログの入稿と同じ。2026-10-31）。
+# 仕組み: .github/workflows/acorn-intake.yml → tools/acorn_news.py add
+name: Acorn Club に情報を追加する
+description: SNS の投稿など、クラリスの新着グッズ情報のリンクをタイムラインに追加します
+title: "[Acorn] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        タイムラインに載るのは **ひとこと・リンク・掲載元（URL から自動）・日付** だけです。写真や投稿の本文は載せません。
+        送信後、数分で結果がこのページのコメントに届きます。直すときは「…」→「Edit」で保存し直してください。
+
+  - type: input
+    id: url
+    attributes:
+      label: リンク（URL）
+      description: 投稿やページの URL を1つ。例）https://x.com/TDR_PR/status/…
+      placeholder: https://
+    validations:
+      required: true
+
+  - type: input
+    id: title
+    attributes:
+      label: ひとこと（タイトル）
+      description: タイムラインに表示する見出しです。投稿の文章をそのまま貼らず、短く要約してください。
+      placeholder: 例）【公式X】クラリスの新しいぬいぐるみバッジが発売
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: 種類
+      options:
+        - ピンバッジ
+        - ぬいぐるみ
+        - グッズ
+        - その他
+      default: 2
+    validations:
+      required: true
+
+  - type: dropdown
+    id: lang
+    attributes:
+      label: 言語
+      options:
+        - 日本語
+        - English
+      default: 0
+
+  - type: input
+    id: date
+    attributes:
+      label: 日付（任意）
+      description: 投稿日・発売日など。空欄なら送信した日。
+      placeholder: 2026-10-31
+
+  - type: checkboxes
+    id: hide
+    attributes:
+      label: 掲載をやめる
+      options:
+        - label: この情報をタイムラインから外す（あとで外したくなったら、ここにチェックして保存）
+
+  - type: checkboxes
+    id: approval
+    attributes:
+      label: 入稿の確認
+      options:
+        - label: この内容でタイムラインに追加します。送信した時点で掲載を承認します。
+          required: true
