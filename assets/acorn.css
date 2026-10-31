@@ -670,7 +670,7 @@ body.acorn-page .site-footer {
 /* ---------- 画面の大きさに合わせた配置 ----------
    スマホ：1列（看板 → 切り替え → 絞り込み → タイムライン → 公式サイト/アカウント一覧 → 注記）
    タブレット：1列のまま横幅を広げる
-   PC：左に看板・操作・情報源（スクロールしても見える）、右にタイムライン。読む行の長さは広げすぎない */
+   PC：左に看板・操作・公式サイト/アカウント一覧、右にタイムライン。読む行の長さは広げすぎない */
 .club-side,
 .club-main {
     display: contents;
@@ -715,13 +715,10 @@ body.acorn-page .site-footer {
     .club-side {
         grid-column: 1;
         grid-row: 1;
-        position: sticky;
-        top: 24px;
         align-self: start;
     }
     .club-side-end {
         grid-row: 2;
-        position: static;
     }
     .club-main {
         grid-column: 2;
@@ -771,8 +768,15 @@ body.acorn-page .site-footer {
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    html.acorn-intro .curtain {
-        display: none;
-    }
+/* 「動きを減らす」設定の端末：幕は動かさず、題名が灯ったあと幕全体が静かに消える（合計 約1.6秒） */
+html.acorn-intro-soft .curtain-left,
+html.acorn-intro-soft .curtain-right,
+html.acorn-intro-soft .club {
+    animation: none;
+}
+html.acorn-intro-soft .curtain-title {
+    animation: curtain-title-in 0.4s ease-out 0.1s both;
+}
+html.acorn-intro-soft .curtain {
+    animation: curtain-done 0.6s ease 1s forwards;
 }
