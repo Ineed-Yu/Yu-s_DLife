@@ -295,19 +295,19 @@
       "id": "mickeynet",
       "name": "ミッキーネット",
       "lang": "ja",
-      "url": "https://jp.mickeynet.com/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&feed=rss2",
-      "kind": "blog",
+      "url": "https://www.bing.com/search?q=site%3Ajp.mickeynet.com+%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&format=rss&mkt=ja-JP",
+      "kind": "search",
       "disney_site": true,
-      "clarice_search": true
+      "site": "jp.mickeynet.com"
     },
     {
       "id": "dmkblog",
       "name": "Disney Magical Kingdom Blog",
       "lang": "ja",
-      "url": "https://www.disney-magical-kingdom-blog.com/feeds/posts/default?alt=rss&q=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9",
-      "kind": "blog",
+      "url": "https://www.bing.com/search?q=site%3Adisney-magical-kingdom-blog.com+%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&format=rss&mkt=ja-JP",
+      "kind": "search",
       "disney_site": true,
-      "clarice_search": true
+      "site": "disney-magical-kingdom-blog.com"
     },
     {
       "id": "disneyworldfan",
@@ -322,19 +322,10 @@
       "id": "ed92",
       "name": "ed92.org",
       "lang": "ja",
-      "url": "https://www.ed92.org/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&feed=rss2",
-      "kind": "blog",
+      "url": "https://www.bing.com/search?q=site%3Aed92.org+%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9&format=rss&mkt=ja-JP",
+      "kind": "search",
       "disney_site": true,
-      "clarice_search": true
-    },
-    {
-      "id": "laughingplace-search",
-      "name": "Laughing Place（Clarice の検索）",
-      "lang": "en",
-      "url": "https://www.laughingplace.com/?s=clarice&feed=rss2",
-      "kind": "blog",
-      "disney_site": true,
-      "clarice_search": true
+      "site": "ed92.org"
     },
     {
       "id": "bing-site-disneypinsblog",
