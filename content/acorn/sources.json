@@ -16,6 +16,14 @@
       "aggregator": true
     },
     {
+      "id": "gnews-en-pins",
+      "name": "Google News (English, pins)",
+      "lang": "en",
+      "topic": "pin",
+      "url": "https://news.google.com/rss/search?q=%22Clarice%22+Disney+pin&hl=en-US&gl=US&ceid=US:en",
+      "aggregator": true
+    },
+    {
       "id": "tdrexplorer",
       "name": "TDR Explorer",
       "lang": "en",
@@ -39,25 +47,6 @@
       "name": "Laughing Place",
       "lang": "en",
       "url": "https://www.laughingplace.com/feed/"
-    },
-    {
-      "id": "castel",
-      "name": "キャステル",
-      "lang": "ja",
-      "url": "https://castel.jp/feed/"
-    },
-    {
-      "id": "castel-rss",
-      "name": "キャステル",
-      "lang": "ja",
-      "url": "https://castel.jp/rss/"
-    },
-    {
-      "id": "disneypinsblog",
-      "name": "Disney Pins Blog",
-      "lang": "en",
-      "topic": "pin",
-      "url": "https://disneypinsblog.com/feed/"
     }
   ]
 }
