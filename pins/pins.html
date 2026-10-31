@@ -12,6 +12,10 @@
     <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
     <link rel="stylesheet" href="/assets/common.css">
+    <!-- サイト共通のフォント（このサイトに置いたファイル。表示を待たせないよう後から読み込む） -->
+    <link rel="stylesheet" href="/assets/fonts.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="/assets/fonts.css"></noscript>
+    <script src="/assets/lang-attr.js"></script>
 
     <!-- SNSで共有されたときの表示 -->
     <meta property="og:type" content="website">
@@ -90,7 +94,7 @@ body {
     margin: 0;
     padding: 20px;
     background-color: #eae3d2; /* 落ち着いた壁紙風のベージュ */
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-family: var(--font-sans);
     display: flex;
     flex-direction: column;
     align-items: center;

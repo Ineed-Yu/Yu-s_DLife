@@ -10,6 +10,10 @@
     <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
     <link rel="stylesheet" href="/assets/common.css">
+    <!-- サイト共通のフォント（このサイトに置いたファイル。表示を待たせないよう後から読み込む） -->
+    <link rel="stylesheet" href="/assets/fonts.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="/assets/fonts.css"></noscript>
+    <script src="/assets/lang-attr.js"></script>
 
 <style>
 .lang-switch-wrapper {
@@ -112,7 +116,7 @@
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-family: var(--font-sans);
             color: #333;
             min-height: 100vh;
             display: flex;

@@ -141,3 +141,8 @@ PR を作ると、軽量版の作り忘れ・位置情報入りの写真・撮�
 
 ## 公開ページを追加したとき
 `sitemap.xml` にそのページの URL を追記してください（準備中のページは載せない）。
+
+## フォント
+- サイト全体のフォントは `assets/fonts.css`（本文：Noto Sans JP／中国語表示は Noto Sans SC、明朝：Noto Serif JP／SC、Acorn Club の看板の英字：Bodoni Moda）。すべて SIL Open Font License で、ファイルは `assets/fonts/` に置いています（外部のサーバーには接続しません）
+- 中国語の表示で簡体字の字形に切り替えるため、`assets/lang-attr.js` が言語切替に合わせて `<html lang>` を変えます
+- 新しいページを作るときは、`/assets/common.css` の次に `fonts.css` と `lang-attr.js` を読み込んでください（既存のページの `<head>` をそのまま写せば OK）

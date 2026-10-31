@@ -11,7 +11,7 @@
     --velvet: #7b2d3b;      /* ステージの幕 */
     --playbill: #fff6e2;    /* プログラム（チラシ）の紙 */
     --ink: #2b1c12;
-    --serif-display: "Bodoni 72", "Didot", "Bodoni MT", "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", serif;
+    --serif-display: var(--font-display);  /* 看板の英字は Bodoni Moda、日本語・中国語は明朝（assets/common.css） */
 }
 
 body.acorn-page {
@@ -20,7 +20,7 @@ body.acorn-page {
     display: flex;
     flex-direction: column;
     color: var(--playbill);
-    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-sans);
     /* 上から差し込むステージの明かりと、木のうろの壁 */
     background:
         radial-gradient(ellipse 80% 45% at 50% 0%, rgba(245, 196, 94, 0.28), rgba(245, 196, 94, 0) 70%),
