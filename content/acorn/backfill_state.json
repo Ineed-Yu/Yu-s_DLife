@@ -2,13 +2,26 @@
   "windows": {
     "gnews-ja": 92,
     "gnews-en": 92,
-    "gnews-zh-hk": 75,
-    "gnews-ja-appear": 0,
+    "gnews-zh-hk": 92,
+    "gnews-ja-appear": 4,
     "gnews-en-appear": 0,
     "gnews-ja-goods": 0,
     "gnews-ja-trio": 0,
     "gnews-ja-tdr": 0,
     "gnews-en-merch": 0
   },
-  "pages": {}
+  "pages": {
+    "tdrexplorer": "done",
+    "wdwinfo": "done",
+    "disneyparksblog": "done",
+    "dtimes": "done",
+    "dpost": "done",
+    "mezzomiki": "done",
+    "wdwnt": "done",
+    "insidethemagic": "done",
+    "mickeyblog": "done",
+    "dlptips": "done",
+    "meritrip": "done",
+    "disneyworldfan": "done"
+  }
 }
