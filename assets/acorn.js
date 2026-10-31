@@ -102,6 +102,7 @@
         kindLabel: { ja: '種類で絞り込む', en: 'Filter by type', fr: 'Filtrer par type', zh: '按类型筛选' },
         official: { ja: '公式', en: 'Official', fr: 'Officiel', zh: '官方' },
         added: { ja: '手動で追加', en: 'Added by hand', fr: 'Ajouté à la main', zh: '手动添加' },
+        others: { ja: 'ほか{n}件の記事でも紹介', en: 'also covered by {n} more', fr: 'aussi relayé par {n} autres', zh: '另有{n}篇报道' },
         opens: { ja: '（別のサイトが開きます）', en: ' (opens another site)', fr: ' (ouvre un autre site)', zh: '（将打开其他网站）' },
         more: { ja: 'さらに表示', en: 'Show more', fr: 'Afficher plus', zh: '显示更多' },
         empty: {
@@ -347,6 +348,9 @@
         const source = el('span', 'playbill-source', item.source || '');
         if (item.official) source.appendChild(el('span', 'playbill-official', t('official')));
         if (item.origin === 'manual') source.appendChild(document.createTextNode(`（${t('added')}）`));
+        // 同じ商品を取り上げたほかの媒体の記事は、いちばん新しい記事にまとめて件数だけ表示
+        const others = parseInt(item.others, 10);
+        if (others > 0) source.appendChild(el('span', 'playbill-others', t('others').replace('{n}', String(others))));
         source.appendChild(el('span', 'visually-hidden', t('opens')));
         body.appendChild(source);
         li.appendChild(card);
