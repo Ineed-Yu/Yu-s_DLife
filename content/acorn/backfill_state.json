@@ -1,8 +1,8 @@
 {
   "windows": {
-    "gnews-ja": 77,
-    "gnews-en": 0,
-    "gnews-zh-hk": 0,
+    "gnews-ja": 92,
+    "gnews-en": 92,
+    "gnews-zh-hk": 75,
     "gnews-ja-appear": 0,
     "gnews-en-appear": 0,
     "gnews-ja-goods": 0,
@@ -20,6 +20,8 @@
     "wdwnt": "done",
     "insidethemagic": "done",
     "mickeyblog": "done",
-    "dlptips": "done"
+    "dlptips": "done",
+    "meritrip": "done",
+    "disneyworldfan": "done"
   }
 }
