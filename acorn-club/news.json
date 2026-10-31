@@ -1,28 +1,6 @@
 {
   "items": [
     {
-      "id": "554f3926f23f0634",
-      "title": "医療用医薬品 : クラリス (クラリス錠200) - KEGG",
-      "url": "https://www.kegg.jp/medicus-bin/japic_med?japic_code=00016704",
-      "source": "kegg.jp",
-      "lang": "ja",
-      "category": "other",
-      "official": false,
-      "date": "2026-10-31T21:15+09:00",
-      "origin": "auto"
-    },
-    {
-      "id": "ffed7ab88a90bd35",
-      "title": "クラリス錠200 | 製品情報 | 大正製薬医療向けサイト",
-      "url": "https://medical.taisho.co.jp/medical/di/cl2?tab=%25E9C%25A0200",
-      "source": "medical.taisho.co.jp",
-      "lang": "ja",
-      "category": "other",
-      "official": false,
-      "date": "2026-10-31T21:15+09:00",
-      "origin": "auto"
-    },
-    {
       "id": "01b32b74619a02ec",
       "title": "Disney Store Japan and China Merchandise Coming to DisneyStore.com",
       "url": "https://disneyparksblog.com/products/disney-store-japan-plush-and-keychains-coming-to-disneystore-com/",
