@@ -279,6 +279,21 @@ def fetch(url: str) -> bytes:
     return data
 
 
+HEADING_OR_CAPTION = re.compile(r"<h[1-4][^>]*>(.*?)</h[1-4]>|<figcaption[^>]*>(.*?)</figcaption>|\balt=\"([^\"]*)\"", re.I | re.S)
+
+
+def clarice_is_featured(content_html: str) -> bool:
+    """本文（HTML）の中で、クラリスが主な話題のひとつか（小見出し・画像の説明に出てくる、または本文に2回以上）。"""
+    if not content_html:
+        return False
+    text = clean_text(content_html, 200_000)
+    if OTHER_CLARICE.search(text):
+        return False
+    if len(CLARICE.findall(text)) >= 2:
+        return True
+    return any(CLARICE.search(" ".join(g for g in m if g)) for m in HEADING_OR_CAPTION.findall(content_html[:200_000]))
+
+
 def unwrap_link(url: str) -> str:
     """Bing ニュースのリンク（bing.com/news/apiclick.aspx?url=元の記事）から元の記事の URL を取り出す。"""
     p = urllib.parse.urlparse(url)
@@ -307,13 +322,9 @@ def items_from_source(src: dict, data: bytes, now: dt.datetime) -> tuple[list[di
         # ディズニー専門のサイト（disney_site）は「ディズニー」の語を、クラリスでのサイト内検索（clarice_search）は
         # 見出しの「クラリス」を求めない（見出しに出てこない記事の取りこぼしを防ぐ）
         summary = clean_text(e["summary"], 600)
-        relaxed = False
-        if src.get("clarice_search"):
-            body = clean_text(e.get("content", ""), 50_000)
-            if body:  # 本文が配信に含まれるときは、本文にクラリスが出てくることを確かめる（検索が効いていない場合の混入を防ぐ）
-                if not CLARICE.search(f"{title}\n{summary}\n{body}") or OTHER_CLARICE.search(body):
-                    continue
-            relaxed = True
+        # クラリスでのサイト内検索：見出しにクラリスが無くても、本文で「主な話題のひとつ」として扱われている記事は載せる
+        # （小見出し・画像の説明に出てくる、または本文に2回以上出てくる）。本文が配信に無いときは緩めない
+        relaxed = bool(src.get("clarice_search")) and clarice_is_featured(e.get("content", ""))
         cat = is_relevant(title, summary, src.get("topic"),
                           require_disney=not src.get("disney_site"), require_clarice=not relaxed)
         if not cat:
