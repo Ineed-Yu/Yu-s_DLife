@@ -158,7 +158,8 @@ def parse_feed(data: bytes) -> list[dict]:
     except ET.ParseError:
         text = data.decode("utf-8", "replace").lstrip("\ufeff \r\n\t")
         if not text.startswith("<?xml") and not re.match(r"<(rss|feed|rdf:RDF)\b", text):
-            raise ValueError("RSS / Atom ではない応答でした（ページやブロック画面の可能性）") from None
+            head = re.sub(r"\s+", " ", TAG.sub(" ", text[:2000])).strip()[:60]
+            raise ValueError(f"RSS / Atom ではない応答でした（ページやブロック画面の可能性。冒頭: {head}）") from None
         root = ET.fromstring(repair_xml(text).encode("utf-8"))
     if strip_ns(root.tag) not in ("rss", "feed", "RDF"):
         raise ValueError(f"RSS / Atom ではない応答でした（<{strip_ns(root.tag)}>）")
