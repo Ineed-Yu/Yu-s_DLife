@@ -44,8 +44,12 @@
         goods: { ja: 'グッズ', en: 'Merchandise', fr: 'Produits', zh: '周边' },
         other: { ja: 'その他', en: 'Other', fr: 'Autres', zh: '其他' },
         allLang: { ja: 'すべての言語', en: 'All languages', fr: 'Toutes les langues', zh: '所有语言' },
-        langJa: { ja: '日本語の情報', en: 'In Japanese', fr: 'En japonais', zh: '日语' },
-        langEn: { ja: '英語の情報', en: 'In English', fr: 'En anglais', zh: '英语' },
+        lang_ja: { ja: '日本語の情報', en: 'In Japanese', fr: 'En japonais', zh: '日语' },
+        lang_en: { ja: '英語の情報', en: 'In English', fr: 'En anglais', zh: '英语' },
+        lang_zh: { ja: '中国語の情報', en: 'In Chinese', fr: 'En chinois', zh: '中文' },
+        lang_fr: { ja: 'フランス語の情報', en: 'In French', fr: 'En français', zh: '法语' },
+        allYears: { ja: 'すべての年', en: 'All years', fr: 'Toutes les années', zh: '全部年份' },
+        yearLabel: { ja: '年で絞り込む', en: 'Filter by year', fr: 'Filtrer par année', zh: '按年份筛选' },
         kindLabel: { ja: '種類で絞り込む', en: 'Filter by type', fr: 'Filtrer par type', zh: '按类型筛选' },
         langLabel: { ja: '言語で絞り込む', en: 'Filter by language', fr: 'Filtrer par langue', zh: '按语言筛选' },
         official: { ja: '公式', en: 'Official', fr: 'Officiel', zh: '官方' },
@@ -53,10 +57,10 @@
         opens: { ja: '（別のサイトが開きます）', en: ' (opens another site)', fr: ' (ouvre un autre site)', zh: '（将打开其他网站）' },
         more: { ja: 'さらに表示', en: 'Show more', fr: 'Afficher plus', zh: '显示更多' },
         empty: {
-            ja: 'まだ新着情報がありません。2時間ごとに自動で集めているので、しばらくしてからもう一度ご覧ください。',
-            en: 'No news yet. New items are collected every two hours, so please check back later.',
-            fr: "Pas encore de nouvelles. Les informations sont collectées toutes les deux heures : revenez un peu plus tard.",
-            zh: '暂时没有新消息。每两小时自动收集一次，请稍后再来看看。'
+            ja: 'まだ新着情報がありません。しばらくしてからもう一度ご覧ください。',
+            en: 'No news yet. Please check back later.',
+            fr: 'Pas encore de nouvelles. Revenez un peu plus tard.',
+            zh: '暂时没有新消息。请稍后再来看看。'
         },
         noMatch: {
             ja: 'この絞り込みに当てはまる情報はまだありません。「すべて」に戻すと全件を表示します。',
@@ -76,7 +80,8 @@
     // ---------- データ ----------
     let data = null;      // { items: [...], links: [...] }
     let failed = false;
-    const state = { category: 'all', lang: 'all', limit: 40 };
+    const state = { category: 'all', lang: 'all', year: 'all', limit: 40 };
+    const yearOf = item => String(item.date || '').slice(0, 4);
 
     function safeUrl(url) {
         try {
@@ -123,12 +128,24 @@
                 catRow.appendChild(chip(t(c), state.category === c, () => setState({ category: c })));
             }
         });
-        const langs = new Set(items.map(i => i.lang));
+        // 年（西暦）：情報がある年だけ、新しい順に並べる
+        const yearRow = document.getElementById('filter-year');
+        if (yearRow) {
+            const years = [...new Set(items.map(yearOf).filter(y => /^\d{4}$/.test(y)))].sort().reverse();
+            yearRow.setAttribute('aria-label', t('yearLabel'));
+            yearRow.replaceChildren();
+            if (years.length) {
+                yearRow.appendChild(chip(t('allYears'), state.year === 'all', () => setState({ year: 'all' })));
+                years.forEach(y => yearRow.appendChild(chip(y, state.year === y, () => setState({ year: y }))));
+            }
+            yearRow.hidden = years.length === 0;
+        }
+        // 言語：情報がある言語だけ
+        const langs = ['ja', 'en', 'zh', 'fr'].filter(l => items.some(i => i.lang === l));
         langRow.replaceChildren();
-        if (langs.size > 1) {
+        if (langs.length > 1) {
             langRow.appendChild(chip(t('allLang'), state.lang === 'all', () => setState({ lang: 'all' })));
-            langRow.appendChild(chip(t('langJa'), state.lang === 'ja', () => setState({ lang: 'ja' })));
-            langRow.appendChild(chip(t('langEn'), state.lang === 'en', () => setState({ lang: 'en' })));
+            langs.forEach(l => langRow.appendChild(chip(t('lang_' + l), state.lang === l, () => setState({ lang: l }))));
         }
         catRow.hidden = items.length === 0;
     }
@@ -157,7 +174,7 @@
         head.appendChild(el('span', 'playbill-kind', t(item.category)));
         card.appendChild(head);
         const title = el('span', 'playbill-title', item.title || '');
-        if (item.lang && item.lang !== 'ja') title.lang = item.lang;
+        if (item.lang && item.lang !== 'ja') title.lang = item.lang === 'zh' ? 'zh' : item.lang;
         card.appendChild(title);
         const source = el('span', 'playbill-source', item.source || '');
         if (item.official) source.appendChild(el('span', 'playbill-official', t('official')));
@@ -183,7 +200,8 @@
         renderFilters(items);
         const shown = items.filter(i =>
             (state.category === 'all' || i.category === state.category) &&
-            (state.lang === 'all' || i.lang === state.lang));
+            (state.lang === 'all' || i.lang === state.lang) &&
+            (state.year === 'all' || yearOf(i) === state.year));
         list.replaceChildren();
         let month = '';
         shown.slice(0, state.limit).forEach(item => {
