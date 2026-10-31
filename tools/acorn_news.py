@@ -131,6 +131,36 @@ def safe_url(u: str | None) -> str | None:
     return u
 
 
+# 安全の確認：セキュリティ上問題のありそうなリンクは載せない（ニュース以外の取得元を広げたため、すべての情報に行う）
+# - https だけ（通信が暗号化されていないページは載せない）
+# - IP アドレスだけの URL、ログイン情報入りの URL、標準以外のポート番号、国際化ドメイン（見た目をまねた偽サイトに使われやすい）は除く
+# - 短縮 URL（行き先が見えない）、ファイル配布・ダウンロードのリンク、悪用が多いトップレベルドメインは除く
+RISKY_TLDS = {"zip", "mov", "top", "xyz", "click", "gq", "tk", "ml", "cf", "ga", "work", "loan", "men", "country",
+              "kim", "science", "party", "gdn", "racing", "review", "stream", "download", "cam", "rest", "icu", "bid"}
+BLOCKED_HOSTS = {"bit.ly", "t.co", "tinyurl.com", "goo.gl", "ow.ly", "is.gd", "buff.ly", "cutt.ly", "rebrand.ly", "shorturl.at",
+                 "lnkd.in", "amzn.to", "amzn.asia", "x.gd", "rb.gy", "t.ly", "mega.nz", "mediafire.com", "4shared.com",
+                 "drive.google.com", "dropbox.com", "wetransfer.com"}
+RISKY_EXT = re.compile(r"\.(exe|msi|apk|dmg|pkg|bat|cmd|scr|js|vbs|jar|zip|rar|7z|iso|torrent)$", re.I)
+
+
+def is_safe_url(url: str | None) -> bool:
+    try:
+        p = urllib.parse.urlparse(url or "")
+        port = p.port
+    except ValueError:
+        return False
+    host = (p.hostname or "").lower().rstrip(".")
+    if p.scheme != "https" or not host or p.username or p.password or (port not in (None, 443)):
+        return False
+    if re.fullmatch(r"[\d.]+", host) or ":" in host or "xn--" in host:
+        return False
+    if host.rsplit(".", 1)[-1] in RISKY_TLDS:
+        return False
+    if any(host == h or host.endswith("." + h) for h in BLOCKED_HOSTS):
+        return False
+    return not RISKY_EXT.search(p.path)
+
+
 def item_id(url: str) -> str:
     return hashlib.sha256(url.encode("utf-8")).hexdigest()[:16]
 
@@ -251,6 +281,8 @@ def items_from_source(src: dict, data: bytes, now: dt.datetime) -> tuple[list[di
         if src.get("aggregator") and source and title.endswith(f" - {source}"):
             title = title[: -len(source) - 3].strip()
         url = safe_url(unwrap_link(e["url"] or ""))
+        if url and not is_safe_url(url) and not GNEWS_ARTICLE.match(url):
+            url = None  # 安全の確認に通らないリンクは載せない
         if not title or not url:
             continue
         cat = is_relevant(title, clean_text(e["summary"], 600), src.get("topic"))
@@ -263,7 +295,8 @@ def items_from_source(src: dict, data: bytes, now: dt.datetime) -> tuple[list[di
             "id": item_id(url),
             "title": title,
             "url": url,
-            "source": source if (src.get("aggregator") and source) else src["name"],
+            # 検索（ブログ・個人サイトなど幅広い）の取得元は、掲載元としてサイトの名前（ドメイン）を出す
+            "source": source if (src.get("aggregator") and source) else (source_from_host(url) if src.get("kind") == "search" else src["name"]),
             "via": src["id"],
             "lang": src.get("lang", "ja"),
             "category": cat,
@@ -347,7 +380,7 @@ def find_share_image(page: str, base: str) -> str | None:
     for key in IMAGE_KEYS:
         if key in found:
             url = urllib.parse.urljoin(base, found[key])
-            if url.startswith("https://") and len(url) <= 1000 and safe_url(url):
+            if len(url) <= 1000 and is_safe_url(url):
                 return url
     return None
 
@@ -361,6 +394,9 @@ def add_image(item: dict, get=http_get, post=http_post_form) -> str:
         if not article:
             item["image"] = ""
             return "元の記事を特定できませんでした"
+        if not is_safe_url(article):
+            item["image"] = ""
+            return "元の記事が安全の確認に通りませんでした（載せません）"
         item["article"] = article
         time.sleep(0.5)
     host = (urllib.parse.urlparse(article).hostname or "").removeprefix("www.")
@@ -480,6 +516,9 @@ def build_timeline(collected: list[dict], manual: list[dict], exclude: dict, now
     items = []
     for it in list(manual) + list(collected):
         if it.get("hidden") or it["url"] in urls or it.get("article") in urls or any(w in it["title"].casefold() for w in words):
+            continue
+        link = it.get("article") or it["url"]
+        if it.get("origin") == "auto" and not (is_safe_url(link) or GNEWS_ARTICLE.match(link)):
             continue
         d = dt.datetime.fromisoformat(it["date"])
         if d < oldest and it.get("origin") != "manual":
