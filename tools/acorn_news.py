@@ -64,6 +64,8 @@ DISNEY = re.compile(r"ディズニー|disney|チップ|デール|chip\s*(?:'n'|n
 OTHER_CLARICE = re.compile(r"カリオストロ|ルパン|lupin|cagliostro|starling|スターリング|羊たちの沈黙|silence of the lambs|"
                            r"hannibal|ハンニバル|lispector|リスペクトル|鲁邦|魯邦|卡里奥斯特罗|卡里奧斯特羅|沉默的羔羊|"
                            r"沉默的羔羊|史达琳|史達琳|silence des agneaux|お化け退治|rebecca breeds|レベッカ・ブリーズ|\bCBS\b|"
+                          # 『赤鼻のトナカイ』のクラリス（ルドルフのガールフレンド）。シーワールドのクリスマスなど
+                          r"rudolph|ルドルフ|reindeer|トナカイ|seaworld|シーワールド|"
                           # 同じ名前の医薬品（クラリス錠＝クラリスロマイシン）
                           r"クラリス錠|クラリスロマイシン|clarith|clarithromycin|医療用医薬品|医薬品|製薬|薬価|処方|抗菌薬|"
                           r"添付文書|錠\s*\d+|\d+\s*mg|kegg|japic|ドライシロップ", re.I)
