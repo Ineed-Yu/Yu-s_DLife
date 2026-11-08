@@ -595,7 +595,8 @@
     "date": "2025-11-26T17:00+09:00",
     "origin": "auto",
     "article": "https://newscast.jp/news/9863669",
-    "image": "https://www.atpress.ne.jp/attachments/P5cxV5gR0IOq27vyzghX.gif"
+    "image": "https://www.atpress.ne.jp/attachments/P5cxV5gR0IOq27vyzghX.gif",
+    "release": ""
   },
   {
     "id": "e332b13642e04e24",
@@ -608,7 +609,8 @@
     "official": false,
     "date": "2025-11-21T14:01+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2025/09/D122802_01.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2025/09/D122802_01.jpg",
+    "release": ""
   },
   {
     "id": "51d3247a247ed907",
@@ -621,7 +623,8 @@
     "official": false,
     "date": "2025-11-19T15:51+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2025/10/チップ＆デール＆クラリスマスコットFluffyCuties.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2025/10/チップ＆デール＆クラリスマスコットFluffyCuties.jpg",
+    "release": ""
   },
   {
     "id": "0b6fa982b563563f",
@@ -673,7 +676,8 @@
     "official": false,
     "date": "2025-10-09T20:12+09:00",
     "origin": "auto",
-    "image": "https://tdrexplorer.com/wp-content/uploads/2025/10/DIsney-Store-Japan-Tweed-Style-Social-Image.jpg"
+    "image": "https://tdrexplorer.com/wp-content/uploads/2025/10/DIsney-Store-Japan-Tweed-Style-Social-Image.jpg",
+    "release": ""
   },
   {
     "id": "a0cb3f3fba826f03",
@@ -686,7 +690,8 @@
     "official": false,
     "date": "2025-08-31T08:40+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2025/07/K120734_01.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2025/07/K120734_01.jpg",
+    "release": ""
   },
   {
     "id": "1dd2b1003657aaea",
@@ -712,7 +717,8 @@
     "official": false,
     "date": "2025-08-16T19:31+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2025/08/Z9Y_3074.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2025/08/Z9Y_3074.jpg",
+    "release": ""
   },
   {
     "id": "beb4d5d57c2e8520",
@@ -725,7 +731,8 @@
     "official": false,
     "date": "2025-08-10T00:55+09:00",
     "origin": "auto",
-    "image": "https://mickeyblog.com/wp-content/uploads/2022/04/Disneybounding-Feature-e1754754945952.jpg"
+    "image": "https://mickeyblog.com/wp-content/uploads/2022/04/Disneybounding-Feature-e1754754945952.jpg",
+    "release": ""
   },
   {
     "id": "84a2fd0bf627cbc7",
@@ -751,7 +758,8 @@
     "official": false,
     "date": "2025-07-30T18:32+09:00",
     "origin": "auto",
-    "image": "https://tdrexplorer.com/wp-content/uploads/2025/07/Minnie-Friends-Soak-Up-the-Sun-in-Disney-Store-Japans-New-‘Summer-Style-Plush-Collection-Social-Image.jpg"
+    "image": "https://tdrexplorer.com/wp-content/uploads/2025/07/Minnie-Friends-Soak-Up-the-Sun-in-Disney-Store-Japans-New-‘Summer-Style-Plush-Collection-Social-Image.jpg",
+    "release": ""
   },
   {
     "id": "015b3fe04d938e98",
@@ -790,7 +798,8 @@
     "official": false,
     "date": "2025-03-31T23:30+09:00",
     "origin": "auto",
-    "image": "https://preresearch.image.itmedia.co.jp/nl/articles/2504/01/cover_news037.jpg"
+    "image": "https://preresearch.image.itmedia.co.jp/nl/articles/2504/01/cover_news037.jpg",
+    "release": ""
   },
   {
     "id": "f93340147f16b559",
@@ -803,7 +812,8 @@
     "official": false,
     "date": "2025-03-28T09:30+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2025/01/B121785_01.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2025/01/B121785_01.jpg",
+    "release": ""
   },
   {
     "id": "c5e344240056013f",
@@ -816,7 +826,8 @@
     "official": false,
     "date": "2025-03-18T11:00+09:00",
     "origin": "auto",
-    "image": "https://r2-media.wdwnt.com/2025/03/tdr-cheer-together-collection-featured.jpg"
+    "image": "https://r2-media.wdwnt.com/2025/03/tdr-cheer-together-collection-featured.jpg",
+    "release": ""
   },
   {
     "id": "c49ae85e5a6741e7",
@@ -829,7 +840,8 @@
     "official": false,
     "date": "2025-03-17T16:46+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2025/03/b5ff3f7c0084365fee7ca99836329e86-1.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2025/03/b5ff3f7c0084365fee7ca99836329e86-1.jpg",
+    "release": "2025-04-24"
   },
   {
     "id": "665ea651f7a52a87",
@@ -843,7 +855,8 @@
     "date": "2025-02-20T21:43+09:00",
     "origin": "auto",
     "article": "https://www.micechat.com/409686-east-meets-west-disneys-international-plushes-finally-arrive-in-the-u-s/disney-store-disney-store-japan-and-china-plushes-wish-list-kirame-sparkle-eyes-plush-mike-wazoswki-and-clarice/",
-    "image": "https://www.micechat.com/wp-content/uploads/2025/02/Disney-Store-Disney-Store-Japan-and-China-plushes-wish-list-kirame-sparkle-eyes-plush-mike-wazoswki-and-clarice.jpg"
+    "image": "https://www.micechat.com/wp-content/uploads/2025/02/Disney-Store-Disney-Store-Japan-and-China-plushes-wish-list-kirame-sparkle-eyes-plush-mike-wazoswki-and-clarice.jpg",
+    "release": ""
   },
   {
     "id": "67bfef8b9c9d8b87",
@@ -896,7 +909,8 @@
     "official": false,
     "date": "2024-12-12T15:54+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2024/12/21f8c16a82c59d245a8a72835b988b4f.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2024/12/21f8c16a82c59d245a8a72835b988b4f.jpg",
+    "release": ""
   },
   {
     "id": "2bd6bd90c8efbec6",
@@ -909,7 +923,8 @@
     "official": false,
     "date": "2024-11-26T19:19+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2024/11/IMG_9644.jpeg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2024/11/IMG_9644.jpeg",
+    "release": "2024-11-21"
   },
   {
     "id": "5d50f443d0820eba",
@@ -936,7 +951,8 @@
     "date": "2024-10-01T16:00+09:00",
     "origin": "auto",
     "article": "https://perfectworld.tokyo/news/dhalochraris/",
-    "image": "https://perfectworld.tokyo/news/wp-content/uploads/2019/10/cl.jpg"
+    "image": "https://perfectworld.tokyo/news/wp-content/uploads/2019/10/cl.jpg",
+    "release": ""
   },
   {
     "id": "fb8a75d55e73732c",
@@ -950,7 +966,8 @@
     "date": "2024-09-26T16:00+09:00",
     "origin": "auto",
     "article": "https://prtimes.jp/main/html/rd/p/000000311.000047990.html",
-    "image": "https://prcdn.freetls.fastly.net/release_image/47990/311/47990-311-be24462630e7e8623c466b6c63c375d5-1040x1040.jpg?format=jpeg&auto=webp&fit=bounds&width=2400&height=1260"
+    "image": "https://prcdn.freetls.fastly.net/release_image/47990/311/47990-311-be24462630e7e8623c466b6c63c375d5-1040x1040.jpg?format=jpeg&auto=webp&fit=bounds&width=2400&height=1260",
+    "release": ""
   },
   {
     "id": "9fd473d644ab6cde",
@@ -1018,7 +1035,8 @@
     "official": false,
     "date": "2024-05-03T10:05+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2024/04/1248387_h1_001-e1714007862531.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2024/04/1248387_h1_001-e1714007862531.jpg",
+    "release": ""
   },
   {
     "id": "d46581ebf5d34ef0",
@@ -1032,7 +1050,8 @@
     "date": "2024-03-07T17:00+09:00",
     "origin": "auto",
     "article": "https://dtimes.jp/post-832188/",
-    "image": "https://dtimes.jp/wp-content/uploads/2024/01/B120956_01.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2024/01/B120956_01.jpg",
+    "release": ""
   },
   {
     "id": "466cc8db6b3e1691",
@@ -1058,7 +1077,8 @@
     "official": false,
     "date": "2024-01-09T07:24+09:00",
     "origin": "auto",
-    "image": "https://mickeyblog.com/wp-content/uploads/2024/01/DB-Wallet-front-scaled.jpeg"
+    "image": "https://mickeyblog.com/wp-content/uploads/2024/01/DB-Wallet-front-scaled.jpeg",
+    "release": ""
   },
   {
     "id": "6e378d21d66e54e5",
@@ -1110,7 +1130,8 @@
     "official": false,
     "date": "2023-08-17T15:31+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2023/08/IMG_9769.jpeg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2023/08/IMG_9769.jpeg",
+    "release": "2023-08-17"
   },
   {
     "id": "046d406ab5ec3767",
@@ -1123,7 +1144,8 @@
     "official": false,
     "date": "2023-05-23T11:00+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2023/04/597aade37917b2ec2e7e7c7ff5890309.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2023/04/597aade37917b2ec2e7e7c7ff5890309.jpg",
+    "release": ""
   },
   {
     "id": "22713506559288e0",
@@ -1149,7 +1171,8 @@
     "official": false,
     "date": "2023-02-09T03:32+09:00",
     "origin": "auto",
-    "image": "https://r2-media.wdwnt.com/2023/02/chip-and-dale-rescue-rangers-dhs.jpg"
+    "image": "https://r2-media.wdwnt.com/2023/02/chip-and-dale-rescue-rangers-dhs.jpg",
+    "release": ""
   },
   {
     "id": "43b62f4882ce8db5",
@@ -1229,7 +1252,8 @@
     "official": false,
     "date": "2022-12-30T10:00+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2022/10/Y104005_01.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2022/10/Y104005_01.jpg",
+    "release": ""
   },
   {
     "id": "e838eea33f0e96f7",
@@ -1242,7 +1266,8 @@
     "official": false,
     "date": "2022-08-08T10:00+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2022/08/6e74407114be27b37f2a5486c8434182.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2022/08/6e74407114be27b37f2a5486c8434182.jpg",
+    "release": "2022-09-14"
   },
   {
     "id": "1c8512506f782846",
@@ -1255,7 +1280,8 @@
     "official": false,
     "date": "2022-04-14T09:09+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2022/04/F466D2F7-8E92-44EA-83D2-2F7B209B00A0.jpeg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2022/04/F466D2F7-8E92-44EA-83D2-2F7B209B00A0.jpeg",
+    "release": "2022-04-14"
   },
   {
     "id": "12a580238e57e55c",
@@ -1269,7 +1295,8 @@
     "date": "2022-04-03T16:00+09:00",
     "origin": "auto",
     "article": "https://ure.pia.co.jp/articles/-/1385100",
-    "image": "https://urepia.ismcdn.jp/mwimgs/d/1/-/img_d1cd4816443ccc33d89c64941c09996f78524.jpg"
+    "image": "https://urepia.ismcdn.jp/mwimgs/d/1/-/img_d1cd4816443ccc33d89c64941c09996f78524.jpg",
+    "release": ""
   },
   {
     "id": "da923a8ec96d87e5",
@@ -1296,7 +1323,8 @@
     "date": "2022-03-25T16:00+09:00",
     "origin": "auto",
     "article": "https://emomiu.jp/news/89358/",
-    "image": "https://emomiu.jp/wp/wp-content/uploads/2022/03/MaisondeFLEUR-クラリス7.jpg"
+    "image": "https://emomiu.jp/wp/wp-content/uploads/2022/03/MaisondeFLEUR-クラリス7.jpg",
+    "release": ""
   },
   {
     "id": "6d33dceaf4a824b2",
@@ -1310,7 +1338,8 @@
     "date": "2022-03-24T16:00+09:00",
     "origin": "auto",
     "article": "https://prtimes.jp/main/html/rd/p/000000523.000036659.html",
-    "image": "https://prcdn.freetls.fastly.net/release_image/36659/523/36659-523-f6dfcf37ebf6b2d1b13413d857c738db-960x480.jpg?format=jpeg&auto=webp&fit=bounds&width=2400&height=1260"
+    "image": "https://prcdn.freetls.fastly.net/release_image/36659/523/36659-523-f6dfcf37ebf6b2d1b13413d857c738db-960x480.jpg?format=jpeg&auto=webp&fit=bounds&width=2400&height=1260",
+    "release": ""
   },
   {
     "id": "6a31f82e0507488a",
@@ -1323,7 +1352,8 @@
     "official": false,
     "date": "2022-03-02T12:01+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2022/03/f6f77a1616e27fc34eb1a81aa7dc6262.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2022/03/f6f77a1616e27fc34eb1a81aa7dc6262.jpg",
+    "release": ""
   },
   {
     "id": "59e187d15e3e1aab",
