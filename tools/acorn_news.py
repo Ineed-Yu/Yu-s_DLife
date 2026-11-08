@@ -533,21 +533,36 @@ RELEASE_EN = re.compile(r"(?:release[sd]?|available|launch(?:es|ed)?|arriv(?:es|
                         r"(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2}),?\s+(\d{4})", re.I)
 
 
-def find_release_date(page_html: str) -> str | None:
-    """記事の本文から発売日を読む（最初に見つかったもの）。見つからなければ None。"""
-    text = clean_text(page_html[:600_000], 300_000)
-    m = RELEASE_JA.search(text)
-    if m:
+def find_release_date(page_html: str, around: str | None = None) -> str | None:
+    """記事の本文から発売日を読む。関連記事などのリンクの文字は除き、記事の日付（around）の90日前〜1年後に入る日付のうち、
+    いちばん多く書かれている日付（同数なら早い方）を選ぶ。見つからなければ None。"""
+    html_wo_links = re.sub(r"<a\b[^>]*>.*?</a>", " ", page_html[:600_000], flags=re.I | re.S)
+    html_wo_links = re.sub(r"<(?:aside|nav|footer)\b.*?</(?:aside|nav|footer)>", " ", html_wo_links, flags=re.I | re.S)
+    text = clean_text(html_wo_links, 300_000)
+    found: list[dt.date] = []
+    for m in RELEASE_JA.finditer(text):
         y, mo, d = [g for g in m.groups() if g][:3]
-    else:
-        m = RELEASE_EN.search(text)
-        if not m:
-            return None
-        mo, d, y = MONTHS[m.group(1).lower()], m.group(2), m.group(3)
-    try:
-        return dt.date(int(y), int(mo), int(d)).isoformat()
-    except ValueError:
+        try:
+            found.append(dt.date(int(y), int(mo), int(d)))
+        except ValueError:
+            pass
+    for m in RELEASE_EN.finditer(text):
+        try:
+            found.append(dt.date(int(m.group(3)), MONTHS[m.group(1).lower()], int(m.group(2))))
+        except ValueError:
+            pass
+    if around:
+        try:
+            base = dt.date.fromisoformat(around[:10])
+            found = [f for f in found if -90 <= (f - base).days <= 365]
+        except ValueError:
+            pass
+    if not found:
         return None
+    counts: dict[dt.date, int] = {}
+    for f in found:
+        counts[f] = counts.get(f, 0) + 1
+    return sorted(counts, key=lambda f: (-counts[f], f))[0].isoformat()
 
 
 def add_image(item: dict, get=http_get, post=http_post_form) -> str:
@@ -577,7 +592,7 @@ def add_image(item: dict, get=http_get, post=http_post_form) -> str:
     image = find_share_image(page, final)
     item["image"] = image or ""
     if item.get("category") in GOODS_CATEGORIES:
-        item["release"] = find_release_date(page) or ""   # 同じ商品かの判定に使う（空＝本文に発売日が見つからない）
+        item["release"] = find_release_date(page, item.get("date")) or ""   # 同じ商品かの判定に使う（空＝本文に発売日が見つからない）
     return image or "共有用の画像が指定されていません"
 
 
