@@ -57,7 +57,8 @@
       "official": false,
       "date": "2026-08-18T16:00+09:00",
       "origin": "auto",
-      "image": "https://nijimen.kusuguru.co.jp/wp-content/uploads/2026/08/avail-disney-minnie-thumb.jpg"
+      "image": "https://nijimen.kusuguru.co.jp/wp-content/uploads/2026/08/avail-disney-minnie-thumb.jpg",
+      "release": "2026-08-22"
     },
     {
       "id": "870d0dc59794fb5f",
@@ -197,7 +198,8 @@
       "official": false,
       "date": "2026-04-26T16:00+09:00",
       "origin": "auto",
-      "image": "https://r2-media.wdwnt.com/2026/04/chip-dale-loungefly-featured.png"
+      "image": "https://r2-media.wdwnt.com/2026/04/chip-dale-loungefly-featured.png",
+      "release": "2026-04-26"
     },
     {
       "id": "4f419b7c5b93f1f3",
@@ -221,7 +223,8 @@
       "official": false,
       "date": "2026-04-19T16:00+09:00",
       "origin": "auto",
-      "image": "https://www.crank-in.net/img/db/269044162171407_1200.jpg"
+      "image": "https://www.crank-in.net/img/db/269044162171407_1200.jpg",
+      "release": "2026-11-23"
     },
     {
       "id": "efe87b00f7b8ac4b",
@@ -246,6 +249,7 @@
       "date": "2026-03-23T16:00+09:00",
       "origin": "auto",
       "image": "https://r2-media.wdwnt.com/2026/03/JapanChipmunkBearPlush_featured.jpg",
+      "release": "2026-03-23",
       "others": 1,
       "dupes": [
         {
@@ -266,7 +270,8 @@
       "official": false,
       "date": "2026-03-11T20:48+09:00",
       "origin": "auto",
-      "image": "https://mezzomiki.jp/wp-content/uploads/2026/03/IMG_6348.jpeg"
+      "image": "https://mezzomiki.jp/wp-content/uploads/2026/03/IMG_6348.jpeg",
+      "release": "2026-03-10"
     },
     {
       "id": "2d3e29afaa0569bb",
@@ -289,7 +294,8 @@
       "category": "other",
       "official": false,
       "date": "2026-03-06T17:49+09:00",
-      "origin": "auto"
+      "origin": "auto",
+      "image": "https://tdrexplorer.com/wp-content/uploads/2026/03/Chip-and-Dale-Birthday-Collection-Brings-Bear-Pyjamas-and-Clarice-to-Disney-Store-Japan-Social-Image.jpg"
     },
     {
       "id": "9b27d3c7ea602cfb",
@@ -327,7 +333,8 @@
       "official": false,
       "date": "2026-03-06T12:52+09:00",
       "origin": "auto",
-      "image": "https://image.news.livedoor.com/newsimage/stf/a/c/ac759_1604_0baff0f2_c0ce796d.jpg"
+      "image": "https://image.news.livedoor.com/newsimage/stf/a/c/ac759_1604_0baff0f2_c0ce796d.jpg",
+      "release": "2026-03-10"
     },
     {
       "id": "bb0e45d7306aafac",
@@ -431,7 +438,8 @@
       "official": false,
       "date": "2025-12-01T10:36+09:00",
       "origin": "auto",
-      "image": "https://dtimes.jp/wp-content/uploads/2025/10/チップ＆デール＆クラリスPtZふわふわバッグFluffy-Cuties.jpg"
+      "image": "https://dtimes.jp/wp-content/uploads/2025/10/チップ＆デール＆クラリスPtZふわふわバッグFluffy-Cuties.jpg",
+      "release": "2025-11-28"
     },
     {
       "id": "65218b4e5fb7fa9f",
