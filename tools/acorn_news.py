@@ -523,6 +523,33 @@ def find_share_image(page: str, base: str) -> str | None:
     return None
 
 
+# 発売日：記事の本文から「2015年3月20日（金）発売」「発売日：2021年4月1日」「available March 20, 2015」などを読む
+RELEASE_JA = re.compile(r"(?:発売日|販売日|販売開始日|発売予定日)\s*[:：は]?\s*(\d{4})年\s*(\d{1,2})月\s*(\d{1,2})日"
+                        r"|(\d{4})年\s*(\d{1,2})月\s*(\d{1,2})日\s*(?:[（(][^）)]{1,3}[）)])?\s*(?:より|から|～|〜)?\s*"
+                        r"(?:順次)?(?:発売|販売|新発売|発売開始|販売開始|登場)")
+MONTHS = {m: n for n, m in enumerate(["january", "february", "march", "april", "may", "june", "july", "august",
+                                         "september", "october", "november", "december"], 1)}
+RELEASE_EN = re.compile(r"(?:release[sd]?|available|launch(?:es|ed)?|arriv(?:es|ed)|on sale|drops?)\D{0,40}?"
+                        r"(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2}),?\s+(\d{4})", re.I)
+
+
+def find_release_date(page_html: str) -> str | None:
+    """記事の本文から発売日を読む（最初に見つかったもの）。見つからなければ None。"""
+    text = clean_text(page_html[:600_000], 300_000)
+    m = RELEASE_JA.search(text)
+    if m:
+        y, mo, d = [g for g in m.groups() if g][:3]
+    else:
+        m = RELEASE_EN.search(text)
+        if not m:
+            return None
+        mo, d, y = MONTHS[m.group(1).lower()], m.group(2), m.group(3)
+    try:
+        return dt.date(int(y), int(mo), int(d)).isoformat()
+    except ValueError:
+        return None
+
+
 def add_image(item: dict, get=http_get, post=http_post_form) -> str:
     """1件分の元記事と画像を調べて item に書き込む。戻り値は結果の説明（試し取得の表示用）。"""
     url = item["url"]
@@ -549,6 +576,8 @@ def add_image(item: dict, get=http_get, post=http_post_form) -> str:
             item["date"] = d.isoformat(timespec="minutes")
     image = find_share_image(page, final)
     item["image"] = image or ""
+    if item.get("category") in GOODS_CATEGORIES:
+        item["release"] = find_release_date(page) or ""   # 同じ商品かの判定に使う（空＝本文に発売日が見つからない）
     return image or "共有用の画像が指定されていません"
 
 
@@ -558,7 +587,11 @@ def add_images(items: list[dict], limit: int, dry_run: bool, get=http_get, post=
     for item in sorted(items, key=lambda x: x.get("date", ""), reverse=True):
         if tried >= limit:
             break
-        if "image" in item or item.get("origin") == "x" or item.get("tweet"):
+        if item.get("origin") == "x" or item.get("tweet"):
+            continue
+        # 画像を調べ済みでも、グッズで発売日をまだ調べていない記事は、もう一度開いて発売日を読む
+        if "image" in item and not (item.get("category") in GOODS_CATEGORIES and "release" not in item
+                                    and item.get("image_tries", 0) < 3):
             continue
         tried += 1
         target = dict(item) if dry_run else item
@@ -729,6 +762,8 @@ def build_timeline(collected: list[dict], manual: list[dict], exclude: dict, now
             item["url"] = it["article"]  # Google ニュース経由のものは、元の記事へ直接リンクする
         if (it.get("image") or "").startswith("https://"):
             item["image"] = it["image"]
+        if it.get("release"):
+            item["release"] = it["release"]
         if isinstance(it.get("t"), dict) and it["t"]:
             item["t"] = it["t"]
         items.append(item)
@@ -743,8 +778,10 @@ def build_timeline(collected: list[dict], manual: list[dict], exclude: dict, now
 
 # ---------------------------------------------------------------- 同じ商品の記事をまとめる（グッズのみ）
 # 別の媒体が同じ商品を取り上げた記事（プレスリリースの転載など）は、いちばん新しい記事だけを表示する。
-# 判定：媒体が違う・日付が30日以内・見出しの特徴的な言葉が重なる（ありふれた言葉は除く）
-DEDUPE_DAYS = 30
+# 判定：見出しがほぼ同じ／「」の商品名と発売日（本文から読む）が同じなら、同じ媒体でもまとめる。発売日が違えば別の商品。
+# それ以外は、媒体が違う・60日以内・見出しの特徴的な言葉が重なること（ありふれた言葉は除く）
+DEDUPE_DAYS = 60            # 別の媒体どうしで「同じ話題」とみなす日数
+DEDUPE_SAME_NAME_DAYS = 45  # 発売日が分からないとき、同じ商品名の記事をまとめる日数（告知と発売当日の記事など）
 DEDUPE_STOP = set("""クラリス チップ デール チップとデール ディズニー disney 新発売 発売 登場 新登場 グッズ 新作 公式 限定 発売中
 先行販売 予約 開始 情報 ニュース 東京ディズニーリゾート 東京ディズニーランド 東京ディズニーシー ミッキー ミニー フレンズ
 キャラクター デザイン かわいい 可愛い 人気 シリーズ コレクション アイテム 種類 東京 土産 お土産 新作スイーツ 新作グッズ
@@ -753,29 +790,75 @@ coming available arrives today japan store""".split())
 DEDUPE_TOKEN = re.compile(r"[一-龥々ァ-ヴーa-z0-9]+")
 
 
+TITLE_NOISE = re.compile(r"【\s*(?:画像|写真|動画|PR|速報|公式)\s*】|[\(（]\s*画像\s*\d+\s*/\s*\d+\s*[\)）]|^\s*\[PR\]\s*|\s*[-|｜]\s*[^-|｜]{2,25}$")
+QUOTED = re.compile(r"[「『“\"]([^」』”\"]{2,40})[」』”\"]")
+YEAR = re.compile(r"(?<!\d)(?:19|20)\d{2}(?!\d)")
+
+
+def clean_title(title: str) -> str:
+    """比べるための見出し（【画像】・(画像1/2)・末尾の掲載元名などを除く）。"""
+    return TITLE_NOISE.sub(" ", unicodedata.normalize("NFKC", title or "")).strip()
+
+
 def title_tokens(title: str) -> set[str]:
-    t = unicodedata.normalize("NFKC", title).lower()
+    t = clean_title(title).lower()
     t = re.sub(r"[＆&・/／\-—–~～!！?？「」『』“”\"'’【】\[\]（）()<>＜＞、。,.:：♪☆★…|｜×]", " ", t)
     return {w for w in DEDUPE_TOKEN.findall(t) if len(w) >= 2 and w not in DEDUPE_STOP}
 
 
-def same_product(a: dict, b: dict) -> bool:
-    if a.get("source") == b.get("source"):
-        return False   # 同じ媒体の別記事は、別の商品として残す
+def product_keys(title: str) -> set[str]:
+    """見出しの「」や“”で囲まれた商品名など（年・ありふれた言葉は除く）。"""
+    keys = set()
+    for q in QUOTED.findall(unicodedata.normalize("NFKC", title or "")):
+        k = re.sub(r"\s+", "", YEAR.sub("", q)).lower()
+        k = re.sub(r"[・&＆!！☆★♪]", "", k)
+        if len(k) >= 3 and k not in DEDUPE_STOP and not re.fullmatch(r"(?:ディズニー|disney|クラリス|clarice|チップ(?:と|&)?デール(?:(?:と|&)?クラリス)?)+", k):
+            keys.add(k)
+    return keys
+
+
+def _days(a: dict, b: dict) -> int:
     try:
-        if abs((dt.datetime.fromisoformat(a["date"]) - dt.datetime.fromisoformat(b["date"])).days) > DEDUPE_DAYS:
-            return False
-    except ValueError:
-        return False
-    ta, tb = title_tokens(a.get("title", "")), title_tokens(b.get("title", ""))
-    if not ta or not tb:
-        return False
-    shared = ta & tb
-    if len(shared) >= 2 and len(shared) / min(len(ta), len(tb)) >= 0.5:
-        return True
+        return abs((dt.datetime.fromisoformat(a["date"]) - dt.datetime.fromisoformat(b["date"])).days)
+    except (ValueError, KeyError):
+        return 10 ** 6
+
+
+def _dice(ta: set[str], tb: set[str]) -> float:
     ga = {x[k:k + 3] for x in ["".join(sorted(ta))] for k in range(len(x) - 2)}
     gb = {x[k:k + 3] for x in ["".join(sorted(tb))] for k in range(len(x) - 2)}
-    return bool(ga and gb) and 2 * len(ga & gb) / (len(ga) + len(gb)) >= 0.5
+    return 2 * len(ga & gb) / (len(ga) + len(gb)) if ga and gb else 0.0
+
+
+def same_product(a: dict, b: dict) -> str | None:
+    """同じ商品の記事か。'strong'（同じ媒体でもまとめる）／'weak'（別の媒体どうしだけまとめる）／None。
+    - strong：見出しがほぼ同じ（【画像】付きの同じ記事など）、または「」の商品名が同じで年が食い違わず1年以内
+    - weak  ：別の媒体・60日以内・見出しの特徴的な言葉が重なる"""
+    ta, tb = title_tokens(a.get("title", "")), title_tokens(b.get("title", ""))
+    if not ta or not tb:
+        return None
+    days = _days(a, b)
+    if ta == tb or _dice(ta, tb) >= 0.85:
+        return "strong"
+    ka, kb = product_keys(a.get("title", "")), product_keys(b.get("title", ""))
+    ya, yb = set(YEAR.findall(a.get("title", ""))), set(YEAR.findall(b.get("title", "")))
+    # 同じ商品＝「商品名（「」の中）が同じ」かつ「発売日が同じ」（記事の本文から読んだ発売日）。
+    # 名前が同じでも発売日が違えば、復刻・再販などの別の商品として残す。ゲーム・映像作品は対象外
+    goods_pair = a.get("category") in GOODS_CATEGORIES and b.get("category") in GOODS_CATEGORIES
+    ra, rb = a.get("release"), b.get("release")
+    if goods_pair and ka & kb and not (ya and yb and not (ya & yb)):
+        if ra and rb:
+            return "strong" if ra == rb else None
+        if days <= DEDUPE_SAME_NAME_DAYS:
+            return "strong"   # 発売日が分からないときは、ごく近い時期（同じ発売の告知と発売当日の記事など）だけ
+    if ra and rb and ra != rb:
+        return None   # 発売日がはっきり違うものは別の商品
+    if a.get("source") == b.get("source") or days > DEDUPE_DAYS:
+        return None
+    shared = ta & tb
+    if (len(shared) >= 2 and len(shared) / min(len(ta), len(tb)) >= 0.5) or _dice(ta, tb) >= 0.5:
+        return "weak"
+    return None
 
 
 def dedupe_goods(items: list[dict]) -> list[dict]:
@@ -794,7 +877,10 @@ def dedupe_goods(items: list[dict]) -> list[dict]:
     for n, a in enumerate(goods):
         for b in goods[n + 1:]:
             ra, rb = find(id(a)), find(id(b))
-            if ra != rb and not (sources[ra] & sources[rb]) and same_product(a, b):
+            if ra == rb:
+                continue
+            kind = same_product(a, b)
+            if kind == "strong" or (kind == "weak" and not (sources[ra] & sources[rb])):
                 parent[rb] = ra
                 sources[ra] |= sources.pop(rb)
     groups: dict[int, list[dict]] = {}

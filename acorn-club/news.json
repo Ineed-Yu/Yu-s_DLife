@@ -266,16 +266,7 @@
       "official": false,
       "date": "2026-03-11T20:48+09:00",
       "origin": "auto",
-      "image": "https://mezzomiki.jp/wp-content/uploads/2026/03/IMG_6348.jpeg",
-      "others": 1,
-      "dupes": [
-        {
-          "title": "【ディズニーストア】チップとデール誕生日コレクション「Chip ‘n’ Dale COLLECTION」登場｜くまパジャマ姿のぬいぐるみや雑貨を発売",
-          "url": "https://disneyworldfan.jp/2026/03/chip-n-dale-collection-disney-store/",
-          "source": "ディズニーワールドファン",
-          "date": "2026-03-06T15:04+09:00"
-        }
-      ]
+      "image": "https://mezzomiki.jp/wp-content/uploads/2026/03/IMG_6348.jpeg"
     },
     {
       "id": "2d3e29afaa0569bb",
@@ -310,19 +301,22 @@
       "category": "other",
       "official": false,
       "date": "2026-03-06T17:00+09:00",
-      "origin": "auto"
-    },
-    {
-      "id": "a9c002f8445ff0c2",
-      "title": "【ディズニー】チップとデールの誕生日前に「Chip ‘n’ Dale COLLECTION」3月13日発売今年はクラリスも登場。ふわもこ素材のぬいぐるみや雑貨がラインナップ",
-      "url": "https://news.livedoor.com/article/detail/30710247/",
-      "source": "ライブドアニュース",
-      "lang": "ja",
-      "category": "plush",
-      "official": false,
-      "date": "2026-03-06T17:00+09:00",
       "origin": "auto",
-      "image": "https://image.news.livedoor.com/newsimage/stf/8/3/83b3a_1838_a5e8fb8573cf0468e40432853d416438.jpg"
+      "others": 2,
+      "dupes": [
+        {
+          "title": "【ディズニー】チップとデールの誕生日前に「Chip ‘n’ Dale COLLECTION」3月13日発売今年はクラリスも登場。ふわもこ素材のぬいぐるみや雑貨がラインナップ",
+          "url": "https://news.livedoor.com/article/detail/30710247/",
+          "source": "ライブドアニュース",
+          "date": "2026-03-06T17:00+09:00"
+        },
+        {
+          "title": "【ディズニーストア】チップとデール誕生日コレクション「Chip ‘n’ Dale COLLECTION」登場｜くまパジャマ姿のぬいぐるみや雑貨を発売",
+          "url": "https://disneyworldfan.jp/2026/03/chip-n-dale-collection-disney-store/",
+          "source": "ディズニーワールドファン",
+          "date": "2026-03-06T15:04+09:00"
+        }
+      ]
     },
     {
       "id": "065bbbb9ba60e676",
@@ -1655,31 +1649,22 @@
       "official": false,
       "date": "2018-03-30T16:00+09:00",
       "origin": "auto",
-      "image": "https://image.news.livedoor.com/newsimage/stf/3/4/348dd_1604_6cf1e3a6471338b44e4672da514d39f2.jpg"
-    },
-    {
-      "id": "09df55729acc07d2",
-      "title": "憧れの歌姫・クラリスやお友だちのチチと一緒のデザインも！イングレム ディズニーデザイン「チップ＆デール」iPhoneケース",
-      "url": "https://news.livedoor.com/article/detail/14507960/",
-      "source": "ライブドアニュース",
-      "lang": "ja",
-      "category": "other",
-      "official": false,
-      "date": "2018-03-30T16:00+09:00",
-      "origin": "auto",
-      "image": "https://image.news.livedoor.com/newsimage/stf/8/3/837d5_1604_df222a2c_92940f3b.jpg"
-    },
-    {
-      "id": "117f125df208a5df",
-      "title": "【画像】憧れの歌姫・クラリスやお友だちのチチと一緒のデザインも！イングレム ディズニーデザイン「チップ＆デール」iPhoneケース 8/14 - ライブドアニュース",
-      "url": "https://news.livedoor.com/article/image_detail/14507960/?img_id=16995958",
-      "source": "ライブドアニュース",
-      "lang": "ja",
-      "category": "other",
-      "official": false,
-      "date": "2018-03-30T16:00+09:00",
-      "origin": "auto",
-      "image": "https://image.news.livedoor.com/newsimage/stf/f/6/f6407_1604_348f9148da913fec21f6e8425822af07.jpg"
+      "image": "https://image.news.livedoor.com/newsimage/stf/3/4/348dd_1604_6cf1e3a6471338b44e4672da514d39f2.jpg",
+      "others": 2,
+      "dupes": [
+        {
+          "title": "憧れの歌姫・クラリスやお友だちのチチと一緒のデザインも！イングレム ディズニーデザイン「チップ＆デール」iPhoneケース",
+          "url": "https://news.livedoor.com/article/detail/14507960/",
+          "source": "ライブドアニュース",
+          "date": "2018-03-30T16:00+09:00"
+        },
+        {
+          "title": "【画像】憧れの歌姫・クラリスやお友だちのチチと一緒のデザインも！イングレム ディズニーデザイン「チップ＆デール」iPhoneケース 8/14 - ライブドアニュース",
+          "url": "https://news.livedoor.com/article/image_detail/14507960/?img_id=16995958",
+          "source": "ライブドアニュース",
+          "date": "2018-03-30T16:00+09:00"
+        }
+      ]
     },
     {
       "id": "445fd5d8ad937795",
@@ -2177,7 +2162,16 @@
       "official": false,
       "date": "2016-10-07T23:05+09:00",
       "origin": "auto",
-      "image": "https://img-mdpr.freetls.fastly.net/article/LwaL/nm/LwaL5U6_JaBlJu9CQ0rzI40DMNONdy4a0iKAt0dKi9s.jpg"
+      "image": "https://img-mdpr.freetls.fastly.net/article/LwaL/nm/LwaL5U6_JaBlJu9CQ0rzI40DMNONdy4a0iKAt0dKi9s.jpg",
+      "others": 1,
+      "dupes": [
+        {
+          "title": "ディズニー、チップ・デール・クラリスが30周年コスチュームで勢揃い",
+          "url": "https://mdpr.jp/disney/detail/1253394",
+          "source": "モデルプレス",
+          "date": "2013-06-19T16:00+09:00"
+        }
+      ]
     },
     {
       "id": "140c2fb90b6ba984",
@@ -2630,19 +2624,16 @@
       "official": false,
       "date": "2015-04-11T19:49+09:00",
       "origin": "auto",
-      "image": "https://mezzomiki.jp/wp-content/uploads/2015/04/2015-04-11-15.16.411.jpg"
-    },
-    {
-      "id": "de98e4f76febd40a",
-      "title": "クラリスそっくりの「アプリコット」 ディズニーストア限定 ...",
-      "url": "https://www.j-cast.com/trend/2015/03/26231230.html?p=all",
-      "source": "ジェイ・キャスト",
-      "lang": "ja",
-      "category": "other",
-      "official": false,
-      "date": "2015-03-26T13:00+09:00",
-      "origin": "auto",
-      "image": "https://www.j-cast.com/trend/images/origin/2015/03/trend_20150324172850.jpg"
+      "image": "https://mezzomiki.jp/wp-content/uploads/2015/04/2015-04-11-15.16.411.jpg",
+      "others": 1,
+      "dupes": [
+        {
+          "title": "クラリスそっくりの「アプリコット」 ディズニーストア限定 ...",
+          "url": "https://www.j-cast.com/trend/2015/03/26231230.html?p=all",
+          "source": "ジェイ・キャスト",
+          "date": "2015-03-26T13:00+09:00"
+        }
+      ]
     },
     {
       "id": "0d9dc254b95e2738",
@@ -2738,19 +2729,16 @@
       "official": false,
       "date": "2014-07-13T17:56+09:00",
       "origin": "auto",
-      "image": "https://mezzomiki.jp/wp-content/uploads/2014/07/2014-07-09-06.17.00.jpg"
-    },
-    {
-      "id": "a6020304b5e85e13",
-      "title": "ミニー･デイジー･クラリス☆ディズニーサマーフェスティバル2014ミニーのトロピカルスプラッシュぬいぐるみバッジ",
-      "url": "https://mezzomiki.jp/post-19258/",
-      "source": "MezzoMiki",
-      "lang": "ja",
-      "category": "plush",
-      "official": false,
-      "date": "2014-07-13T17:46+09:00",
-      "origin": "auto",
-      "image": "https://mezzomiki.jp/wp-content/uploads/2014/07/2014-07-09-06.30.33.jpg"
+      "image": "https://mezzomiki.jp/wp-content/uploads/2014/07/2014-07-09-06.17.00.jpg",
+      "others": 1,
+      "dupes": [
+        {
+          "title": "ミニー･デイジー･クラリス☆ディズニーサマーフェスティバル2014ミニーのトロピカルスプラッシュぬいぐるみバッジ",
+          "url": "https://mezzomiki.jp/post-19258/",
+          "source": "MezzoMiki",
+          "date": "2014-07-13T17:46+09:00"
+        }
+      ]
     },
     {
       "id": "8da2f7fb8fef1685",
@@ -2919,18 +2907,6 @@
       "date": "2013-06-21T16:00+09:00",
       "origin": "auto",
       "image": "https://youpouch.com/wp-content/uploads/sites/4/2013/06/tdl1-e1371797961988.jpg?w=580&h=305&crop=1"
-    },
-    {
-      "id": "668bfa7b722e5d59",
-      "title": "ディズニー、チップ・デール・クラリスが30周年コスチュームで勢揃い",
-      "url": "https://mdpr.jp/disney/detail/1253394",
-      "source": "モデルプレス",
-      "lang": "ja",
-      "category": "other",
-      "official": false,
-      "date": "2013-06-19T16:00+09:00",
-      "origin": "auto",
-      "image": "https://img-mdpr.freetls.fastly.net/article/LwaL/nm/LwaL5U6_JaBlJu9CQ0rzI40DMNONdy4a0iKAt0dKi9s.jpg?width=700&disable=upscale&auto=webp&quality=80"
     },
     {
       "id": "4b200b3f795272aa",
