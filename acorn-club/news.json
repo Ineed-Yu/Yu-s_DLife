@@ -2420,22 +2420,7 @@
       "official": false,
       "date": "2015-10-04T19:21+09:00",
       "origin": "auto",
-      "image": "https://mezzomiki.jp/wp-content/uploads/2015/10/2015.10.04-17.45.54.11.jpg",
-      "others": 2,
-      "dupes": [
-        {
-          "title": "クラリスのユニベア「アプリコット｣登場☆ぬいぐるみやコスチュームなどグッズまとめ",
-          "url": "https://mezzomiki.jp/post-39159/",
-          "source": "MezzoMiki",
-          "date": "2015-04-11T19:49+09:00"
-        },
-        {
-          "title": "クラリスそっくりの「アプリコット」 ディズニーストア限定 ...",
-          "url": "https://www.j-cast.com/trend/2015/03/26231230.html?p=all",
-          "source": "ジェイ・キャスト",
-          "date": "2015-03-26T13:00+09:00"
-        }
-      ]
+      "image": "https://mezzomiki.jp/wp-content/uploads/2015/10/2015.10.04-17.45.54.11.jpg"
     },
     {
       "id": "659a1bcccea51d8e",
@@ -2628,6 +2613,27 @@
       "date": "2015-05-29T20:49+09:00",
       "origin": "auto",
       "image": "https://mezzomiki.jp/wp-content/uploads/2015/05/2015-04-22-16.21.21-4.jpg"
+    },
+    {
+      "id": "8dea2713e06008b4",
+      "title": "クラリスのユニベア「アプリコット｣登場☆ぬいぐるみやコスチュームなどグッズまとめ",
+      "url": "https://mezzomiki.jp/post-39159/",
+      "source": "MezzoMiki",
+      "lang": "ja",
+      "category": "plush",
+      "official": false,
+      "date": "2015-04-11T19:49+09:00",
+      "origin": "auto",
+      "image": "https://mezzomiki.jp/wp-content/uploads/2015/04/2015-04-11-15.16.411.jpg",
+      "others": 1,
+      "dupes": [
+        {
+          "title": "クラリスそっくりの「アプリコット」 ディズニーストア限定 ...",
+          "url": "https://www.j-cast.com/trend/2015/03/26231230.html?p=all",
+          "source": "ジェイ・キャスト",
+          "date": "2015-03-26T13:00+09:00"
+        }
+      ]
     },
     {
       "id": "0d9dc254b95e2738",
