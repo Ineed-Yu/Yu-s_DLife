@@ -743,8 +743,10 @@ def build_timeline(collected: list[dict], manual: list[dict], exclude: dict, now
 
 # ---------------------------------------------------------------- 同じ商品の記事をまとめる（グッズのみ）
 # 別の媒体が同じ商品を取り上げた記事（プレスリリースの転載など）は、いちばん新しい記事だけを表示する。
-# 判定：媒体が違う・日付が30日以内・見出しの特徴的な言葉が重なる（ありふれた言葉は除く）
-DEDUPE_DAYS = 30
+# 判定：見出しがほぼ同じ／「」の商品名が同じ（1年以内・年が食い違わない）なら同じ媒体でもまとめる。
+# それ以外は、媒体が違う・60日以内・見出しの特徴的な言葉が重なること（ありふれた言葉は除く）
+DEDUPE_DAYS = 60            # 別の媒体どうしで「同じ話題」とみなす日数
+DEDUPE_KEY_DAYS = 400       # 同じ商品名（「」）なら、再販・続報もまとめる日数
 DEDUPE_STOP = set("""クラリス チップ デール チップとデール ディズニー disney 新発売 発売 登場 新登場 グッズ 新作 公式 限定 発売中
 先行販売 予約 開始 情報 ニュース 東京ディズニーリゾート 東京ディズニーランド 東京ディズニーシー ミッキー ミニー フレンズ
 キャラクター デザイン かわいい 可愛い 人気 シリーズ コレクション アイテム 種類 東京 土産 お土産 新作スイーツ 新作グッズ
@@ -753,29 +755,68 @@ coming available arrives today japan store""".split())
 DEDUPE_TOKEN = re.compile(r"[一-龥々ァ-ヴーa-z0-9]+")
 
 
+TITLE_NOISE = re.compile(r"【\s*(?:画像|写真|動画|PR|速報|公式)\s*】|[\(（]\s*画像\s*\d+\s*/\s*\d+\s*[\)）]|^\s*\[PR\]\s*|\s*[-|｜]\s*[^-|｜]{2,25}$")
+QUOTED = re.compile(r"[「『“\"]([^」』”\"]{2,40})[」』”\"]")
+YEAR = re.compile(r"(?<!\d)(?:19|20)\d{2}(?!\d)")
+
+
+def clean_title(title: str) -> str:
+    """比べるための見出し（【画像】・(画像1/2)・末尾の掲載元名などを除く）。"""
+    return TITLE_NOISE.sub(" ", unicodedata.normalize("NFKC", title or "")).strip()
+
+
 def title_tokens(title: str) -> set[str]:
-    t = unicodedata.normalize("NFKC", title).lower()
+    t = clean_title(title).lower()
     t = re.sub(r"[＆&・/／\-—–~～!！?？「」『』“”\"'’【】\[\]（）()<>＜＞、。,.:：♪☆★…|｜×]", " ", t)
     return {w for w in DEDUPE_TOKEN.findall(t) if len(w) >= 2 and w not in DEDUPE_STOP}
 
 
-def same_product(a: dict, b: dict) -> bool:
-    if a.get("source") == b.get("source"):
-        return False   # 同じ媒体の別記事は、別の商品として残す
+def product_keys(title: str) -> set[str]:
+    """見出しの「」や“”で囲まれた商品名など（年・ありふれた言葉は除く）。"""
+    keys = set()
+    for q in QUOTED.findall(unicodedata.normalize("NFKC", title or "")):
+        k = re.sub(r"\s+", "", YEAR.sub("", q)).lower()
+        k = re.sub(r"[・&＆!！☆★♪]", "", k)
+        if len(k) >= 3 and k not in DEDUPE_STOP and not re.fullmatch(r"(?:ディズニー|disney|クラリス|clarice|チップ(?:と|&)?デール(?:(?:と|&)?クラリス)?)+", k):
+            keys.add(k)
+    return keys
+
+
+def _days(a: dict, b: dict) -> int:
     try:
-        if abs((dt.datetime.fromisoformat(a["date"]) - dt.datetime.fromisoformat(b["date"])).days) > DEDUPE_DAYS:
-            return False
-    except ValueError:
-        return False
-    ta, tb = title_tokens(a.get("title", "")), title_tokens(b.get("title", ""))
-    if not ta or not tb:
-        return False
-    shared = ta & tb
-    if len(shared) >= 2 and len(shared) / min(len(ta), len(tb)) >= 0.5:
-        return True
+        return abs((dt.datetime.fromisoformat(a["date"]) - dt.datetime.fromisoformat(b["date"])).days)
+    except (ValueError, KeyError):
+        return 10 ** 6
+
+
+def _dice(ta: set[str], tb: set[str]) -> float:
     ga = {x[k:k + 3] for x in ["".join(sorted(ta))] for k in range(len(x) - 2)}
     gb = {x[k:k + 3] for x in ["".join(sorted(tb))] for k in range(len(x) - 2)}
-    return bool(ga and gb) and 2 * len(ga & gb) / (len(ga) + len(gb)) >= 0.5
+    return 2 * len(ga & gb) / (len(ga) + len(gb)) if ga and gb else 0.0
+
+
+def same_product(a: dict, b: dict) -> str | None:
+    """同じ商品の記事か。'strong'（同じ媒体でもまとめる）／'weak'（別の媒体どうしだけまとめる）／None。
+    - strong：見出しがほぼ同じ（【画像】付きの同じ記事など）、または「」の商品名が同じで年が食い違わず1年以内
+    - weak  ：別の媒体・60日以内・見出しの特徴的な言葉が重なる"""
+    ta, tb = title_tokens(a.get("title", "")), title_tokens(b.get("title", ""))
+    if not ta or not tb:
+        return None
+    days = _days(a, b)
+    if ta == tb or _dice(ta, tb) >= 0.85:
+        return "strong"
+    ka, kb = product_keys(a.get("title", "")), product_keys(b.get("title", ""))
+    ya, yb = set(YEAR.findall(a.get("title", ""))), set(YEAR.findall(b.get("title", "")))
+    # ゲーム・映像作品の「」は作品名（イベントごとに別の話題）なので、商品名の一致ではまとめない
+    goods_pair = a.get("category") in GOODS_CATEGORIES and b.get("category") in GOODS_CATEGORIES
+    if goods_pair and ka & kb and days <= DEDUPE_KEY_DAYS and not (ya and yb and not (ya & yb)):
+        return "strong"
+    if a.get("source") == b.get("source") or days > DEDUPE_DAYS:
+        return None
+    shared = ta & tb
+    if (len(shared) >= 2 and len(shared) / min(len(ta), len(tb)) >= 0.5) or _dice(ta, tb) >= 0.5:
+        return "weak"
+    return None
 
 
 def dedupe_goods(items: list[dict]) -> list[dict]:
@@ -794,7 +835,10 @@ def dedupe_goods(items: list[dict]) -> list[dict]:
     for n, a in enumerate(goods):
         for b in goods[n + 1:]:
             ra, rb = find(id(a)), find(id(b))
-            if ra != rb and not (sources[ra] & sources[rb]) and same_product(a, b):
+            if ra == rb:
+                continue
+            kind = same_product(a, b)
+            if kind == "strong" or (kind == "weak" and not (sources[ra] & sources[rb])):
                 parent[rb] = ra
                 sources[ra] |= sources.pop(rb)
     groups: dict[int, list[dict]] = {}
