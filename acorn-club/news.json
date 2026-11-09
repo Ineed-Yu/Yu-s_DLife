@@ -2009,7 +2009,8 @@
       "official": false,
       "date": "2017-04-26T14:48+09:00",
       "origin": "auto",
-      "image": "https://dtimes.jp/wp-content/uploads/2017/04/DSC_7149.jpg"
+      "image": "https://dtimes.jp/wp-content/uploads/2017/04/DSC_7149.jpg",
+      "release": "2017-04-27"
     },
     {
       "id": "b806e1fccaeaa1a6",
@@ -2033,7 +2034,8 @@
       "official": false,
       "date": "2017-04-10T19:00+09:00",
       "origin": "auto",
-      "image": "https://dtimes.jp/wp-content/uploads/2017/04/260e8919938c56d3663243de431ae983.jpg"
+      "image": "https://dtimes.jp/wp-content/uploads/2017/04/260e8919938c56d3663243de431ae983.jpg",
+      "release": "2017-04-08"
     },
     {
       "id": "98f9b70b40fdc64a",
@@ -2057,7 +2059,8 @@
       "official": false,
       "date": "2017-03-09T17:00+09:00",
       "origin": "auto",
-      "image": "https://dtimes.jp/wp-content/uploads/2017/03/73b90d037bec9cd97ef6d91d5a223ce1.jpg"
+      "image": "https://dtimes.jp/wp-content/uploads/2017/03/73b90d037bec9cd97ef6d91d5a223ce1.jpg",
+      "release": "2017-03-11"
     },
     {
       "id": "1df5811747d98a46",
@@ -2117,7 +2120,8 @@
       "official": false,
       "date": "2017-02-01T11:10+09:00",
       "origin": "auto",
-      "image": "https://dtimes.jp/wp-content/uploads/2017/01/attachment03.jpg"
+      "image": "https://dtimes.jp/wp-content/uploads/2017/01/attachment03.jpg",
+      "release": "2017-02-04"
     },
     {
       "id": "cbf99d8deafe6c2e",
@@ -2259,15 +2263,7 @@
       "date": "2016-07-07T19:48+09:00",
       "origin": "auto",
       "image": "https://dtimes.jp/wp-content/uploads/2016/07/1606I07.jpg",
-      "others": 1,
-      "dupes": [
-        {
-          "title": "トロピカルフルーツたっぷりなフローズンも☆東京ディズニーシー”ディズニー・サマーフェスティバル2016”カクテルまとめ",
-          "url": "https://mezzomiki.jp/post-67415/",
-          "source": "MezzoMiki",
-          "date": "2016-07-05T21:07+09:00"
-        }
-      ]
+      "release": "2016-07-08"
     },
     {
       "id": "5417fd32d89462ef",
@@ -2279,7 +2275,21 @@
       "official": false,
       "date": "2016-07-06T20:14+09:00",
       "origin": "auto",
-      "image": "https://dtimes.jp/wp-content/uploads/2016/07/1606I05.jpg"
+      "image": "https://dtimes.jp/wp-content/uploads/2016/07/1606I05.jpg",
+      "release": "2016-07-08"
+    },
+    {
+      "id": "d8865fd10f67f608",
+      "title": "トロピカルフルーツたっぷりなフローズンも☆東京ディズニーシー”ディズニー・サマーフェスティバル2016”カクテルまとめ",
+      "url": "https://mezzomiki.jp/post-67415/",
+      "source": "MezzoMiki",
+      "lang": "ja",
+      "category": "other",
+      "official": false,
+      "date": "2016-07-05T21:07+09:00",
+      "origin": "auto",
+      "image": "https://mezzomiki.jp/wp-content/uploads/2016/07/D5H_33051.jpg",
+      "release": "2016-08-31"
     },
     {
       "id": "e6da8ed6adf50f11",
@@ -2303,7 +2313,8 @@
       "official": false,
       "date": "2016-07-01T12:33+09:00",
       "origin": "auto",
-      "image": "https://mezzomiki.jp/wp-content/uploads/2016/07/DSC_1686.jpg"
+      "image": "https://mezzomiki.jp/wp-content/uploads/2016/07/DSC_1686.jpg",
+      "release": "2016-07-01"
     },
     {
       "id": "9dfe7f91175c5e39",
@@ -2315,7 +2326,8 @@
       "official": false,
       "date": "2016-06-29T16:05+09:00",
       "origin": "auto",
-      "image": "https://dtimes.jp/wp-content/uploads/2016/06/160303zbr03.jpg"
+      "image": "https://dtimes.jp/wp-content/uploads/2016/06/160303zbr03.jpg",
+      "release": "2016-07-01"
     },
     {
       "id": "25046fcaea47b530",
@@ -2339,7 +2351,8 @@
       "official": false,
       "date": "2016-06-13T12:30+09:00",
       "origin": "auto",
-      "image": "https://dtimes.jp/wp-content/uploads/2016/06/SH-yukata-5.jpg"
+      "image": "https://dtimes.jp/wp-content/uploads/2016/06/SH-yukata-5.jpg",
+      "release": "2016-06-16"
     },
     {
       "id": "9289a9f11be6f682",
