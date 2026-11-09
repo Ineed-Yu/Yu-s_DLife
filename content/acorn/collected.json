@@ -2015,7 +2015,8 @@
     "date": "2018-03-30T16:00+09:00",
     "origin": "auto",
     "article": "https://news.livedoor.com/article/detail/14507960/",
-    "image": "https://image.news.livedoor.com/newsimage/stf/8/3/837d5_1604_df222a2c_92940f3b.jpg"
+    "image": "https://image.news.livedoor.com/newsimage/stf/8/3/837d5_1604_df222a2c_92940f3b.jpg",
+    "release": "2018-03-30"
   },
   {
     "id": "117f125df208a5df",
@@ -2029,7 +2030,8 @@
     "date": "2018-03-30T16:00+09:00",
     "origin": "auto",
     "article": "https://news.livedoor.com/article/image_detail/14507960/?img_id=16995958",
-    "image": "https://image.news.livedoor.com/newsimage/stf/f/6/f6407_1604_348f9148da913fec21f6e8425822af07.jpg"
+    "image": "https://image.news.livedoor.com/newsimage/stf/f/6/f6407_1604_348f9148da913fec21f6e8425822af07.jpg",
+    "release": ""
   },
   {
     "id": "445fd5d8ad937795",
@@ -2042,7 +2044,8 @@
     "official": false,
     "date": "2018-03-01T07:54+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2018/03/IMG_2269-1.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2018/03/IMG_2269-1.jpg",
+    "release": "2018-03-01"
   },
   {
     "id": "b6b75d178aaa036b",
@@ -2055,7 +2058,8 @@
     "official": false,
     "date": "2018-02-17T13:46+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2018/02/D67719px01_32018A.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2018/02/D67719px01_32018A.jpg",
+    "release": ""
   },
   {
     "id": "d668ff36f3f3e745",
@@ -2068,7 +2072,8 @@
     "official": false,
     "date": "2018-02-15T22:30+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2018/02/DFY_6403-1.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2018/02/DFY_6403-1.jpg",
+    "release": ""
   },
   {
     "id": "c39dc69b06c50be3",
@@ -2082,7 +2087,8 @@
     "date": "2018-02-08T17:00+09:00",
     "origin": "auto",
     "article": "https://dtimes.jp/ginza-cozy-corner-dinsey-girls-collection-2018/",
-    "image": "https://dtimes.jp/wp-content/uploads/2018/02/main-10.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2018/02/main-10.jpg",
+    "release": ""
   },
   {
     "id": "e23cd6494d83d7b0",
@@ -2095,7 +2101,8 @@
     "official": false,
     "date": "2018-01-18T10:28+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2018/01/D77626px01_12818IN.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2018/01/D77626px01_12818IN.jpg",
+    "release": ""
   },
   {
     "id": "8a35ed9c3eefb4eb",
@@ -2108,7 +2115,8 @@
     "official": false,
     "date": "2017-12-26T17:13+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2017/12/D80061px01_32018A.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2017/12/D80061px01_32018A.jpg",
+    "release": ""
   },
   {
     "id": "952c2b89c871de2b",
@@ -2121,7 +2129,8 @@
     "official": false,
     "date": "2017-12-26T12:00+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2017/12/D67720px04_32018A.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2017/12/D67720px04_32018A.jpg",
+    "release": ""
   },
   {
     "id": "b7e26c21b79161d4",
@@ -2134,7 +2143,8 @@
     "official": false,
     "date": "2017-12-22T12:00+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2017/12/IMG_0707.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2017/12/IMG_0707.jpg",
+    "release": ""
   },
   {
     "id": "2d9ac46132213f93",
@@ -2147,7 +2157,8 @@
     "official": false,
     "date": "2017-12-06T14:33+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2017/12/o1040104014084775068.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2017/12/o1040104014084775068.jpg",
+    "release": "2017-12-09"
   },
   {
     "id": "fd3f121c2111e17a",
@@ -2160,7 +2171,8 @@
     "official": false,
     "date": "2017-11-30T22:51+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2017/11/e8c0ad5973b24466b2ab99ab0d7fd559.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2017/11/e8c0ad5973b24466b2ab99ab0d7fd559.jpg",
+    "release": "2017-12-02"
   },
   {
     "id": "c8a0bc08607585b1",
@@ -2174,7 +2186,8 @@
     "date": "2017-11-19T00:45+09:00",
     "origin": "auto",
     "article": "https://www.oricon.co.jp/news/2059121/photo/4/",
-    "image": "https://contents.oricon.co.jp/upimg/news/20150914/2059121_201509140912833001442219332c.jpg"
+    "image": "https://contents.oricon.co.jp/upimg/news/20150914/2059121_201509140912833001442219332c.jpg",
+    "release": ""
   },
   {
     "id": "bffc24b4e930015a",
@@ -2187,7 +2200,8 @@
     "official": false,
     "date": "2017-11-16T19:20+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2017/11/90637311af1b0c22a4c71830c84025b5.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2017/11/90637311af1b0c22a4c71830c84025b5.jpg",
+    "release": ""
   },
   {
     "id": "ca0f45cc847f7d31",
@@ -2201,7 +2215,8 @@
     "date": "2017-11-05T17:28+09:00",
     "origin": "auto",
     "article": "https://www.oricon.co.jp/news/2059121/full/",
-    "image": "https://contents.oricon.co.jp/upimg/news/20150914/2059121_201509140912491001442219332c.jpg"
+    "image": "https://contents.oricon.co.jp/upimg/news/20150914/2059121_201509140912491001442219332c.jpg",
+    "release": ""
   },
   {
     "id": "5300b68fe9aec398",
@@ -2215,7 +2230,8 @@
     "date": "2017-10-26T13:44+09:00",
     "origin": "auto",
     "article": "https://www.oricon.co.jp/news/2059121/photo/17/",
-    "image": "https://contents.oricon.co.jp/upimg/news/20150914/2059121_201509140914224001442219332c.jpg"
+    "image": "https://contents.oricon.co.jp/upimg/news/20150914/2059121_201509140914224001442219332c.jpg",
+    "release": ""
   },
   {
     "id": "39f841bff37c8870",
@@ -2228,7 +2244,8 @@
     "official": false,
     "date": "2017-10-22T09:58+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2017/10/gd1920-m-01-dl.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2017/10/gd1920-m-01-dl.jpg",
+    "release": ""
   },
   {
     "id": "efd9f682096551d8",
@@ -2241,7 +2258,8 @@
     "official": false,
     "date": "2017-09-28T16:00+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2017/09/D67186px24_32913A.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2017/09/D67186px24_32913A.jpg",
+    "release": ""
   },
   {
     "id": "1143ae5576f1caa2",
@@ -2254,7 +2272,8 @@
     "official": false,
     "date": "2017-09-08T17:42+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2000/01/57333dd97f0d69b285dbaf2aded7f306.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2000/01/57333dd97f0d69b285dbaf2aded7f306.jpg",
+    "release": ""
   },
   {
     "id": "4cdd6860d3f8be57",
@@ -2268,7 +2287,8 @@
     "date": "2017-08-30T16:00+09:00",
     "origin": "auto",
     "article": "https://ure.pia.co.jp/articles/-/95747",
-    "image": "https://urepia.ismcdn.jp/mwimgs/c/5/-/img_c551b33148339ed9be84935a7ce49f3479332.jpg"
+    "image": "https://urepia.ismcdn.jp/mwimgs/c/5/-/img_c551b33148339ed9be84935a7ce49f3479332.jpg",
+    "release": ""
   },
   {
     "id": "96d319bcccf1367e",
@@ -2281,7 +2301,8 @@
     "official": false,
     "date": "2017-08-02T16:00+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2017/07/03031741_58b92c4f10baf.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2017/07/03031741_58b92c4f10baf.jpg",
+    "release": ""
   },
   {
     "id": "892e0dba5861d9bd",
@@ -2294,7 +2315,8 @@
     "official": false,
     "date": "2017-07-29T10:00+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2017/07/C52162px01_32017A.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2017/07/C52162px01_32017A.jpg",
+    "release": ""
   },
   {
     "id": "4accb26643b35ed7",
@@ -2307,7 +2329,8 @@
     "official": false,
     "date": "2017-07-25T19:04+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2017/07/banpresto-chip-dale-figure-19.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2017/07/banpresto-chip-dale-figure-19.jpg",
+    "release": "2017-07-20"
   },
   {
     "id": "e1445bfe866d3cf8",
@@ -2320,7 +2343,8 @@
     "official": false,
     "date": "2017-07-23T12:00+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2017/07/C70318px01_584178S.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2017/07/C70318px01_584178S.jpg",
+    "release": ""
   },
   {
     "id": "b72f97c4517e5bdd",
@@ -2333,7 +2357,8 @@
     "official": false,
     "date": "2017-07-06T20:45+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2017/07/happy-anniversary-4.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2017/07/happy-anniversary-4.jpg",
+    "release": ""
   },
   {
     "id": "09b4b0dd764bfba8",
@@ -2347,7 +2372,8 @@
     "date": "2017-06-29T16:00+09:00",
     "origin": "auto",
     "article": "https://dtimes.jp/banpresto-disney-characters-lovers-moment-chip-dale-clarice/",
-    "image": "https://dtimes.jp/wp-content/uploads/2017/06/fdb78b2ef89b8bee0827ebc3494b1a83.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2017/06/fdb78b2ef89b8bee0827ebc3494b1a83.jpg",
+    "release": "2017-07-20"
   },
   {
     "id": "4bc56e9543d3f17f",
@@ -2360,7 +2386,8 @@
     "official": false,
     "date": "2017-06-27T21:58+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2017/06/D5H_68701.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2017/06/D5H_68701.jpg",
+    "release": ""
   },
   {
     "id": "d161d45535a3c674",
@@ -2373,7 +2400,8 @@
     "official": false,
     "date": "2017-06-26T10:00+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2017/06/C52110px01_32017A.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2017/06/C52110px01_32017A.jpg",
+    "release": ""
   },
   {
     "id": "b9a0018d76638e92",
@@ -2386,7 +2414,8 @@
     "official": false,
     "date": "2017-06-22T22:37+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2017/06/D5H_73661.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2017/06/D5H_73661.jpg",
+    "release": ""
   },
   {
     "id": "7aac13a6ba7a7ff1",
@@ -2399,7 +2428,8 @@
     "official": false,
     "date": "2017-06-15T09:57+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2017/06/IMG_09101.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2017/06/IMG_09101.jpg",
+    "release": ""
   },
   {
     "id": "d465561a96ee5cfb",

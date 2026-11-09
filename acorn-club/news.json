@@ -1699,7 +1699,8 @@
       "official": false,
       "date": "2018-03-01T07:54+09:00",
       "origin": "auto",
-      "image": "https://mezzomiki.jp/wp-content/uploads/2018/03/IMG_2269-1.jpg"
+      "image": "https://mezzomiki.jp/wp-content/uploads/2018/03/IMG_2269-1.jpg",
+      "release": "2018-03-01"
     },
     {
       "id": "b6b75d178aaa036b",
@@ -1792,7 +1793,8 @@
       "official": false,
       "date": "2017-12-06T14:33+09:00",
       "origin": "auto",
-      "image": "https://dtimes.jp/wp-content/uploads/2017/12/o1040104014084775068.jpg"
+      "image": "https://dtimes.jp/wp-content/uploads/2017/12/o1040104014084775068.jpg",
+      "release": "2017-12-09"
     },
     {
       "id": "fd3f121c2111e17a",
@@ -1804,7 +1806,8 @@
       "official": false,
       "date": "2017-11-30T22:51+09:00",
       "origin": "auto",
-      "image": "https://dtimes.jp/wp-content/uploads/2017/11/e8c0ad5973b24466b2ab99ab0d7fd559.jpg"
+      "image": "https://dtimes.jp/wp-content/uploads/2017/11/e8c0ad5973b24466b2ab99ab0d7fd559.jpg",
+      "release": "2017-12-02"
     },
     {
       "id": "bffc24b4e930015a",
@@ -1913,6 +1916,7 @@
       "date": "2017-07-25T19:04+09:00",
       "origin": "auto",
       "image": "https://mezzomiki.jp/wp-content/uploads/2017/07/banpresto-chip-dale-figure-19.jpg",
+      "release": "2017-07-20",
       "others": 1,
       "dupes": [
         {
