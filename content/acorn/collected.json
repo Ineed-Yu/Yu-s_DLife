@@ -3397,7 +3397,8 @@
     "official": false,
     "date": "2014-07-05T20:28+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2014/07/2014-07-04-11.41.431.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2014/07/2014-07-04-11.41.431.jpg",
+    "release": ""
   },
   {
     "id": "75edbb4656ec85cb",
@@ -3410,7 +3411,8 @@
     "official": false,
     "date": "2014-07-05T10:21+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2014/07/2014-07-02-11.51.541.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2014/07/2014-07-02-11.51.541.jpg",
+    "release": ""
   },
   {
     "id": "61085c3f01e9fc34",
@@ -3436,7 +3438,8 @@
     "official": false,
     "date": "2014-07-03T20:54+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2014/07/2014-07-02-14.38.581.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2014/07/2014-07-02-14.38.581.jpg",
+    "release": ""
   },
   {
     "id": "d8f4ca1fef9a6862",
@@ -3462,7 +3465,8 @@
     "official": false,
     "date": "2014-02-13T11:13+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2014/02/DSC_1994.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2014/02/DSC_1994.jpg",
+    "release": ""
   },
   {
     "id": "995ab6c358336775",
@@ -3527,7 +3531,8 @@
     "official": false,
     "date": "2013-10-30T23:00+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2013/10/DSC_47381.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2013/10/DSC_47381.jpg",
+    "release": ""
   },
   {
     "id": "7d92e08d4dacc02b",
@@ -3554,7 +3559,8 @@
     "date": "2013-06-21T16:00+09:00",
     "origin": "auto",
     "article": "https://youpouch.com/2013/06/21/125045/",
-    "image": "https://youpouch.com/wp-content/uploads/sites/4/2013/06/tdl1-e1371797961988.jpg?w=580&h=305&crop=1"
+    "image": "https://youpouch.com/wp-content/uploads/sites/4/2013/06/tdl1-e1371797961988.jpg?w=580&h=305&crop=1",
+    "release": ""
   },
   {
     "id": "668bfa7b722e5d59",
@@ -3568,7 +3574,8 @@
     "date": "2013-06-19T16:00+09:00",
     "origin": "auto",
     "article": "https://mdpr.jp/disney/detail/1253394",
-    "image": "https://img-mdpr.freetls.fastly.net/article/LwaL/nm/LwaL5U6_JaBlJu9CQ0rzI40DMNONdy4a0iKAt0dKi9s.jpg?width=700&disable=upscale&auto=webp&quality=80"
+    "image": "https://img-mdpr.freetls.fastly.net/article/LwaL/nm/LwaL5U6_JaBlJu9CQ0rzI40DMNONdy4a0iKAt0dKi9s.jpg?width=700&disable=upscale&auto=webp&quality=80",
+    "release": ""
   },
   {
     "id": "4b200b3f795272aa",
@@ -3581,6 +3588,7 @@
     "official": false,
     "date": "2013-06-19T10:28+09:00",
     "origin": "auto",
-    "image": "https://dpost.jp/wp/wp-content/uploads/2018/12/no-image-large2-1.png"
+    "image": "https://dpost.jp/wp/wp-content/uploads/2018/12/no-image-large2-1.png",
+    "release": ""
   }
 ]
