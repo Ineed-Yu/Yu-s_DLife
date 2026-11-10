@@ -2907,7 +2907,8 @@
     "official": false,
     "date": "2016-03-08T11:39+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2016/03/DSC_8833.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2016/03/DSC_8833.jpg",
+    "release": ""
   },
   {
     "id": "6babc6cf80a6dc3d",
@@ -2921,7 +2922,8 @@
     "date": "2016-02-26T17:00+09:00",
     "origin": "auto",
     "article": "https://ure.pia.co.jp/articles/-/52995",
-    "image": "https://urepia.ismcdn.jp/mwimgs/e/4/-/img_e473ed069ced3fefb9136a1755b3ea9f19974.jpg"
+    "image": "https://urepia.ismcdn.jp/mwimgs/e/4/-/img_e473ed069ced3fefb9136a1755b3ea9f19974.jpg",
+    "release": "2016-02-27"
   },
   {
     "id": "14a4156ca8bbd8e2",
@@ -2935,7 +2937,8 @@
     "date": "2016-02-10T17:00+09:00",
     "origin": "auto",
     "article": "https://dtimes.jp/walt-disney-japan-1602-flower/",
-    "image": "https://dtimes.jp/wp-content/uploads/2016/02/DSC_8763.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2016/02/DSC_8763.jpg",
+    "release": "2016-02-12"
   },
   {
     "id": "b641a0aff6c65496",
@@ -2948,7 +2951,8 @@
     "official": false,
     "date": "2016-02-04T08:36+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2016/02/DSC_9439.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2016/02/DSC_9439.jpg",
+    "release": ""
   },
   {
     "id": "32949a5da728cb08",
@@ -2961,7 +2965,8 @@
     "official": false,
     "date": "2015-10-24T15:21+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2015/10/DSC_25701.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2015/10/DSC_25701.jpg",
+    "release": "2015-10-23"
   },
   {
     "id": "6b696a2b2fd188e8",
@@ -2974,7 +2979,8 @@
     "official": false,
     "date": "2015-10-04T19:21+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2015/10/2015.10.04-17.45.54.11.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2015/10/2015.10.04-17.45.54.11.jpg",
+    "release": "2015-10-04"
   },
   {
     "id": "659a1bcccea51d8e",
@@ -2988,7 +2994,8 @@
     "date": "2015-10-01T16:00+09:00",
     "origin": "auto",
     "article": "https://getnews.jp/archives/1172286",
-    "image": "https://livedoor.blogimg.jp/fulltimeblog/imgs/5/0/50163acc-s.jpg"
+    "image": "https://livedoor.blogimg.jp/fulltimeblog/imgs/5/0/50163acc-s.jpg",
+    "release": ""
   },
   {
     "id": "91de2b7ee5544dc3",
@@ -3001,7 +3008,8 @@
     "official": false,
     "date": "2015-09-30T18:14+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2015/09/2015.09.30-16.54.521.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2015/09/2015.09.30-16.54.521.jpg",
+    "release": "2015-09-29"
   },
   {
     "id": "88dd19eff1abcc98",
@@ -3014,7 +3022,8 @@
     "official": false,
     "date": "2015-09-24T16:16+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2015/09/walt-disney-japan-1509-tsumtsum-main.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2015/09/walt-disney-japan-1509-tsumtsum-main.jpg",
+    "release": "2015-10-18"
   },
   {
     "id": "c923ba5e4c431c23",
@@ -3027,7 +3036,8 @@
     "official": false,
     "date": "2015-09-22T21:04+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2015/09/2015-09-22-18.52.321.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2015/09/2015-09-22-18.52.321.jpg",
+    "release": ""
   },
   {
     "id": "5bc0f2d044a28b96",
@@ -3041,7 +3051,8 @@
     "date": "2015-09-14T16:00+09:00",
     "origin": "auto",
     "article": "https://beauty.oricon.co.jp/news/2059121/photo/15/",
-    "image": "https://contents.oricon.co.jp/upimg/news/20150914/2059121_201509140913992001442219332c.jpg"
+    "image": "https://contents.oricon.co.jp/upimg/news/20150914/2059121_201509140913992001442219332c.jpg",
+    "release": ""
   },
   {
     "id": "d896197a7a1c42cf",
@@ -3054,7 +3065,8 @@
     "official": false,
     "date": "2015-09-11T21:27+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2015/09/disneystore-1509-cup1.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2015/09/disneystore-1509-cup1.jpg",
+    "release": ""
   },
   {
     "id": "805a5094c7569779",
@@ -3067,7 +3079,8 @@
     "official": false,
     "date": "2015-08-06T14:52+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2015/08/campus-girls1.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2015/08/campus-girls1.jpg",
+    "release": ""
   },
   {
     "id": "97836c00d0087ae9",
@@ -3080,7 +3093,8 @@
     "official": false,
     "date": "2015-07-30T09:13+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2015/07/2015-07-28-10.23.45.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2015/07/2015-07-28-10.23.45.jpg",
+    "release": ""
   },
   {
     "id": "044cef04608dba83",
@@ -3106,7 +3120,8 @@
     "official": false,
     "date": "2015-07-10T22:40+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2015/07/DSC_52851.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2015/07/DSC_52851.jpg",
+    "release": ""
   },
   {
     "id": "95898793241e7ce1",
@@ -3119,7 +3134,8 @@
     "official": false,
     "date": "2015-07-09T21:55+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2015/07/2015-07-04-15.03.2611.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2015/07/2015-07-04-15.03.2611.jpg",
+    "release": ""
   },
   {
     "id": "eb653a6e76add408",
@@ -3132,7 +3148,8 @@
     "official": false,
     "date": "2015-07-06T20:24+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2015/07/DSC_6226.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2015/07/DSC_6226.jpg",
+    "release": ""
   },
   {
     "id": "31345389d706e4bb",
@@ -3145,7 +3162,8 @@
     "official": false,
     "date": "2015-07-05T17:30+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2015/07/2015-07-04-15.05.481.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2015/07/2015-07-04-15.05.481.jpg",
+    "release": ""
   },
   {
     "id": "422da898de077bfb",
@@ -3158,7 +3176,8 @@
     "official": false,
     "date": "2015-07-01T19:27+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2015/07/DSC_62341.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2015/07/DSC_62341.jpg",
+    "release": ""
   },
   {
     "id": "04ca7b3cbad92f35",
@@ -3184,7 +3203,8 @@
     "official": false,
     "date": "2015-06-09T12:07+09:00",
     "origin": "auto",
-    "image": "https://dtimes.jp/wp-content/uploads/2015/06/takara-tomy-arts-1506-beanscollection0.jpg"
+    "image": "https://dtimes.jp/wp-content/uploads/2015/06/takara-tomy-arts-1506-beanscollection0.jpg",
+    "release": ""
   },
   {
     "id": "0c953e03d4f7d8af",
@@ -3197,7 +3217,8 @@
     "official": false,
     "date": "2015-05-29T20:49+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2015/05/2015-04-22-16.21.21-4.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2015/05/2015-04-22-16.21.21-4.jpg",
+    "release": ""
   },
   {
     "id": "8dea2713e06008b4",
@@ -3210,7 +3231,8 @@
     "official": false,
     "date": "2015-04-11T19:49+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2015/04/2015-04-11-15.16.411.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2015/04/2015-04-11-15.16.411.jpg",
+    "release": "2015-04-11"
   },
   {
     "id": "de98e4f76febd40a",
@@ -3223,7 +3245,8 @@
     "official": false,
     "date": "2015-03-26T13:00+09:00",
     "origin": "auto",
-    "image": "https://www.j-cast.com/trend/images/origin/2015/03/trend_20150324172850.jpg"
+    "image": "https://www.j-cast.com/trend/images/origin/2015/03/trend_20150324172850.jpg",
+    "release": ""
   },
   {
     "id": "0d9dc254b95e2738",
@@ -3237,7 +3260,8 @@
     "date": "2015-03-23T16:00+09:00",
     "origin": "auto",
     "article": "https://beauty.oricon.co.jp/news/2050465/full/",
-    "image": "https://contents.oricon.co.jp/upimg/news/20150323/2050465_201503230433756001427097651c.jpg"
+    "image": "https://contents.oricon.co.jp/upimg/news/20150323/2050465_201503230433756001427097651c.jpg",
+    "release": ""
   },
   {
     "id": "7ad72cbf87d80a06",
@@ -3250,7 +3274,8 @@
     "official": false,
     "date": "2015-02-11T18:24+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2015/02/2015-02-05-08.30.3051.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2015/02/2015-02-05-08.30.3051.jpg",
+    "release": ""
   },
   {
     "id": "bb930febf293f842",
@@ -3276,7 +3301,8 @@
     "official": false,
     "date": "2014-12-27T15:42+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2014/12/2014.12.26-19.54.28.111.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2014/12/2014.12.26-19.54.28.111.jpg",
+    "release": "2014-12-26"
   },
   {
     "id": "689f123aad6aac1b",
@@ -3289,7 +3315,8 @@
     "official": false,
     "date": "2014-11-22T19:25+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2014/11/2014-11-21-14.54.38-4.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2014/11/2014-11-21-14.54.38-4.jpg",
+    "release": ""
   },
   {
     "id": "78ad7e334c55c876",
@@ -3315,7 +3342,8 @@
     "official": false,
     "date": "2014-08-01T21:39+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2014/08/2014-08-01-19.35.10.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2014/08/2014-08-01-19.35.10.jpg",
+    "release": "2014-08-01"
   },
   {
     "id": "706cf59505489daa",
@@ -3328,7 +3356,8 @@
     "official": false,
     "date": "2014-07-13T17:56+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2014/07/2014-07-09-06.17.00.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2014/07/2014-07-09-06.17.00.jpg",
+    "release": "2014-07-08"
   },
   {
     "id": "a6020304b5e85e13",
@@ -3341,7 +3370,8 @@
     "official": false,
     "date": "2014-07-13T17:46+09:00",
     "origin": "auto",
-    "image": "https://mezzomiki.jp/wp-content/uploads/2014/07/2014-07-09-06.30.33.jpg"
+    "image": "https://mezzomiki.jp/wp-content/uploads/2014/07/2014-07-09-06.30.33.jpg",
+    "release": "2014-07-08"
   },
   {
     "id": "8da2f7fb8fef1685",
