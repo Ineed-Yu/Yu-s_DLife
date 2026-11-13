@@ -105,7 +105,6 @@
         allYears: { ja: 'すべての年', en: 'All years', fr: 'Toutes les années', zh: '全部年份' },
         kindLabel: { ja: '種類で絞り込む', en: 'Filter by type', fr: 'Filtrer par type', zh: '按类型筛选' },
         official: { ja: '公式', en: 'Official', fr: 'Officiel', zh: '官方' },
-        added: { ja: '手動で追加', en: 'Added by hand', fr: 'Ajouté à la main', zh: '手动添加' },
         others: { ja: '{n}件の記事から選ぶ', en: 'Choose from {n} articles', fr: 'Choisir parmi {n} articles', zh: '从{n}篇报道中选择' },
         pickTitle: { ja: '読む記事を選んでください', en: 'Choose an article to read', fr: 'Choisissez un article à lire', zh: '请选择要阅读的报道' },
         newest: { ja: '最新', en: 'Latest', fr: 'Le plus récent', zh: '最新' },
@@ -405,7 +404,7 @@
         body.appendChild(title);
         const source = el('span', 'playbill-source', item.source || '');
         if (item.official) source.appendChild(el('span', 'playbill-official', t('official')));
-        if (item.origin === 'manual') source.appendChild(document.createTextNode(`（${t('added')}）`));
+        // 手動で追加した情報（item.origin === 'manual'）も、ページ上では自動の情報と同じに見せる（運用のメモは表示しない）
         if (choices.length) {
             source.appendChild(el('span', 'playbill-others', t('others').replace('{n}', String(choices.length))));
         } else {
