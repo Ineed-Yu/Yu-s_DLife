@@ -1,5 +1,7 @@
 {
   "_説明": "タイムラインに出したくない情報（関係ない記事など）。urls に URL を、keywords にタイトルに含まれる言葉を書くと、その情報は表示されません。",
-  "urls": [],
+  "urls": [
+    "https://www.reddit.com/r/u_EuphoricRiver3057/comments/1r2ubfk/disney_store_japan_urupochachan_clarice_palmsized/"
+  ],
   "keywords": []
 }
