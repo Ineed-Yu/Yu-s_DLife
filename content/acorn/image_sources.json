@@ -9,8 +9,8 @@
     {"id": "img-mezzomiki", "name": "MezzoMiki", "lang": "ja", "url": "https://mezzomiki.jp/feed/"},
     {"id": "img-meritrip", "name": "メリトリップ", "lang": "ja", "url": "https://meri-trip.jp/feed/"},
     {"id": "img-disneyworldfan", "name": "ディズニーワールドファン", "lang": "ja", "url": "https://disneyworldfan.jp/feed/"},
-    {"id": "img-ed92", "name": "ed92.org", "lang": "ja", "url": "https://www.ed92.org/feed/"},
-    {"id": "img-tdrnavi", "name": "TDR NAVI", "lang": "ja", "url": "https://tdrnavi.jp/feed/"},
+    {"id": "img-ed92", "name": "ed92.org", "lang": "ja", "url": "https://www.ed92.org/?feed=rss2"},
+    {"id": "img-tdrnavi", "name": "TDR NAVI", "lang": "ja", "url": "https://tdrnavi.jp/?feed=rss2"},
     {"id": "img-dmkblog", "name": "Disney Magical Kingdom Blog", "lang": "ja", "url": "https://www.disney-magical-kingdom-blog.com/feeds/posts/default"},
     {"id": "img-tradingcardjournal", "name": "Trading Card Journal", "lang": "ja", "url": "https://www.tradingcardjournal.com/feed/", "require_disney": true}
   ]
