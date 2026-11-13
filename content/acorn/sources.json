@@ -298,7 +298,8 @@
       "type": "page",
       "url": "https://www.disney-magical-kingdom-blog.com/search?q=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9",
       "kind": "blog",
-      "disney_site": true
+      "disney_site": true,
+      "open_results": true
     },
     {
       "id": "disneyworldfan",
@@ -316,7 +317,9 @@
       "type": "page",
       "url": "https://www.ed92.org/?s=%E3%82%AF%E3%83%A9%E3%83%AA%E3%82%B9",
       "kind": "blog",
-      "disney_site": true
+      "disney_site": true,
+      "open_results": true,
+      "page_param": "paged"
     },
     {
       "id": "disneypinsblog",
@@ -325,7 +328,9 @@
       "type": "page",
       "url": "https://disneypinsblog.com/search?q=clarice&type=article",
       "kind": "blog",
-      "disney_site": true
+      "disney_site": true,
+      "open_results": true,
+      "page_param": "page"
     },
     {
       "id": "disneystore-uk",

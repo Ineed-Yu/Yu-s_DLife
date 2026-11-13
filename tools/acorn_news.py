@@ -6,6 +6,8 @@
   content/acorn/manual.json    … 入力フォームから手動で追加した情報（SNS の投稿など）
   content/acorn/image_sources.json … 画像の中の「Clarice / クラリス」も読むサイト（管理者が共有したサイトの新着記事の一覧）
   content/acorn/ocr_state.json     … 画像を調べ終えた記事（同じ記事を何度も調べないため）
+  content/acorn/sitemap_sources.json … サイトマップから過去の記事も全部たどるサイト（RSS の無いサイト）
+  content/acorn/sitemap_state.json   … サイトマップをどこまで調べたか・検索結果から開いて確かめる記事の順番待ち
   content/acorn/exclude.json   … 表示しない情報（URL・言葉）
   content/acorn/x_state.json   … X の検索の続きの位置と、今月読んだ件数（従量課金の上限管理）
         ↓
@@ -23,6 +25,8 @@
   python3 tools/acorn_news.py collect --dry-run   # 書き換えずに、取得元ごとの結果を表示（PR での確認用）
   python3 tools/acorn_news.py backfill            # 過去の記事を期間ごとに探して取り込む（手動で1回）
   python3 tools/acorn_news.py images --dry-run    # 書き換えずに、記事の画像が見つかるかを試す（PR での確認用）
+  python3 tools/acorn_news.py pages               # RSS の無いサイト：サイトマップ・検索結果の記事を開いて確かめる（自動実行用）
+  python3 tools/acorn_news.py pages --trial 3     # 書き換えずに、サイトマップが読めるかと記事3件を試す（PR での確認用）
   python3 tools/acorn_news.py ocr 記事のURL        # 書き換えずに、記事の画像にクラリスの文字があるか試す（PR での確認用）
   python3 tools/acorn_news.py build               # 集めた情報からタイムラインだけ作り直す
   python3 tools/acorn_news.py build --check       # タイムラインが最新か・クラリス年表の書き方が正しいか確認する（CI 用）
@@ -36,6 +40,7 @@ import argparse
 import base64
 import datetime as dt
 import email.utils
+import gzip
 import hashlib
 import html
 import io
@@ -47,8 +52,10 @@ import sys
 import tempfile
 import time
 import unicodedata
+import urllib.error
 import urllib.parse
 import urllib.request
+import urllib.robotparser
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -831,6 +838,345 @@ def check_images(known: set[str], now: dt.datetime, dry_run: bool, fetcher=fetch
     return found
 
 
+# ---------------------------------------------------------------- 記事を開いて確かめる（RSS の無いサイト：サイトマップ・自前のスクレイピング）
+# ① サイトマップ：content/acorn/sitemap_sources.json のサイトの「全記事の URL 一覧」（sitemap.xml）を読み、
+#    記事を1件ずつ開いて、見出し・小見出し・画像の説明にクラリスがあるかを確かめる。過去の記事も全部たどる。
+#    1回に PAGES_BUDGET_SECONDS 秒まで少しずつ進め、どこまで調べたかを sitemap_state.json に残して次回に続ける。
+#    最後まで調べ終えたら、以後は更新日（lastmod）が新しい記事だけを調べる。
+# ② 自前のスクレイピング：サイト内検索の結果のページ（sources.json の type: page）を
+#    ・page_param があれば 2ページ目・3ページ目…と過去までたどる（backfill）
+#    ・open_results があれば、リンクの文字にクラリスが無い記事も開いて中身を確かめる（検索結果＝本文にクラリスがある記事）
+# どちらも robots.txt（サイトが「読まないで」と指定した場所）を守り、1秒に1件以上の間隔をあける。保存するのは見出し・URL・日付・
+# 共有用の画像の場所だけで、本文は保存しない。
+SITEMAP_SOURCES_FILE = DATA_DIR / "sitemap_sources.json"
+PAGES_STATE_FILE = DATA_DIR / "sitemap_state.json"
+PAGES_BUDGET_SECONDS = 240.0
+PAGES_PAUSE = 1.0
+PENDING_PER_RUN = 20             # 検索結果から開いて確かめる記事の、1回の上限
+MAX_SITEMAP_BYTES = 15 * 1024 * 1024
+SITEMAP_SKIP = re.compile(r"tag|categor|author|attachment|image|video|taxonom|users|page-sitemap|wp-sitemap-posts-page|"
+                          r"product_cat|collections|blogs?_?tags|archive", re.I)
+NOT_ARTICLE_PATH = re.compile(r"^/?$|/(?:tag|tags|category|categories|author|page|search|feed|wp-|cart|account|login|"
+                              r"collections|policies|pages/(?:contact|about))(?:/|$)|\.(?:jpe?g|png|gif|webp|pdf|xml|zip)$", re.I)
+ARTICLE_HINT = re.compile(r"og:type[\"']?\s+content=[\"']article|content=[\"']article[\"'][^>]*og:type|article:published_time|"
+                          r"\"datePublished\"|itemprop=[\"']datePublished|<article\b", re.I)
+PUBLISHED = re.compile(r"(?:article:published_time[\"']?\s+content=|\"datePublished\"\s*:\s*|itemprop=[\"']datePublished[\"'][^>]*content=)"
+                       r"[\"']?([0-9]{4}-[0-9]{2}-[0-9]{2}[^\"'<>\s]*)", re.I)
+TIME_TAG = re.compile(r"<time\b[^>]*datetime=[\"']([0-9]{4}-[0-9]{2}-[0-9]{2}[^\"']*)", re.I)
+TITLE_TAG = re.compile(r"<title[^>]*>(.*?)</title>", re.I | re.S)
+SITE_SUFFIX = re.compile(r"\s*[|｜]\s*[^|｜]{2,40}$|\s+[-–—]\s+[^-–—]{2,30}$")
+
+
+def get_bytes(url: str, limit: int = MAX_SITEMAP_BYTES) -> bytes:
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "application/xml,text/xml,*/*"})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        data = r.read(limit + 1)
+    if len(data) > limit:
+        raise ValueError("サイトマップが大きすぎます")
+    if data[:2] == b"\x1f\x8b":
+        data = gzip.decompress(data)[: limit + 1]
+        if len(data) > limit:
+            raise ValueError("サイトマップが大きすぎます")
+    return data
+
+
+def read_sitemap(data: bytes) -> tuple[list[str], list[tuple[str, str]]]:
+    """sitemap.xml を読み、(子のサイトマップの URL, [(記事の URL, 更新日)]) を返す。"""
+    root = ET.fromstring(data)   # 外部実体は標準ライブラリの既定で展開されない
+    maps, urls = [], []
+    for el in root:
+        name = strip_ns(el.tag)
+        loc = lastmod = ""
+        for c in el:
+            if strip_ns(c.tag) == "loc":
+                loc = (c.text or "").strip()
+            elif strip_ns(c.tag) == "lastmod":
+                lastmod = (c.text or "").strip()
+        if not loc.startswith("https://") and not loc.startswith("http://"):
+            continue
+        if name == "sitemap":
+            maps.append(loc)
+        elif name == "url":
+            urls.append((loc, lastmod))
+    return maps, urls
+
+
+def robots_for(site: str, get=http_get) -> tuple[urllib.robotparser.RobotFileParser, list[str], float]:
+    """robots.txt を読み、(読んでよいかの判定, 書かれているサイトマップ, 間隔の秒数) を返す。読めなければ「すべて可」。"""
+    rp = urllib.robotparser.RobotFileParser()
+    try:
+        _, text = get(urllib.parse.urljoin(site, "/robots.txt"))
+        lines = text.splitlines()
+    except Exception:
+        lines = []
+    rp.parse(lines)
+    maps = [l.split(":", 1)[1].strip() for l in lines if l.lower().startswith("sitemap:")]
+    delay = rp.crawl_delay(USER_AGENT) or rp.crawl_delay("*") or 0
+    return rp, maps, max(PAGES_PAUSE, min(float(delay), 10.0))
+
+
+def find_sitemaps(site: str, robots_maps: list[str], getb=get_bytes) -> list[str]:
+    """サイトの記事のサイトマップ（子まで展開した一覧）を返す。タグ・カテゴリ・画像などのサイトマップは除く。"""
+    roots = robots_maps or [urllib.parse.urljoin(site, p) for p in (
+        "/sitemap.xml", "/sitemap_index.xml", "/wp-sitemap.xml", "/sitemap-index.xml", "/sitemap.xml.gz",
+        "/post-sitemap.xml", "/sitemaps.xml", "/sitemap/sitemap.xml", "/wp-sitemap-posts-post-1.xml")]
+    host = (urllib.parse.urlparse(site).hostname or "").removeprefix("www.")
+    out: list[str] = []
+    for root in roots:
+        try:
+            maps, urls = read_sitemap(getb(root))
+        except Exception:
+            continue
+        if urls:
+            out.append(root)
+        for m in maps:
+            mh = (urllib.parse.urlparse(m).hostname or "").removeprefix("www.")
+            if mh != host or SITEMAP_SKIP.search(urllib.parse.urlparse(m).path) or m in out:
+                continue
+            try:   # 2段目（索引の中の索引）まで
+                sub_maps, sub_urls = read_sitemap(getb(m))
+            except Exception:
+                continue
+            if sub_urls:
+                out.append(m)
+            out += [s for s in sub_maps if s not in out and not SITEMAP_SKIP.search(urllib.parse.urlparse(s).path)]
+        if out:
+            break
+    return out
+
+
+def article_title(page: str) -> str:
+    for tag in META_TAG.findall(page[:400_000]):
+        attrs = {k.lower(): (v1 if v1 or not v2 else v2) for k, v1, v2 in META_ATTR.findall(tag)}
+        if (attrs.get("property") or attrs.get("name") or "").lower() == "og:title" and attrs.get("content"):
+            return clean_text(html.unescape(attrs["content"]), 200)
+    m = TITLE_TAG.search(page[:400_000])
+    return SITE_SUFFIX.sub("", clean_text(html.unescape(m.group(1)), 200)) if m else ""
+
+
+def check_article(url: str, src: dict, now: dt.datetime, lastmod: str = "", get=http_get) -> dict | None:
+    """記事を開いて、クラリスの記事なら載せる情報の形で返す（違えば None）。
+    クラリスは「見出し」か「本文の小見出し・画像の説明」にあること（サイドバーや関連記事だけに名前が出るページは除く）。"""
+    final, page = get(url)
+    if not is_safe_url(final) or not ARTICLE_HINT.search(page[:600_000]):
+        return None   # 記事ではないページ（一覧・カテゴリなど）
+    title = article_title(page)
+    if not title or NOISE_TITLE.search(title):
+        return None
+    body = main_content(page)
+    featured = bool(CLARICE.search(title)) or clarice_is_featured(body)
+    if not featured:
+        return None
+    text = clean_text(re.sub(r"<a\b[^>]*>.*?</a>", " ", body[:300_000], flags=re.I | re.S), 4000)
+    cat = is_relevant(title, text[:1500], src.get("topic"), require_disney=not src.get("disney_site", True), require_clarice=False)
+    if not cat and not OTHER_CLARICE.search(title + text):
+        cat = category_of(text, src.get("topic"))
+    if not cat:
+        return None
+    m = PUBLISHED.search(page[:600_000]) or TIME_TAG.search(body[:300_000])
+    date = parse_date(m.group(1)) if m else None
+    date = date or parse_date(lastmod)
+    if not date:
+        return None   # 公開日が分からない記事は、年がずれるため載せない
+    item = {"id": item_id(final), "title": title, "url": final, "source": src["name"], "via": src["id"],
+            "lang": src.get("lang", "ja"), "category": cat, "official": False,
+            "date": min(date, now).isoformat(timespec="minutes"), "origin": "auto"}
+    item["image"] = find_share_image(page, final) or ""
+    if cat in GOODS_CATEGORIES:
+        item["release"] = find_release_date(page, item["date"]) or ""
+    return item
+
+
+def queue_pending(state: dict, urls: list[tuple[str, str]], known: set[str]) -> int:
+    """検索結果から見つけた「開いて確かめる記事」を順番待ちに入れる。戻り値は追加した件数。"""
+    pending = state.setdefault("pending", [])
+    checked = state.setdefault("checked", {})
+    have = {p["url"] for p in pending}
+    added = 0
+    for url, via in urls:
+        if url in have or url in checked or item_id(url) in known:
+            continue
+        pending.append({"url": url, "via": via})
+        have.add(url)
+        added += 1
+    return added
+
+
+def unmatched_links(src: dict, final_url: str, page: str) -> list[str]:
+    """検索結果のページから、リンクの文字にクラリスが無い「記事らしい」リンク（同じサイト内）を返す。"""
+    host = (urllib.parse.urlparse(final_url).hostname or "").removeprefix("www.")
+    out = []
+    listing = re.sub(r"<(?:header|nav|aside|footer)\b.*?</(?:header|nav|aside|footer)>", " ", page, flags=re.I | re.S)   # 検索結果は記事が複数並ぶので、<article> 1つだけに絞らない
+    for h1, h2, inner in ANCHOR.findall(listing[:2_000_000]):
+        url = urllib.parse.urljoin(final_url, html.unescape(h1 or h2)).split("#")[0]
+        title = clean_text(inner, 200)
+        p = urllib.parse.urlparse(url)
+        if len(title) < 8 or CLARICE.search(title) or (p.hostname or "").removeprefix("www.") != host:
+            continue
+        if p.query or NOT_ARTICLE_PATH.search(p.path) or not is_safe_url(url) or url in out:
+            continue
+        out.append(url)
+    return out
+
+
+def known_ids() -> set[str]:
+    return {i["id"] for i in load_json(DATA_DIR / "collected.json", [])} | {i["id"] for i in load_json(DATA_DIR / "manual.json", [])}
+
+
+def crawl_pages(dry_run: bool, now: dt.datetime, budget: float = PAGES_BUDGET_SECONDS, trial: int = 0,
+                get=http_get, getb=get_bytes, clock=time.monotonic, sleep=time.sleep) -> list[dict]:
+    """① 検索結果の順番待ちの記事と、② サイトマップの記事を、時間の許す範囲で開いて確かめる。見つけた情報を返す。
+    trial>0（PR の試し）は、サイトマップが読めるかと、各サイトの記事を trial 件だけ確かめる（状態は変えない）。"""
+    started = clock()
+    state = load_json(PAGES_STATE_FILE, {})
+    known = known_ids()
+    found: list[dict] = []
+    all_sources = load_json(DATA_DIR / "sources.json", {}).get("sources", [])
+    by_id = {s["id"]: s for s in all_sources}
+    robots: dict[str, tuple] = {}
+
+    def robot(url: str):
+        p = urllib.parse.urlparse(url)
+        key = f"{p.scheme}://{p.netloc}/"
+        if key not in robots:
+            robots[key] = robots_for(key, get)
+        return robots[key]
+
+    def left() -> bool:
+        return clock() - started < budget
+
+    # ② 自前のスクレイピングで見つけた順番待ち（検索結果にあるがリンクの文字にクラリスが無い記事）
+    pending = state.get("pending", [])
+    done_now = 0
+    while pending and done_now < PENDING_PER_RUN and left() and not trial:
+        p = pending.pop(0)
+        src = by_id.get(p.get("via")) or {"id": p.get("via", "?"), "name": source_from_host(p["url"])}
+        rp, _, pause = robot(p["url"])
+        state.setdefault("checked", {})[p["url"]] = now.date().isoformat()
+        done_now += 1
+        if not rp.can_fetch(USER_AGENT, p["url"]):
+            continue
+        try:
+            item = check_article(p["url"], src, now, get=get)
+        except urllib.error.HTTPError as e:
+            item = None
+            if e.code in (429, 503):   # 間隔をあけるよう求められたら、順番待ちに戻して次回に
+                state["checked"].pop(p["url"], None)
+                pending.append(p)
+                break
+        except Exception:
+            item = None
+        if item and item["id"] not in known:
+            found.append(item)
+            known.add(item["id"])
+        sleep(pause)
+    if done_now:
+        print(f"::notice title=検索結果の記事::{done_now} 件を開いて確かめ、残り {len(pending)} 件")
+
+    # ① サイトマップ
+    sources = load_json(SITEMAP_SOURCES_FILE, {}).get("sources", [])
+    sstate = state.setdefault("sources", {})
+    for src in sources:
+        if not trial and not left():
+            break
+        st = {} if trial else sstate.setdefault(src["id"], {})
+        if not trial and st.get("done") and st.get("finished", "")[:10] == now.date().isoformat():
+            continue   # 調べ終えたサイトの「更新された記事」の確認は1日1回
+        try:
+            rp, robots_maps, pause = robot(src["site"])
+            pause = max(pause, float(src.get("pause") or 0))   # サイトごとの間隔（読みすぎと言われやすいサイトは長めに）
+            if trial or not st.get("maps") or st.get("done"):
+                maps = find_sitemaps(src["site"], robots_maps, getb)
+                if not maps:
+                    print(f"::warning title=サイトマップ（{src['id']}）::サイトマップが見つかりませんでした")
+                    continue
+                if not trial and (not st.get("maps") or st.get("done")):
+                    if st.get("done"):   # 調べ終えたあと：前回から更新された記事だけを調べ直す
+                        st.update({"maps": maps, "map": 0, "pos": 0, "done": False, "since": st.get("finished", "")})
+                    else:
+                        st.update({"maps": maps, "map": 0, "pos": 0, "done": False, "since": "", "started": now.isoformat(timespec="minutes")})
+            else:
+                maps = st["maps"]
+            include = re.compile(src["include"]) if src.get("include") else None
+            checked = hits = 0
+            i, pos = (0, 0) if trial else (int(st.get("map", 0)), int(st.get("pos", 0)))
+            since = "" if trial else st.get("since", "")
+            while i < len(maps) and (trial or left()):
+                _, urls = read_sitemap(getb(maps[i]))
+                if trial:
+                    sample = [u for u in urls if not NOT_ARTICLE_PATH.search(urllib.parse.urlparse(u[0]).path)
+                              and (not include or include.search(u[0]))]
+                    print(f"::notice title=サイトマップ（{src['id']}）::{len(maps)} 個のサイトマップ／最初の1個に記事 {len(urls)} 件"
+                          f"（対象 {len(sample)} 件）例: {sample[0][0] if sample else 'なし'}")
+                    urls = sample[: trial]
+                while pos < len(urls) and (trial or left()):
+                    url, lastmod = urls[pos]
+                    pos += 1
+                    path = urllib.parse.urlparse(url).path
+                    if NOT_ARTICLE_PATH.search(path) or (include and not include.search(url)) or item_id(url) in known:
+                        continue
+                    if since and (not lastmod or lastmod < since):
+                        continue
+                    if not rp.can_fetch(USER_AGENT, url):
+                        continue
+                    try:
+                        item = check_article(url, src, now, lastmod, get)
+                    except urllib.error.HTTPError as e:
+                        if e.code in (429, 503):   # 「読みすぎ」と言われたら、そのサイトは今回やめて次回同じ記事から続ける
+                            pos -= 1
+                            print(f"::notice title=サイトマップ（{src['id']}）::サイトから間隔をあけるよう求められたため、続きは次回")
+                            break
+                        item = None
+                    except Exception:
+                        item = None
+                    checked += 1
+                    if trial:
+                        print(f"::notice title=サイトマップの試し（{src['id']}）::{url[:70]} → "
+                              + (f"クラリスあり：{item['title'][:40]}（{item['date'][:10]}）" if item else "対象外"))
+                    if item:
+                        hits += 1
+                        found.append(item)
+                        known.add(item["id"])
+                    sleep(pause)
+                if trial:
+                    break
+                if pos >= len(urls):
+                    i, pos = i + 1, 0
+                else:
+                    break   # 時間切れ・間隔の指示
+            if not trial:
+                st["map"], st["pos"] = i, pos
+                st["checked"] = int(st.get("checked", 0)) + checked
+                st["hits"] = int(st.get("hits", 0)) + hits
+                if i >= len(maps):
+                    st["done"] = True
+                    st["finished"] = now.isoformat(timespec="minutes")
+                print(f"::notice title=サイトマップ（{src['id']}）::今回 {checked} 件を開いて {hits} 件にクラリス／"
+                      f"{i}/{len(maps)} 個目のサイトマップまで" + ("・調べ終えました" if st.get("done") else "・続きは次回"))
+        except Exception as e:
+            print(f"::warning title=サイトマップ（{src['id']}）::読めませんでした（{type(e).__name__}: {str(e)[:120]}）")
+    if not dry_run and not trial:
+        cutoff = (now - dt.timedelta(days=365)).date().isoformat()
+        state["checked"] = {u: d for u, d in state.get("checked", {}).items() if d >= cutoff}
+        write_if_changed(PAGES_STATE_FILE, dump(state))
+    return found
+
+
+def run_pages(dry_run: bool, now: dt.datetime, budget: float, trial: int = 0) -> int:
+    found = crawl_pages(dry_run, now, budget, trial)
+    years = sorted({f["date"][:4] for f in found})
+    print(f"::notice title=記事を開いて確認::クラリスの記事 {len(found)} 件" + (f"（{'・'.join(years)} 年）" if years else ""))
+    if dry_run or trial:
+        return 0
+    collected = merge_collected(load_json(DATA_DIR / "collected.json", []), found)
+    collected.sort(key=lambda x: x["date"], reverse=True)
+    collected = collected[: MAX_ITEMS * 2]
+    changed = write_if_changed(DATA_DIR / "collected.json", dump(collected))
+    changed |= write_if_changed(OUT_FILE, timeline_json(now))
+    print("更新しました" if changed else "変更なし")
+    return 0
+
+
 # ---------------------------------------------------------------- 見出しの自動翻訳（Claude API）
 # ページの言語（日本語・英語・フランス語・中国語）に合わせて見出しだけを表示するため、見出しを4言語に訳して t に保存する。
 # キー（Secrets の ANTHROPIC_API_KEY。ブログの翻訳と共通）が無ければ何もしない。月の上限（見出しの件数）を超えたら止まる。
@@ -1175,6 +1521,7 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search
     except ValueError:
         x_limit = X_DEFAULT_MONTHLY_LIMIT
     x_state = load_json(X_STATE_FILE, {})
+    to_open: list[tuple[str, str]] = []   # 検索結果から、開いて確かめる記事（URL, 取得元）
     notes: list[str] = []   # 取得元ごとの結果（GitHub の注記は1ステップ10件までしか出ないため、最後に要約を先頭にして出す）
     tally: list[str] = []
     for src in sources:
@@ -1198,6 +1545,8 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search
             if src.get("type") == "page":
                 final, page = http_get(src["url"])
                 items, total = page_items(src, final, page, now)
+                if src.get("open_results"):   # リンクの文字にクラリスが無い検索結果も、あとで開いて確かめる
+                    to_open += [(u, src["id"]) for u in unmatched_links(src, final, page)]
             else:
                 items, total = items_from_source(src, fetcher(src["url"]), now)
             ok += 1
@@ -1219,8 +1568,13 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search
     except Exception as e:  # 画像の確認に失敗しても収集は止めない
         print(f"::warning title=画像の文字::調べられませんでした（{type(e).__name__}: {str(e)[:120]}）")
     if dry_run:
+        print(f"::notice title=検索結果の記事::開いて確かめる候補 {len(to_open)} 件")
         print(f"試し取得：{ok}/{len(sources)} 件の取得元から {len(found)} 件の候補（ファイルは書き換えていません）")
         return 0
+    if to_open:
+        pstate = load_json(PAGES_STATE_FILE, {})
+        if queue_pending(pstate, to_open, {i["id"] for i in found} | known_ids()):
+            write_if_changed(PAGES_STATE_FILE, dump(pstate))
     collected = merge_collected(load_json(DATA_DIR / "collected.json", []), found)
     collected.sort(key=lambda x: x["date"], reverse=True)
     collected = collected[: MAX_ITEMS * 2]
@@ -1291,6 +1645,8 @@ def backfill(dry_run: bool, now: dt.datetime, windows: int | None = None, fetche
     all_sources = load_json(DATA_DIR / "sources.json", {}).get("sources", [])
     gnews = [s for s in all_sources if s.get("backfill") and "news.google.com/rss/search" in s.get("url", "")]
     site_search = [s for s in all_sources if s.get("clarice_search") and "feed=rss2" in s.get("url", "")]
+    page_search = [s for s in all_sources if s.get("type") == "page" and s.get("page_param")]   # 自前のスクレイピング（検索結果のページ）
+    to_open: list[tuple[str, str]] = []
     spans = backfill_windows(now)
     trial = bool(windows)
     if trial:
@@ -1329,6 +1685,34 @@ def backfill(dry_run: bool, now: dt.datetime, windows: int | None = None, fetche
         if not trial:
             state["pages"][src["id"]] = "done" if page is None or page > last else page - 1
         out_of_time |= page is not None and page <= last
+    for src in page_search:
+        done = state["pages"].get(src["id"], 0)
+        if done == "done" and not trial:
+            continue
+        page = 1 if trial else int(done) + 1
+        last = 2 if trial else BACKFILL_MAX_PAGES
+        seen_links: set[str] = set()
+        while page <= last and time_left():
+            try:
+                url = src["url"] if page == 1 else f"{src['url']}{'&' if '?' in src['url'] else '?'}{src['page_param']}={page}"
+                final, html_page = http_get(url)
+                items, total = page_items(src, final, html_page, now)
+                links = unmatched_links(src, final, html_page) if src.get("open_results") else []
+            except Exception:
+                total, items, links = 0, [], []
+            new_links = {i["url"] for i in items} | set(links)
+            if not total or not (new_links - seen_links):   # ページの終わり（同じ内容が続く・404 など）
+                page = None
+                break
+            seen_links |= new_links
+            found += items
+            to_open += [(u, src["id"]) for u in links]
+            per_source[src["id"]] = per_source.get(src["id"], 0) + len(items)
+            page += 1
+            time.sleep(pause)
+        if not trial:
+            state["pages"][src["id"]] = "done" if page is None or page > last else page - 1
+        out_of_time |= page is not None and page <= last
     for src in gnews:
         i = 0 if trial else int(state["windows"].get(src["id"], 0))
         while i < len(spans) and time_left():
@@ -1350,8 +1734,14 @@ def backfill(dry_run: bool, now: dt.datetime, windows: int | None = None, fetche
     print(f"::notice title=過去分::候補 {len(found)} 件（失敗 {fails} 回）{'・すべて調べ終えました' if complete else '・続きは次回'}: {summary}")
     for it in sorted(found, key=lambda x: x["date"])[:5]:
         print(f"::notice title=過去分の例::{it['date'][:10]} {it['title'][:50]}")
+    if to_open:
+        print(f"::notice title=過去分の検索結果::開いて確かめる候補 {len(to_open)} 件")
     if dry_run:
         return 0
+    if to_open:
+        pstate = load_json(PAGES_STATE_FILE, {})
+        if queue_pending(pstate, to_open, {i["id"] for i in found} | known_ids()):
+            write_if_changed(PAGES_STATE_FILE, dump(pstate))
     if not trial:
         write_if_changed(BACKFILL_STATE, dump(state))
     collected = merge_collected(load_json(DATA_DIR / "collected.json", []), found)
@@ -1593,6 +1983,11 @@ def main() -> int:
     im = sub.add_parser("images")
     im.add_argument("--dry-run", action="store_true")
     im.add_argument("--limit", type=int, default=8)
+    pg = sub.add_parser("pages", help="RSS の無いサイト：サイトマップと検索結果の記事を開いて確かめる")
+    pg.add_argument("--dry-run", action="store_true")
+    pg.add_argument("--budget", type=float, default=PAGES_BUDGET_SECONDS, help="1回に使う時間（秒）。続きは次回")
+    pg.add_argument("--trial", type=int, default=0, help="試し：サイトマップが読めるかと、各サイトの記事をこの件数だけ確かめる")
+    pg.add_argument("--url", help="試し：この記事を1件だけ開いて、クラリスの記事と判定されるか確かめる")
     oc = sub.add_parser("ocr", help="1つの記事の画像にクラリスの文字があるか試す（ファイルは書き換えない）")
     oc.add_argument("url")
     b = sub.add_parser("build")
@@ -1617,6 +2012,17 @@ def main() -> int:
         tried = add_images(items, args.limit, True)
         print(f"試し：{tried} 件の記事の画像を調べました（ファイルは書き換えていません）")
         return 0
+    if args.cmd == "pages" and args.url:
+        try:
+            item = check_article(args.url, {"id": "trial", "name": source_from_host(args.url), "disney_site": True}, now)
+        except Exception as e:
+            print(f"::warning title=記事の判定（試し）::{args.url[:70]} を開けませんでした（{type(e).__name__}: {str(e)[:80]}）")
+            return 0
+        print(f"::notice title=記事の判定（試し）::{args.url[:70]} → "
+              + (f"クラリスの記事：{item['title'][:40]}（{item['category']}・{item['date'][:10]}）" if item else "対象外"))
+        return 0
+    if args.cmd == "pages":
+        return run_pages(args.dry_run, now, args.budget, args.trial)
     if args.cmd == "ocr":
         langs = ocr_langs()
         if not langs:
