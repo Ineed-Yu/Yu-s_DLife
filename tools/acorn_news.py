@@ -52,6 +52,7 @@ import sys
 import tempfile
 import time
 import unicodedata
+import urllib.error
 import urllib.parse
 import urllib.request
 import urllib.robotparser
@@ -1057,6 +1058,12 @@ def crawl_pages(dry_run: bool, now: dt.datetime, budget: float = PAGES_BUDGET_SE
             continue
         try:
             item = check_article(p["url"], src, now, get=get)
+        except urllib.error.HTTPError as e:
+            item = None
+            if e.code in (429, 503):   # 間隔をあけるよう求められたら、順番待ちに戻して次回に
+                state["checked"].pop(p["url"], None)
+                pending.append(p)
+                break
         except Exception:
             item = None
         if item and item["id"] not in known:
@@ -1113,6 +1120,12 @@ def crawl_pages(dry_run: bool, now: dt.datetime, budget: float = PAGES_BUDGET_SE
                         continue
                     try:
                         item = check_article(url, src, now, lastmod, get)
+                    except urllib.error.HTTPError as e:
+                        if e.code in (429, 503):   # 「読みすぎ」と言われたら、そのサイトは今回やめて次回同じ記事から続ける
+                            pos -= 1
+                            print(f"::notice title=サイトマップ（{src['id']}）::サイトから間隔をあけるよう求められたため、続きは次回")
+                            break
+                        item = None
                     except Exception:
                         item = None
                     checked += 1
@@ -1128,6 +1141,8 @@ def crawl_pages(dry_run: bool, now: dt.datetime, budget: float = PAGES_BUDGET_SE
                     break
                 if pos >= len(urls):
                     i, pos = i + 1, 0
+                else:
+                    break   # 時間切れ・間隔の指示
             if not trial:
                 st["map"], st["pos"] = i, pos
                 st["checked"] = int(st.get("checked", 0)) + checked
@@ -1997,7 +2012,11 @@ def main() -> int:
         print(f"試し：{tried} 件の記事の画像を調べました（ファイルは書き換えていません）")
         return 0
     if args.cmd == "pages" and args.url:
-        item = check_article(args.url, {"id": "trial", "name": source_from_host(args.url), "disney_site": True}, now)
+        try:
+            item = check_article(args.url, {"id": "trial", "name": source_from_host(args.url), "disney_site": True}, now)
+        except Exception as e:
+            print(f"::warning title=記事の判定（試し）::{args.url[:70]} を開けませんでした（{type(e).__name__}: {str(e)[:80]}）")
+            return 0
         print(f"::notice title=記事の判定（試し）::{args.url[:70]} → "
               + (f"クラリスの記事：{item['title'][:40]}（{item['category']}・{item['date'][:10]}）" if item else "対象外"))
         return 0

@@ -54,7 +54,7 @@ jobs:
       - name: 記事を開いて判定する試し（クラリスの記事・関係ない記事）
         run: |
           python3 tools/acorn_news.py pages --url "https://dtimes.jp/disney-magical-farm-chip-dale-clarice-cafe/"
-          python3 tools/acorn_news.py pages --url "https://www.disney-magical-kingdom-blog.com/2026/11/pixar-40th-anniversary-x-airside-campaign.html"
+          python3 tools/acorn_news.py pages --url "https://tdrnavi.jp/park/dcl/40425"
       - name: 記事の画像の試し取得（ファイルは書き換えない）
         run: python3 tools/acorn_news.py images --dry-run --limit 8
       - name: タイムラインが最新か確認
