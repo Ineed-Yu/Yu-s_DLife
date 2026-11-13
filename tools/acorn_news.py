@@ -9,6 +9,7 @@
   content/acorn/sitemap_sources.json … サイトマップから過去の記事も全部たどるサイト（RSS の無いサイト）
   content/acorn/sitemap_state.json   … サイトマップをどこまで調べたか・検索結果から開いて確かめる記事の順番待ち
   content/acorn/exclude.json   … 表示しない情報（URL・言葉）
+  content/acorn/groups.json    … 管理者が「同じ商品」と決めた記事のまとまり（期間と見出しの言葉）
   content/acorn/x_state.json   … X の検索の続きの位置と、今月読んだ件数（従量課金の上限管理）
         ↓
   acorn-club/news.json         … ページに表示するタイムライン（新しい順）
@@ -1443,6 +1444,16 @@ def dedupe_goods(items: list[dict]) -> list[dict]:
         return x
 
     sources = {id(i): {i.get("source")} for i in goods}   # まとまりごとの媒体（同じ媒体が2つ入らないようにする）
+    # 管理者が「同じ商品」と決めたまとまり（content/acorn/groups.json）：期間内で、見出しに言葉のどれかを含む記事を1つにまとめる
+    for rule in load_json(DATA_DIR / "groups.json", {}).get("groups", []):
+        words = [w.casefold() for w in rule.get("keywords") or [] if w]
+        hit = [i for i in goods if words and rule.get("from", "") <= i["date"][:10] <= rule.get("to", "9999")
+               and any(w in i["title"].casefold() for w in words)]
+        for b in hit[1:]:
+            ra, rb = find(id(hit[0])), find(id(b))
+            if ra != rb:
+                parent[rb] = ra
+                sources[ra] |= sources.pop(rb)
     for n, a in enumerate(goods):
         for b in goods[n + 1:]:
             ra, rb = find(id(a)), find(id(b))

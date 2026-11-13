@@ -249,7 +249,7 @@
     },
     {
       "id": "reddit-en",
-      "name": "Reddit（英語の掲示板）",
+      "name": "Reddit",
       "lang": "en",
       "url": "https://www.reddit.com/search.rss?q=clarice%20disney&sort=new",
       "kind": "sns",
