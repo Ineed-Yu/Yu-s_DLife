@@ -17,6 +17,7 @@ on:
     paths:
       - "tools/acorn_news.py"
       - "content/acorn/sources.json"
+      - "content/acorn/image_sources.json"
       - "acorn-club/history.json"
       - ".github/workflows/acorn-collect.yml"
 
@@ -35,8 +36,16 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+      # 画像の中の「Clarice / クラリス」を読むソフト（無料の Tesseract）と、読みやすく拡大するための Pillow
+      - name: 画像の文字を読むソフトを用意
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends tesseract-ocr tesseract-ocr-eng tesseract-ocr-jpn > /dev/null
+          python3 -m pip install -q "pillow>=11,<13"
       - name: 試し取得（ファイルは書き換えない）
         run: python3 tools/acorn_news.py collect --dry-run
+      - name: 画像の文字の試し読み（クラリスのピンが画像の中だけに載っている記事）
+        run: python3 tools/acorn_news.py ocr "https://disneypinsblog.com/blogs/news/mickey-s-very-merry-christmas-party-2026-disney-pins"
       - name: 過去分の試し取得（直近2期間だけ・ファイルは書き換えない）
         run: python3 tools/acorn_news.py backfill --dry-run --windows 2
       - name: 記事の画像の試し取得（ファイルは書き換えない）
@@ -59,6 +68,13 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+
+      # 画像の中の「Clarice / クラリス」を読むソフト（無料の Tesseract）と、読みやすく拡大するための Pillow
+      - name: 画像の文字を読むソフトを用意
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends tesseract-ocr tesseract-ocr-eng tesseract-ocr-jpn > /dev/null
+          python3 -m pip install -q "pillow>=11,<13"
 
       # X（有料の API）はキーを登録するまで動かない。月の上限は Variables の X_MONTHLY_POST_LIMIT（未設定なら 1300 件）
       - name: 新着情報を集める

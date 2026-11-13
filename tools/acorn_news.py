@@ -4,6 +4,8 @@
   content/acorn/sources.json   … 取得元（RSS / Atom）
   content/acorn/collected.json … 自動で集めた情報（取得元の配信から消えても残す）
   content/acorn/manual.json    … 入力フォームから手動で追加した情報（SNS の投稿など）
+  content/acorn/image_sources.json … 画像の中の「Clarice / クラリス」も読むサイト（管理者が共有したサイトの新着記事の一覧）
+  content/acorn/ocr_state.json     … 画像を調べ終えた記事（同じ記事を何度も調べないため）
   content/acorn/exclude.json   … 表示しない情報（URL・言葉）
   content/acorn/x_state.json   … X の検索の続きの位置と、今月読んだ件数（従量課金の上限管理）
         ↓
@@ -21,6 +23,7 @@
   python3 tools/acorn_news.py collect --dry-run   # 書き換えずに、取得元ごとの結果を表示（PR での確認用）
   python3 tools/acorn_news.py backfill            # 過去の記事を期間ごとに探して取り込む（手動で1回）
   python3 tools/acorn_news.py images --dry-run    # 書き換えずに、記事の画像が見つかるかを試す（PR での確認用）
+  python3 tools/acorn_news.py ocr 記事のURL        # 書き換えずに、記事の画像にクラリスの文字があるか試す（PR での確認用）
   python3 tools/acorn_news.py build               # 集めた情報からタイムラインだけ作り直す
   python3 tools/acorn_news.py build --check       # タイムラインが最新か・クラリス年表の書き方が正しいか確認する（CI 用）
   python3 tools/acorn_news.py add イベントのJSON   # 入力フォームの内容を手動の情報として追加（自動実行用）
@@ -35,10 +38,13 @@ import datetime as dt
 import email.utils
 import hashlib
 import html
+import io
 import json
 import os
 import re
+import subprocess
 import sys
+import tempfile
 import time
 import unicodedata
 import urllib.parse
@@ -623,6 +629,208 @@ def add_images(items: list[dict], limit: int, dry_run: bool, get=http_get, post=
     return tried
 
 
+# ---------------------------------------------------------------- 画像の中の「Clarice」を読む（管理者が共有したサイトだけ）
+# ピンの一覧表（ワンシート）やカードのチェックリストのように、クラリスが本文には無く画像の中にだけ書かれている記事を拾う。
+# 対象は content/acorn/image_sources.json のサイト（管理者が共有したサイト）の「新着記事の一覧（配信）」だけ。
+# 見出しがグッズの話題の記事について、本文の画像を最大 OCR_IMAGES_PER_ARTICLE 枚読み、
+# 画像の中に「Clarice / クラリス」の文字があれば載せる。文字を読むのは無料のソフト（Tesseract）で、費用はかからない。
+# 読み取った画像はその場で捨て、このサイトには保存しない（画像として表示するのは、これまでどおり掲載元の共有用の画像だけ）。
+IMAGE_SOURCES_FILE = DATA_DIR / "image_sources.json"
+OCR_STATE_FILE = DATA_DIR / "ocr_state.json"
+OCR_ARTICLES_PER_RUN = 12      # 1回の収集で調べる記事の上限
+OCR_PER_SOURCE = 3             # 1つのサイトから1回に調べる記事の上限（記事の多いサイトばかりにならないよう）
+OCR_IMAGES_PER_ARTICLE = 6
+OCR_MAX_IMAGE_BYTES = 6 * 1024 * 1024
+OCR_MAX_AGE_DAYS = 30          # これより古い記事は調べない（新着だけ）
+OCR_BUDGET_SECONDS = 180.0     # 1回に使う時間の上限（ブログの公開など、他の自動処理を待たせすぎない）
+OCR_KEEP_DAYS = 120            # 調べた記事を覚えておく日数
+# 文字の読み間違い（i→l・1、c→e など）を少し許す。単語の途中に含まれるもの（Clarice 以外の語）は除く
+CLARICE_OCR = re.compile(r"(?<![a-z])c\s?l\s?[a@]\s?r\s?[i1l|!]\s?[ce]\s?[e3c](?![a-z])|クラリス", re.I)
+IMG_TAG = re.compile(r"<img\b[^>]*>", re.I)
+IMG_ATTR = re.compile(r"""\b(src|data-src|data-lazy-src|data-original|srcset|data-srcset)\s*=\s*(?:"([^"]*)"|'([^']*)')""", re.I)
+NOT_CONTENT_IMAGE = re.compile(r"logo|icon|avatar|sprite|favicon|emoji|badge|button|banner|gravatar|spacer|pixel|blank\.|\.svg|\.gif", re.I)
+IMAGE_EXT = re.compile(r"\.(?:jpe?g|png|webp)(?:$|\?)", re.I)
+
+
+def article_images(content_html: str, base: str) -> list[str]:
+    """本文の HTML から、本文の画像（https・jpg/png/webp）の URL を並び順に返す。ロゴ・アイコンなどは除く。
+    srcset があればいちばん大きいものを選ぶ（小さな文字を読みやすくするため）。"""
+    out: list[str] = []
+    for tag in IMG_TAG.findall(content_html[:1_000_000]):
+        attrs = {k.lower(): (v1 or v2) for k, v1, v2 in IMG_ATTR.findall(tag)}
+        cand = None
+        for key in ("data-srcset", "srcset"):
+            if attrs.get(key):
+                best, best_w = None, -1
+                for part in attrs[key].split(","):
+                    bits = part.strip().split()
+                    if not bits:
+                        continue
+                    w = int(bits[1][:-1]) if len(bits) > 1 and bits[1].endswith("w") and bits[1][:-1].isdigit() else 0
+                    if w > best_w:
+                        best, best_w = bits[0], w
+                cand = best
+                break
+        cand = cand or attrs.get("data-src") or attrs.get("data-lazy-src") or attrs.get("data-original") or attrs.get("src")
+        if not cand or cand.startswith("data:"):
+            continue
+        url = urllib.parse.urljoin(base, html.unescape(cand.strip()))
+        if url.startswith("//"):
+            url = "https:" + url
+        if NOT_CONTENT_IMAGE.search(url) or not IMAGE_EXT.search(urllib.parse.urlparse(url).path + "?") or not is_safe_url(url):
+            continue
+        if url not in out:
+            out.append(url)
+    return out
+
+
+def main_content(page: str) -> str:
+    """記事のページから本文らしい部分（<article> の中、無ければヘッダー・ナビ・サイドバー・フッターを除いた全体）を返す。"""
+    m = re.search(r"<article\b.*?</article>", page, re.I | re.S)
+    body = m.group(0) if m else page
+    return re.sub(r"<(?:header|nav|aside|footer)\b.*?</(?:header|nav|aside|footer)>", " ", body, flags=re.I | re.S)
+
+
+def get_image_bytes(url: str) -> bytes:
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "image/jpeg,image/png,image/webp"})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        ctype = (r.headers.get_content_type() or "").lower()
+        if ctype not in ("image/jpeg", "image/png", "image/webp", "image/jpg"):
+            raise ValueError(f"画像ではない応答（{ctype}）")
+        data = r.read(OCR_MAX_IMAGE_BYTES + 1)
+    if len(data) > OCR_MAX_IMAGE_BYTES:
+        raise ValueError("画像が大きすぎます")
+    return data
+
+
+def ocr_text(data: bytes, langs: str = "eng+jpn") -> str:
+    """画像の中の文字を読む（Tesseract）。小さな文字を読みやすくするため、Pillow があれば拡大・白黒にしてから読む。"""
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "img"
+        try:
+            from PIL import Image  # 無ければそのまま読む
+            Image.MAX_IMAGE_PIXELS = 40_000_000   # 極端に大きい画像（解凍爆弾）は読まない
+            with Image.open(io.BytesIO(data)) as im:
+                im = im.convert("L")
+                if im.width < 2400:
+                    scale = min(3.0, 2400 / max(im.width, 1))
+                    im = im.resize((int(im.width * scale), int(im.height * scale)), Image.LANCZOS)
+                im.save(path.with_suffix(".png"))
+                path = path.with_suffix(".png")
+        except ImportError:
+            path.write_bytes(data)
+        texts = []
+        for psm in ("11", "3"):   # 11：ばらばらに置かれた文字（一覧表）、3：ふつうの文章
+            r = subprocess.run(["tesseract", str(path), "stdout", "-l", langs, "--psm", psm],
+                               capture_output=True, timeout=90, text=True)
+            texts.append(r.stdout)
+            if CLARICE_OCR.search(r.stdout):
+                break
+        return "\n".join(texts)
+
+
+def ocr_langs() -> str:
+    try:
+        r = subprocess.run(["tesseract", "--list-langs"], capture_output=True, text=True, timeout=20)
+        have = set(r.stdout.split())
+    except Exception:
+        return ""
+    return "+".join(l for l in ("eng", "jpn") if l in have)
+
+
+def clarice_in_images(article_url: str, content_html: str, get=http_get, get_image=get_image_bytes, read=ocr_text,
+                      langs: str = "eng+jpn") -> tuple[str | None, int]:
+    """記事の本文の画像に「Clarice / クラリス」の文字があるか調べる。戻り値：(見つかった画像の URL か None, 読んだ枚数)"""
+    images = article_images(content_html, article_url) if content_html else []
+    if not images:
+        final, page = get(article_url)
+        images = article_images(main_content(page), final)
+    read_count = 0
+    for url in images[:OCR_IMAGES_PER_ARTICLE]:
+        try:
+            text = read(get_image(url), langs)
+        except Exception:
+            continue
+        read_count += 1
+        if CLARICE_OCR.search(text) and not OTHER_CLARICE.search(text):
+            return url, read_count
+    return None, read_count
+
+
+def ocr_candidates(src: dict, entries: list[dict], known: set[str], seen: dict, now: dt.datetime) -> list[dict]:
+    """1つのサイトの新着記事から、画像を調べる記事（見出しがグッズの話題・本文や見出しではクラリスが分からない・未調査）を選ぶ。"""
+    out = []
+    for e in entries:
+        url = safe_url(e.get("url") or "")
+        title = clean_text(e.get("title"))
+        if not url or not title or not is_safe_url(url) or url in seen or item_id(url) in known:
+            continue
+        date = parse_date(e.get("date")) or now
+        if date < now - dt.timedelta(days=OCR_MAX_AGE_DAYS):
+            continue
+        if NOISE_TITLE.search(title) or OTHER_CLARICE.search(title):
+            continue
+        if src.get("require_disney") and not DISNEY.search(title):
+            continue
+        cat = category_of(title, src.get("topic"))
+        if cat not in GOODS_CATEGORIES:
+            continue
+        out.append({"title": title, "url": url, "date": min(date, now), "category": cat,
+                    "content": e.get("content") or ""})
+    out.sort(key=lambda x: x["date"], reverse=True)
+    return out[:OCR_PER_SOURCE]
+
+
+def check_images(known: set[str], now: dt.datetime, dry_run: bool, fetcher=fetch, get=http_get,
+                 get_image=get_image_bytes, read=ocr_text, budget: float = OCR_BUDGET_SECONDS,
+                 langs: str | None = None) -> list[dict]:
+    """共有されたサイトの新着記事の画像を読み、クラリスが書かれていた記事を返す（載せる情報の形）。"""
+    sources = load_json(IMAGE_SOURCES_FILE, {}).get("sources", [])
+    if not sources:
+        return []
+    langs = ocr_langs() if langs is None else langs
+    if not langs:
+        print("::notice title=画像の文字::文字を読むソフト（Tesseract）が無いため、画像は調べませんでした")
+        return []
+    state = load_json(OCR_STATE_FILE, {})
+    seen: dict = state.get("seen", {})
+    started, found, checked, tally = time.monotonic(), [], 0, []
+    queue = []
+    for src in sources:
+        try:
+            entries = parse_feed(fetcher(src["url"]))
+            cands = ocr_candidates(src, entries, known, seen, now)
+            tally.append(f"{src['id']} {len(cands)}/{len(entries)}")
+            queue += [(src, c) for c in cands]
+        except Exception as e:
+            tally.append(f"{src['id']} ×")
+            print(f"::warning title=画像の文字（{src['id']}）::新着記事の一覧を取得できませんでした（{type(e).__name__}: {str(e)[:100]}）")
+    queue.sort(key=lambda sc: sc[1]["date"], reverse=True)
+    for src, c in queue:
+        if checked >= OCR_ARTICLES_PER_RUN or time.monotonic() - started > budget:
+            break
+        checked += 1
+        try:
+            hit, n = clarice_in_images(c["url"], c["content"], get, get_image, read, langs)
+            note = f"クラリスあり（{hit}）" if hit else f"画像 {n} 枚にクラリスの文字なし"
+        except Exception as e:
+            hit, note = None, f"記事を取得できませんでした（{type(e).__name__}）"
+        seen[c["url"]] = now.date().isoformat()
+        print(f"::notice title=画像の文字（{src['id']}）::{c['title'][:40]} → {note[:140]}")
+        if hit:
+            found.append({
+                "id": item_id(c["url"]), "title": c["title"], "url": c["url"], "source": src["name"], "via": src["id"],
+                "lang": src.get("lang", "ja"), "category": c["category"], "official": False,
+                "date": c["date"].isoformat(timespec="minutes"), "origin": "auto", "found_in": "image",
+            })
+    print(f"::notice title=画像の文字::新着記事の候補（候補/一覧）: {'、'.join(tally)} → {checked} 件を調べ、{len(found)} 件にクラリス")
+    if not dry_run:
+        cutoff = (now - dt.timedelta(days=OCR_KEEP_DAYS)).date().isoformat()
+        state["seen"] = {u: d for u, d in seen.items() if d >= cutoff}
+        write_if_changed(OCR_STATE_FILE, dump(state))
+    return found
+
+
 # ---------------------------------------------------------------- 見出しの自動翻訳（Claude API）
 # ページの言語（日本語・英語・フランス語・中国語）に合わせて見出しだけを表示するため、見出しを4言語に訳して t に保存する。
 # キー（Secrets の ANTHROPIC_API_KEY。ブログの翻訳と共通）が無ければ何もしない。月の上限（見出しの件数）を超えたら止まる。
@@ -1003,6 +1211,13 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search
     print(f"::notice title=まとめ::取得元 {ok}/{len(sources)} 件・候補 {len(found)} 件（取得元 候補/配信）: " + "、".join(tally))
     for line in notes:
         print(line)
+    # 共有されたサイトの新着記事は、画像の中の「Clarice / クラリス」も読む（本文で見つかった記事・掲載済みの記事は除く）
+    known = {i["id"] for i in found} | {i["id"] for i in load_json(DATA_DIR / "collected.json", [])} \
+        | {i["id"] for i in load_json(DATA_DIR / "manual.json", [])}
+    try:
+        found += check_images(known, now, dry_run, fetcher)
+    except Exception as e:  # 画像の確認に失敗しても収集は止めない
+        print(f"::warning title=画像の文字::調べられませんでした（{type(e).__name__}: {str(e)[:120]}）")
     if dry_run:
         print(f"試し取得：{ok}/{len(sources)} 件の取得元から {len(found)} 件の候補（ファイルは書き換えていません）")
         return 0
@@ -1378,6 +1593,8 @@ def main() -> int:
     im = sub.add_parser("images")
     im.add_argument("--dry-run", action="store_true")
     im.add_argument("--limit", type=int, default=8)
+    oc = sub.add_parser("ocr", help="1つの記事の画像にクラリスの文字があるか試す（ファイルは書き換えない）")
+    oc.add_argument("url")
     b = sub.add_parser("build")
     b.add_argument("--check", action="store_true")
     a = sub.add_parser("add")
@@ -1399,6 +1616,14 @@ def main() -> int:
         items = load_json(DATA_DIR / "manual.json", []) + load_json(DATA_DIR / "collected.json", [])
         tried = add_images(items, args.limit, True)
         print(f"試し：{tried} 件の記事の画像を調べました（ファイルは書き換えていません）")
+        return 0
+    if args.cmd == "ocr":
+        langs = ocr_langs()
+        if not langs:
+            print("::error title=画像の文字::文字を読むソフト（Tesseract）がありません")
+            return 1
+        hit, n = clarice_in_images(args.url, "", langs=langs)
+        print(f"::notice title=画像の文字（試し）::{args.url[:80]} → " + (f"クラリスあり（{hit}）" if hit else f"画像 {n} 枚にクラリスの文字なし"))
         return 0
     if args.cmd == "build":
         text = timeline_json(now)

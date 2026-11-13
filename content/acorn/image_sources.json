@@ -1,0 +1,15 @@
+{
+  "_説明": "画像の中の「Clarice / クラリス」も読むサイト。管理者が共有したサイトだけを入れる。url はそのサイトの新着記事の一覧（RSS / Atom。検索結果ではない）。require_disney は見出しにディズニーの語がある記事だけを調べる（ディズニー専門ではないサイト用）。",
+  "sources": [
+    {"id": "img-disneypinsblog", "name": "Disney Pins Blog", "lang": "en", "url": "https://disneypinsblog.com/blogs/news.atom"},
+    {"id": "img-wdwnt", "name": "WDW News Today", "lang": "en", "url": "https://wdwnt.com/feed/"},
+    {"id": "img-laughingplace", "name": "Laughing Place", "lang": "en", "url": "https://www.laughingplace.com/feed/"},
+    {"id": "img-dtimes", "name": "Dtimes", "lang": "ja", "url": "https://dtimes.jp/feed/"},
+    {"id": "img-dpost", "name": "Dpost", "lang": "ja", "url": "https://dpost.jp/feed/"},
+    {"id": "img-mezzomiki", "name": "MezzoMiki", "lang": "ja", "url": "https://mezzomiki.jp/feed/"},
+    {"id": "img-meritrip", "name": "メリトリップ", "lang": "ja", "url": "https://meri-trip.jp/feed/"},
+    {"id": "img-disneyworldfan", "name": "ディズニーワールドファン", "lang": "ja", "url": "https://disneyworldfan.jp/feed/"},
+    {"id": "img-dmkblog", "name": "Disney Magical Kingdom Blog", "lang": "ja", "url": "https://www.disney-magical-kingdom-blog.com/feeds/posts/default"},
+    {"id": "img-tradingcardjournal", "name": "Trading Card Journal", "lang": "ja", "url": "https://www.tradingcardjournal.com/feed/", "require_disney": true}
+  ]
+}
