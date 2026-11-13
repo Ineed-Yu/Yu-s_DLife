@@ -1,8 +1,8 @@
 {
-  "_説明": "サイトマップ（sitemap.xml）から過去の記事も全部たどり、1件ずつ開いてクラリスの記事かを確かめるサイト（RSS の無いサイト）。site はサイトのトップの URL。include を書くと、その形の URL（正規表現）だけを開く。",
+  "_説明": "サイトマップ（sitemap.xml）から過去の記事も全部たどり、1件ずつ開いてクラリスの記事かを確かめるサイト（RSS の無いサイト）。site はサイトのトップの URL。include を書くと、その形の URL（正規表現）だけを開く。pause は記事を開く間隔（秒。読みすぎと言われやすいサイト用）。",
   "sources": [
     {"id": "sm-ed92", "name": "ed92.org", "lang": "ja", "site": "https://www.ed92.org/", "disney_site": true},
     {"id": "sm-tdrnavi", "name": "TDR NAVI", "lang": "ja", "site": "https://tdrnavi.jp/", "disney_site": true},
-    {"id": "sm-dmkblog", "name": "Disney Magical Kingdom Blog", "lang": "ja", "site": "https://www.disney-magical-kingdom-blog.com/", "disney_site": true}
+    {"id": "sm-dmkblog", "name": "Disney Magical Kingdom Blog", "lang": "ja", "site": "https://www.disney-magical-kingdom-blog.com/", "disney_site": true, "pause": 6}
   ]
 }

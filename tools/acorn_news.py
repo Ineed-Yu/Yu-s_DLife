@@ -1084,6 +1084,7 @@ def crawl_pages(dry_run: bool, now: dt.datetime, budget: float = PAGES_BUDGET_SE
             continue   # 調べ終えたサイトの「更新された記事」の確認は1日1回
         try:
             rp, robots_maps, pause = robot(src["site"])
+            pause = max(pause, float(src.get("pause") or 0))   # サイトごとの間隔（読みすぎと言われやすいサイトは長めに）
             if trial or not st.get("maps") or st.get("done"):
                 maps = find_sitemaps(src["site"], robots_maps, getb)
                 if not maps:
