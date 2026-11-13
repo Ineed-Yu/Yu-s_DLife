@@ -916,7 +916,9 @@ def robots_for(site: str, get=http_get) -> tuple[urllib.robotparser.RobotFilePar
 
 def find_sitemaps(site: str, robots_maps: list[str], getb=get_bytes) -> list[str]:
     """サイトの記事のサイトマップ（子まで展開した一覧）を返す。タグ・カテゴリ・画像などのサイトマップは除く。"""
-    roots = robots_maps or [urllib.parse.urljoin(site, p) for p in ("/sitemap.xml", "/sitemap_index.xml", "/wp-sitemap.xml")]
+    roots = robots_maps or [urllib.parse.urljoin(site, p) for p in (
+        "/sitemap.xml", "/sitemap_index.xml", "/wp-sitemap.xml", "/sitemap-index.xml", "/sitemap.xml.gz",
+        "/post-sitemap.xml", "/sitemaps.xml", "/sitemap/sitemap.xml", "/wp-sitemap-posts-post-1.xml")]
     host = (urllib.parse.urlparse(site).hostname or "").removeprefix("www.")
     out: list[str] = []
     for root in roots:
@@ -1003,7 +1005,8 @@ def unmatched_links(src: dict, final_url: str, page: str) -> list[str]:
     """検索結果のページから、リンクの文字にクラリスが無い「記事らしい」リンク（同じサイト内）を返す。"""
     host = (urllib.parse.urlparse(final_url).hostname or "").removeprefix("www.")
     out = []
-    for h1, h2, inner in ANCHOR.findall(main_content(page)[:2_000_000]):
+    listing = re.sub(r"<(?:header|nav|aside|footer)\b.*?</(?:header|nav|aside|footer)>", " ", page, flags=re.I | re.S)   # 検索結果は記事が複数並ぶので、<article> 1つだけに絞らない
+    for h1, h2, inner in ANCHOR.findall(listing[:2_000_000]):
         url = urllib.parse.urljoin(final_url, html.unescape(h1 or h2)).split("#")[0]
         title = clean_text(inner, 200)
         p = urllib.parse.urlparse(url)
@@ -1968,6 +1971,7 @@ def main() -> int:
     pg.add_argument("--dry-run", action="store_true")
     pg.add_argument("--budget", type=float, default=PAGES_BUDGET_SECONDS, help="1回に使う時間（秒）。続きは次回")
     pg.add_argument("--trial", type=int, default=0, help="試し：サイトマップが読めるかと、各サイトの記事をこの件数だけ確かめる")
+    pg.add_argument("--url", help="試し：この記事を1件だけ開いて、クラリスの記事と判定されるか確かめる")
     oc = sub.add_parser("ocr", help="1つの記事の画像にクラリスの文字があるか試す（ファイルは書き換えない）")
     oc.add_argument("url")
     b = sub.add_parser("build")
@@ -1991,6 +1995,11 @@ def main() -> int:
         items = load_json(DATA_DIR / "manual.json", []) + load_json(DATA_DIR / "collected.json", [])
         tried = add_images(items, args.limit, True)
         print(f"試し：{tried} 件の記事の画像を調べました（ファイルは書き換えていません）")
+        return 0
+    if args.cmd == "pages" and args.url:
+        item = check_article(args.url, {"id": "trial", "name": source_from_host(args.url), "disney_site": True}, now)
+        print(f"::notice title=記事の判定（試し）::{args.url[:70]} → "
+              + (f"クラリスの記事：{item['title'][:40]}（{item['category']}・{item['date'][:10]}）" if item else "対象外"))
         return 0
     if args.cmd == "pages":
         return run_pages(args.dry_run, now, args.budget, args.trial)

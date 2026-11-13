@@ -51,6 +51,10 @@ jobs:
         run: python3 tools/acorn_news.py backfill --dry-run --windows 2
       - name: RSS の無いサイトの試し（サイトマップが読めるか・記事3件を開いて確かめる。ファイルは書き換えない）
         run: python3 tools/acorn_news.py pages --trial 3
+      - name: 記事を開いて判定する試し（クラリスの記事・関係ない記事）
+        run: |
+          python3 tools/acorn_news.py pages --url "https://dtimes.jp/disney-magical-farm-chip-dale-clarice-cafe/"
+          python3 tools/acorn_news.py pages --url "https://www.disney-magical-kingdom-blog.com/2026/11/pixar-40th-anniversary-x-airside-campaign.html"
       - name: 記事の画像の試し取得（ファイルは書き換えない）
         run: python3 tools/acorn_news.py images --dry-run --limit 8
       - name: タイムラインが最新か確認
