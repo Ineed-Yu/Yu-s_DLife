@@ -53,7 +53,7 @@ RESORTS = {
     "香港ディズニーランド": "hkdl",
     "上海ディズニーランド": "shdl",
 }
-KINDS = {"ショー": "show", "パレード": "parade", "グリーティング": "greeting", "その他": "event"}
+KINDS = {"ショー": "show", "パレード": "parade", "グリーティング": "greeting", "その他": "other"}
 
 
 def notion_query(db: str, token: str, opener=urllib.request.urlopen) -> list[dict]:
@@ -122,7 +122,7 @@ def to_entry(row: dict) -> tuple[dict | None, str]:
             entry["park"] = RESORTS[_select(p.get("リゾート・施設"))]
         else:
             return None, f"「{title}」: パーク（またはリゾート・施設）が必要"
-        entry["kind"] = KINDS.get(_select(p.get("内容区分")), "event")
+        entry["kind"] = KINDS.get(_select(p.get("内容区分")), "other")
     details = []
     if work and work != title:
         details.append(work)

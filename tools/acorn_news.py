@@ -1489,7 +1489,7 @@ def timeline_json(now: dt.datetime) -> str:
 
 HISTORY_FILE = ROOT / "acorn-club" / "history.json"
 HISTORY_PARKS = {"film", "tdl", "tds", "dl", "wdw", "dlp", "shdl", "hkdl", "aulani"}
-HISTORY_KINDS = {"work", "show", "parade", "greeting", "event"}
+HISTORY_KINDS = {"work", "show", "parade", "greeting", "event", "other"}
 
 
 def check_history(data: dict) -> list[str]:

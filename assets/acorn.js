@@ -57,6 +57,7 @@
         view_history: { ja: 'クラリス年表', en: 'Clarice timeline', fr: 'Chronologie de Clarice', zh: '克拉丽丝年表' },
         profile: { ja: 'プロフィール', en: 'Profile', fr: 'Profil', zh: '简介' },
         source: { ja: '出典', en: 'Source', fr: 'Source', zh: '出处' },
+        allKinds: { ja: 'すべての種類', en: 'All types', fr: 'Tous les types', zh: '全部类型' },
         allParks: { ja: 'すべてのパーク・作品', en: 'All parks and works', fr: 'Tous les parcs et œuvres', zh: '全部乐园与作品' },
         park_film: { ja: '作品（映画・シリーズ）', en: 'Films and series', fr: 'Films et séries', zh: '电影与剧集' },
         park_tdl: { ja: '東京ディズニーランド', en: 'Tokyo Disneyland', fr: 'Tokyo Disneyland', zh: '东京迪士尼乐园' },
@@ -142,6 +143,8 @@
     let chron = null;     // クラリス年表（/acorn-club/history.json）
     let historyFailed = false;
     let historyPark = 'all';
+    let historyKind = 'all';   // 年表の種類（Notion の「内容区分」＋作品）
+    const HISTORY_KINDS = ['work', 'show', 'parade', 'greeting', 'event', 'other'];
     const viewOf = item => (APPEAR.includes(item.category) ? 'appear' : MISC.includes(item.category) ? 'misc' : 'goods');
     const state = { view: 'goods', category: 'all', year: 'all', limit: 40 };
     const REGIONS = ['jp', 'us', 'hi', 'fr', 'cn', 'hk'];
@@ -535,9 +538,23 @@
             });
             select.value = historyPark;
         }
+        // 種類の絞り込み（登録がある種類だけ）
+        const kindSelect = document.getElementById('kind-select');
+        const kinds = HISTORY_KINDS.filter(k => chron.entries.some(e => e.kind === k));
+        if (historyKind !== 'all' && !kinds.includes(historyKind)) historyKind = 'all';
+        if (kindSelect) {
+            kindSelect.replaceChildren();
+            [['all', t('allKinds')], ...kinds.map(k => [k, t(k)])].forEach(([v, label]) => {
+                const o = el('option', '', label);
+                o.value = v;
+                kindSelect.appendChild(o);
+            });
+            kindSelect.value = historyKind;
+        }
         // 年表（古い順。西暦ごとに見出し）
         const shown = chron.entries
             .filter(e => historyPark === 'all' || e.park === historyPark)
+            .filter(e => historyKind === 'all' || e.kind === historyKind)
             .sort((a, b) => String(a.date).localeCompare(String(b.date)));
         list.replaceChildren();
         let year = '';
@@ -749,6 +766,8 @@
         if (saved !== 'ja') switchLanguage(saved);
         const parkSelect = document.getElementById('park-select');
         if (parkSelect) parkSelect.addEventListener('change', () => { historyPark = parkSelect.value; render(); });
+        const kindSelect = document.getElementById('kind-select');
+        if (kindSelect) kindSelect.addEventListener('change', () => { historyKind = kindSelect.value; render(); });
         const yearSelect = document.getElementById('year-select');
         if (yearSelect) yearSelect.addEventListener('change', () => setState({ year: yearSelect.value }));
         load();
