@@ -1,86 +1,6 @@
 {
   "pending": [
     {
-      "url": "https://www.ed92.org/2024/10/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2024/09/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2024/08/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2024/07/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2024/06/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2024/05/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2024/04/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2024/03/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2024/02/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2024/01/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2023/12/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2023/11/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2023/10/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2023/09/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2023/08/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2023/07/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2023/06/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2023/05/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2023/04/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2023/03/",
-      "via": "ed92"
-    },
-    {
       "url": "https://www.ed92.org/2023/02/",
       "via": "ed92"
     },
@@ -325,7 +245,27 @@
     "https://www.ed92.org/2025/02/": "2026-11-14",
     "https://www.ed92.org/2025/01/": "2026-11-14",
     "https://www.ed92.org/2024/12/": "2026-11-14",
-    "https://www.ed92.org/2024/11/": "2026-11-14"
+    "https://www.ed92.org/2024/11/": "2026-11-14",
+    "https://www.ed92.org/2024/10/": "2026-11-14",
+    "https://www.ed92.org/2024/09/": "2026-11-14",
+    "https://www.ed92.org/2024/08/": "2026-11-14",
+    "https://www.ed92.org/2024/07/": "2026-11-14",
+    "https://www.ed92.org/2024/06/": "2026-11-14",
+    "https://www.ed92.org/2024/05/": "2026-11-14",
+    "https://www.ed92.org/2024/04/": "2026-11-14",
+    "https://www.ed92.org/2024/03/": "2026-11-14",
+    "https://www.ed92.org/2024/02/": "2026-11-14",
+    "https://www.ed92.org/2024/01/": "2026-11-14",
+    "https://www.ed92.org/2023/12/": "2026-11-14",
+    "https://www.ed92.org/2023/11/": "2026-11-14",
+    "https://www.ed92.org/2023/10/": "2026-11-14",
+    "https://www.ed92.org/2023/09/": "2026-11-14",
+    "https://www.ed92.org/2023/08/": "2026-11-14",
+    "https://www.ed92.org/2023/07/": "2026-11-14",
+    "https://www.ed92.org/2023/06/": "2026-11-14",
+    "https://www.ed92.org/2023/05/": "2026-11-14",
+    "https://www.ed92.org/2023/04/": "2026-11-14",
+    "https://www.ed92.org/2023/03/": "2026-11-14"
   },
   "sources": {
     "sm-ed92": {},
@@ -334,11 +274,11 @@
         "https://tdrnavi.jp/resource/i/sitemap_spot.xml"
       ],
       "map": 0,
-      "pos": 124,
+      "pos": 251,
       "done": false,
       "since": "",
       "started": "2026-11-14T08:52+09:00",
-      "checked": 124,
+      "checked": 251,
       "hits": 0
     }
   }
