@@ -23,6 +23,7 @@
 | `BOARD.md` | いまの状況と、相手への連絡・依頼 | 各エージェントが自分の欄を更新 |
 | `LOG.md` | 作業の記録（新しいものを上に） | 作業を終えたエージェントが1〜3行で追記 |
 | `acorn-issue-format.md` | Acorn Club に情報を追加する Issue の書き方 | 仕組みを変えたときに Claude が更新 |
+| `acorn-source-format.md` | Acorn Club の取得元（情報を集めるサイト）を追加する Issue の書き方 | 仕組みを変えたときに Claude が更新 |
 
 ## 使い方（どのエージェントも同じ）
 
