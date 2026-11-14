@@ -1,5 +1,8 @@
 # Acorn Club：入力フォーム（Issues →「Acorn Club に情報を追加する」）からタイムラインに追加
-# 動くのは「リポジトリの持ち主本人」が送信・編集したときだけです。送信した時点で管理者の承認とみなします。
+# 動くのは、Issue の作成者が「リポジトリの持ち主」で、本文が Acorn の入力フォーム（「リンク（URL）」欄あり）のときだけです。
+# 持ち主本人による送信のほか、持ち主のアカウントで動く Muse が作成・編集した Issue も対象です（2026-11-15 管理者決定）。
+# 題名の「[Acorn]」は無くても動きます。送信した時点で管理者の承認とみなします。
+# スクリプト側でも作成者の権限と「入稿の確認」のチェックを確かめます。
 name: Acorn Club の手動追加
 
 on:
@@ -11,18 +14,18 @@ permissions:
   issues: write
   pages: write
 
-# 他の自動処理と同時に main を書き換えないよう、1つずつ順番に動かす
-concurrency:
-  group: blog-publish
-  cancel-in-progress: false
-
 jobs:
   add:
     if: >-
-      startsWith(github.event.issue.title, '[Acorn]') &&
-      github.event.sender.login == github.repository_owner &&
-      github.event.issue.user.login == github.repository_owner
+      github.event.issue.user.login == github.repository_owner &&
+      contains(github.event.issue.body, '### リンク（URL）')
     runs-on: ubuntu-latest
+    # 他の自動処理と同時に main を書き換えないよう、1つずつ順番に動かす。
+    # ここ（ジョブ）に書くのは、対象外の Issue の動きで待ちの自動処理が取り消されないようにするため。
+    # それでも Issue が続けて作られると待ちが取り消されることがあるので、1回の処理で開いているフォームの Issue を全部拾う。
+    concurrency:
+      group: blog-publish
+      cancel-in-progress: false
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       ISSUE: ${{ github.event.issue.number }}
@@ -34,9 +37,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      # Issue の本文はシェルに埋め込まず、イベントのファイルから Python で読む
-      - name: タイムラインに追加
-        run: python3 tools/acorn_news.py add "$GITHUB_EVENT_PATH" > "$RUNNER_TEMP/result.json"
+      # Issue の本文はシェルに埋め込まず、ファイルから Python で読む
+      - name: タイムラインに追加（開いているフォームの Issue もまとめて）
+        run: |
+          gh api "repos/${GITHUB_REPOSITORY}/issues?state=open&creator=${GITHUB_REPOSITORY_OWNER}&per_page=100" > "$RUNNER_TEMP/open.json"
+          python3 tools/acorn_news.py add-all "$GITHUB_EVENT_PATH" --open "$RUNNER_TEMP/open.json" --owner "$GITHUB_REPOSITORY_OWNER" > "$RUNNER_TEMP/result.json"
 
       - name: main に保存
         id: push
@@ -64,17 +69,18 @@ jobs:
       - name: 結果をコメント
         if: always()
         run: |
-          : > "$RUNNER_TEMP/comment.md"
-          if [ -s "$RUNNER_TEMP/result.json" ] && ! grep -q '"skipped"' "$RUNNER_TEMP/result.json"; then
-            python3 tools/acorn_news.py comment "$RUNNER_TEMP/result.json" > "$RUNNER_TEMP/comment.md"
-          fi
           if [ "${{ job.status }}" != "success" ]; then
             printf '⚠️ **自動処理の途中でエラーが起きました。** 反映されていない可能性があります。\n\n詳細: %s/%s/actions/runs/%s\n' \
-              "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" > "$RUNNER_TEMP/comment.md"
+              "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" > "$RUNNER_TEMP/error.md"
+            gh issue comment "$ISSUE" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/error.md"
+            exit 0
           fi
-          if [ -s "$RUNNER_TEMP/comment.md" ]; then
-            gh issue comment "$ISSUE" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/comment.md"
-          fi
-          if [ "${{ job.status }}" = "success" ] && grep -q '"status": "added"' "$RUNNER_TEMP/result.json" 2>/dev/null; then
-            gh issue close "$ISSUE" --repo "$GITHUB_REPOSITORY" --reason completed || true
-          fi
+          python3 tools/acorn_news.py add-report "$RUNNER_TEMP/result.json" "$RUNNER_TEMP/report"
+          for f in "$RUNNER_TEMP"/report/*.md; do
+            [ -e "$f" ] || continue
+            n="$(basename "$f" .md)"
+            gh issue comment "$n" --repo "$GITHUB_REPOSITORY" --body-file "$f"
+            if [ -e "$RUNNER_TEMP/report/$n.close" ]; then
+              gh issue close "$n" --repo "$GITHUB_REPOSITORY" --reason completed || true
+            fi
+          done
