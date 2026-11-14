@@ -57,6 +57,7 @@
         view_history: { ja: 'クラリス年表', en: 'Clarice timeline', fr: 'Chronologie de Clarice', zh: '克拉丽丝年表' },
         profile: { ja: 'プロフィール', en: 'Profile', fr: 'Profil', zh: '简介' },
         source: { ja: '出典', en: 'Source', fr: 'Source', zh: '出处' },
+        allKinds: { ja: 'すべての種類', en: 'All types', fr: 'Tous les types', zh: '全部类型' },
         allParks: { ja: 'すべてのパーク・作品', en: 'All parks and works', fr: 'Tous les parcs et œuvres', zh: '全部乐园与作品' },
         park_film: { ja: '作品（映画・シリーズ）', en: 'Films and series', fr: 'Films et séries', zh: '电影与剧集' },
         park_tdl: { ja: '東京ディズニーランド', en: 'Tokyo Disneyland', fr: 'Tokyo Disneyland', zh: '东京迪士尼乐园' },
@@ -142,6 +143,8 @@
     let chron = null;     // クラリス年表（/acorn-club/history.json）
     let historyFailed = false;
     let historyPark = 'all';
+    let historyKind = 'all';   // 年表の種類（Notion の「内容区分」＋作品）
+    const HISTORY_KINDS = ['work', 'show', 'parade', 'greeting', 'event', 'other'];
     const viewOf = item => (APPEAR.includes(item.category) ? 'appear' : MISC.includes(item.category) ? 'misc' : 'goods');
     const state = { view: 'goods', category: 'all', year: 'all', limit: 40 };
     const REGIONS = ['jp', 'us', 'hi', 'fr', 'cn', 'hk'];
@@ -468,12 +471,13 @@
     // ---------- クラリス年表 ----------
     const loc = o => (o && typeof o === 'object' ? (o[currentLang] || o.en || o.ja || '') : String(o || ''));
 
-    function historyDate(date) {
+    function historyDate(date, withYear) {   // withYear：年も入れた表記（終了が別の年のとき用）
         const m = String(date || '').match(/^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?$/);
         if (!m) return { year: '', label: '' };
-        if (!m[2]) return { year: m[1], label: '' };
+        if (!m[2]) return { year: m[1], label: withYear ? m[1] : '' };
         const d = new Date(Date.UTC(+m[1], +m[2] - 1, +(m[3] || 1)));
         const opts = m[3] ? { month: 'short', day: 'numeric', timeZone: 'UTC' } : { month: 'long', timeZone: 'UTC' };
+        if (withYear) opts.year = 'numeric';
         return { year: m[1], label: new Intl.DateTimeFormat(LOCALES[currentLang], opts).format(d) };
     }
 
@@ -534,9 +538,23 @@
             });
             select.value = historyPark;
         }
+        // 種類の絞り込み（登録がある種類だけ）
+        const kindSelect = document.getElementById('kind-select');
+        const kinds = HISTORY_KINDS.filter(k => chron.entries.some(e => e.kind === k));
+        if (historyKind !== 'all' && !kinds.includes(historyKind)) historyKind = 'all';
+        if (kindSelect) {
+            kindSelect.replaceChildren();
+            [['all', t('allKinds')], ...kinds.map(k => [k, t(k)])].forEach(([v, label]) => {
+                const o = el('option', '', label);
+                o.value = v;
+                kindSelect.appendChild(o);
+            });
+            kindSelect.value = historyKind;
+        }
         // 年表（古い順。西暦ごとに見出し）
         const shown = chron.entries
             .filter(e => historyPark === 'all' || e.park === historyPark)
+            .filter(e => historyKind === 'all' || e.kind === historyKind)
             .sort((a, b) => String(a.date).localeCompare(String(b.date)));
         list.replaceChildren();
         let year = '';
@@ -550,11 +568,19 @@
             li.dataset.category = e.kind === 'work' ? 'work' : e.kind;
             const card = el('div', 'playbill history-entry');
             const head = el('span', 'playbill-head');
-            if (d.label) head.appendChild(el('span', 'playbill-date', d.label));
+            // 終了（end）があれば「開始〜終了」と表示する（年が違うときは終了の年も書く）
+            const end = e.end ? historyDate(e.end) : null;
+            let when = d.label;
+            if (end && end.year) {
+                const endText = end.year !== d.year ? historyDate(e.end, true).label : end.label;
+                if (endText) when = `${d.label || d.year}〜${endText}`;
+            }
+            if (when) head.appendChild(el('span', 'playbill-date', when));
             head.appendChild(el('span', 'playbill-kind', t(e.kind)));
-            head.appendChild(el('span', 'history-park', t('park_' + e.park)));
+            head.appendChild(el('span', 'history-park', t('park_' + e.park) + (loc(e.place) ? `｜${loc(e.place)}` : '')));
             card.appendChild(head);
             card.appendChild(el('span', 'playbill-title', loc(e.title)));
+            if (loc(e.edition)) card.appendChild(el('span', 'history-edition', loc(e.edition)));
             if (loc(e.note)) card.appendChild(el('span', 'history-note', loc(e.note)));
             const a = sourceLink(e.source);
             if (a) card.appendChild(a);
@@ -740,6 +766,8 @@
         if (saved !== 'ja') switchLanguage(saved);
         const parkSelect = document.getElementById('park-select');
         if (parkSelect) parkSelect.addEventListener('change', () => { historyPark = parkSelect.value; render(); });
+        const kindSelect = document.getElementById('kind-select');
+        if (kindSelect) kindSelect.addEventListener('change', () => { historyKind = kindSelect.value; render(); });
         const yearSelect = document.getElementById('year-select');
         if (yearSelect) yearSelect.addEventListener('change', () => setState({ year: yearSelect.value }));
         load();

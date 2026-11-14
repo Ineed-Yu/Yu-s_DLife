@@ -1489,7 +1489,7 @@ def timeline_json(now: dt.datetime) -> str:
 
 HISTORY_FILE = ROOT / "acorn-club" / "history.json"
 HISTORY_PARKS = {"film", "tdl", "tds", "dl", "wdw", "dlp", "shdl", "hkdl", "aulani"}
-HISTORY_KINDS = {"work", "show", "parade", "greeting", "event"}
+HISTORY_KINDS = {"work", "show", "parade", "greeting", "event", "other"}
 
 
 def check_history(data: dict) -> list[str]:
@@ -1503,10 +1503,15 @@ def check_history(data: dict) -> list[str]:
             problems.append(f"{where}: park が不明です（{e.get('park')}）")
         if e.get("kind") not in HISTORY_KINDS:
             problems.append(f"{where}: kind が不明です（{e.get('kind')}）")
-        if not (e.get("title") or {}).get("ja") or not (e.get("title") or {}).get("en"):
+        from_notion = e.get("origin") == "notion"   # 管理者が Notion で管理している項目（日本語だけ・出典は任意）
+        if not (e.get("title") or {}).get("ja") or not (from_notion or (e.get("title") or {}).get("en")):
             problems.append(f"{where}: title は ja と en の両方が必要です")
+        if e.get("end") and not re.fullmatch(r"\d{4}(-\d{2}(-\d{2})?)?", str(e["end"])):
+            problems.append(f"{where}: end は YYYY / YYYY-MM / YYYY-MM-DD で書いてください")
         src = e.get("source") or {}
-        if not src.get("name") or not (src.get("url") or "").startswith("https://"):
+        if src and not (src.get("url") or "").startswith("https://"):
+            problems.append(f"{where}: 出典の url は https で書いてください")
+        if not from_notion and (not src.get("name") or not (src.get("url") or "").startswith("https://")):
             problems.append(f"{where}: 出典（source の name と https の url）が必要です")
     for src in (data.get("profile") or {}).get("sources") or []:
         if not (src.get("url") or "").startswith("https://"):

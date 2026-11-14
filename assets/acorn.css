@@ -352,6 +352,12 @@ html.acorn-intro .club {
 .history-park {
     color: #6b5643;
 }
+.history-edition {
+    display: block;
+    margin-top: 2px;
+    font-size: 13px;
+    color: #6b5643;
+}
 .history-note {
     display: block;
     margin-top: 4px;
