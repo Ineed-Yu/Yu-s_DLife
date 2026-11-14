@@ -468,12 +468,13 @@
     // ---------- クラリス年表 ----------
     const loc = o => (o && typeof o === 'object' ? (o[currentLang] || o.en || o.ja || '') : String(o || ''));
 
-    function historyDate(date) {
+    function historyDate(date, withYear) {   // withYear：年も入れた表記（終了が別の年のとき用）
         const m = String(date || '').match(/^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?$/);
         if (!m) return { year: '', label: '' };
-        if (!m[2]) return { year: m[1], label: '' };
+        if (!m[2]) return { year: m[1], label: withYear ? m[1] : '' };
         const d = new Date(Date.UTC(+m[1], +m[2] - 1, +(m[3] || 1)));
         const opts = m[3] ? { month: 'short', day: 'numeric', timeZone: 'UTC' } : { month: 'long', timeZone: 'UTC' };
+        if (withYear) opts.year = 'numeric';
         return { year: m[1], label: new Intl.DateTimeFormat(LOCALES[currentLang], opts).format(d) };
     }
 
@@ -550,11 +551,19 @@
             li.dataset.category = e.kind === 'work' ? 'work' : e.kind;
             const card = el('div', 'playbill history-entry');
             const head = el('span', 'playbill-head');
-            if (d.label) head.appendChild(el('span', 'playbill-date', d.label));
+            // 終了（end）があれば「開始〜終了」と表示する（年が違うときは終了の年も書く）
+            const end = e.end ? historyDate(e.end) : null;
+            let when = d.label;
+            if (end && end.year) {
+                const endText = end.year !== d.year ? historyDate(e.end, true).label : end.label;
+                if (endText) when = `${d.label || d.year}〜${endText}`;
+            }
+            if (when) head.appendChild(el('span', 'playbill-date', when));
             head.appendChild(el('span', 'playbill-kind', t(e.kind)));
-            head.appendChild(el('span', 'history-park', t('park_' + e.park)));
+            head.appendChild(el('span', 'history-park', t('park_' + e.park) + (loc(e.place) ? `｜${loc(e.place)}` : '')));
             card.appendChild(head);
             card.appendChild(el('span', 'playbill-title', loc(e.title)));
+            if (loc(e.edition)) card.appendChild(el('span', 'history-edition', loc(e.edition)));
             if (loc(e.note)) card.appendChild(el('span', 'history-note', loc(e.note)));
             const a = sourceLink(e.source);
             if (a) card.appendChild(a);
