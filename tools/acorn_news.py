@@ -1985,6 +1985,32 @@ def comment_for(result: dict) -> str:
     return ""
 
 
+def add_all(event: dict, open_issues: list[dict], owner: str, now: dt.datetime) -> list[dict]:
+    """きっかけになった Issue と、開いたままの入力フォームの Issue をまとめて処理する。
+    Issue が続けて作られると、待っていた自動処理が GitHub に取り消されることがある。取り消された分も、
+    残った1回がここで拾う。対象は「持ち主が作成した Issue」で、本文が Acorn の入力フォームのものだけ。"""
+    trigger = event.get("issue") or {}
+    seen, queue = set(), []
+    for issue in [trigger] + list(open_issues or []):
+        n = issue.get("number")
+        if not n or n in seen or issue.get("pull_request"):
+            continue
+        seen.add(n)
+        if ((issue.get("user") or {}).get("login") or "") != owner or "### リンク（URL）" not in (issue.get("body") or ""):
+            continue
+        queue.append(issue)
+    results = []
+    for issue in queue:
+        is_trigger = issue.get("number") == trigger.get("number")
+        result = add_manual({"issue": issue}, now)
+        if "skipped" in result:
+            continue
+        if result.get("errors") and not is_trigger:
+            continue   # きっかけ以外の Issue の入力ミスは、その Issue が編集されたときに知らせる（同じコメントを繰り返さない）
+        results.append({"issue": issue["number"], **result})
+    return results
+
+
 # ---------------------------------------------------------------- 入口
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -2010,6 +2036,13 @@ def main() -> int:
     b.add_argument("--check", action="store_true")
     a = sub.add_parser("add")
     a.add_argument("event")
+    aa = sub.add_parser("add-all", help="きっかけの Issue と、開いたままの入力フォームの Issue をまとめて追加する")
+    aa.add_argument("event")
+    aa.add_argument("--open", required=True, help="開いている Issue の一覧（GitHub の API の JSON）")
+    aa.add_argument("--owner", required=True)
+    ar = sub.add_parser("add-report", help="add-all の結果から、Issue ごとのコメント（番号.md）と、閉じる Issue の印（番号.close）を作る")
+    ar.add_argument("result")
+    ar.add_argument("outdir")
     so = sub.add_parser("source")
     so.add_argument("event")
     sc = sub.add_parser("source-comment")
@@ -2066,6 +2099,22 @@ def main() -> int:
     if args.cmd == "add":
         result = add_manual(json.loads(Path(args.event).read_text(encoding="utf-8")), now)
         print(json.dumps(result, ensure_ascii=False))
+        return 0
+    if args.cmd == "add-all":
+        results = add_all(json.loads(Path(args.event).read_text(encoding="utf-8")),
+                          json.loads(Path(args.open).read_text(encoding="utf-8")), args.owner, now)
+        print(json.dumps({"results": results}, ensure_ascii=False))
+        return 0
+    if args.cmd == "add-report":
+        out = Path(args.outdir)
+        out.mkdir(parents=True, exist_ok=True)
+        for r in json.loads(Path(args.result).read_text(encoding="utf-8")).get("results", []):
+            n = int(r["issue"])
+            text = comment_for(r)
+            if text:
+                (out / f"{n}.md").write_text(text + "\n", encoding="utf-8")
+            if r.get("status") == "added":
+                (out / f"{n}.close").write_text("", encoding="utf-8")
         return 0
     if args.cmd == "source":
         print(json.dumps(add_source(json.loads(Path(args.event).read_text(encoding="utf-8")), now), ensure_ascii=False))

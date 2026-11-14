@@ -11,11 +11,6 @@ permissions:
   issues: write
   pages: write
 
-# 他の自動処理と同時に main を書き換えないよう、1つずつ順番に動かす
-concurrency:
-  group: blog-publish
-  cancel-in-progress: false
-
 jobs:
   add:
     if: >-
@@ -23,6 +18,10 @@ jobs:
       github.event.sender.login == github.repository_owner &&
       github.event.issue.user.login == github.repository_owner
     runs-on: ubuntu-latest
+    # 他の自動処理と同時に main を書き換えないよう順番に動かす（ジョブに書く：対象外の Issue の動きで待ちが取り消されないように）
+    concurrency:
+      group: blog-publish
+      cancel-in-progress: false
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       ISSUE: ${{ github.event.issue.number }}
