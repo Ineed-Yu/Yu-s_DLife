@@ -273,6 +273,11 @@ def parse_date(s: str | None) -> dt.datetime | None:
 
 def source_from_host(url: str) -> str:
     host = (urllib.parse.urlparse(url).hostname or "").removeprefix("www.")
+    if "xn--" in host:   # 日本語ドメイン（手動で追加したもの）は、記号のような表記（xn--…）ではなく元の文字で表示する
+        try:
+            host = host.encode("ascii").decode("idna")
+        except (UnicodeError, ValueError):
+            pass
     return {"x.com": "X", "twitter.com": "X", "instagram.com": "Instagram", "threads.net": "Threads",
             "youtube.com": "YouTube", "youtu.be": "YouTube", "tiktok.com": "TikTok"}.get(host, host)
 
