@@ -1,86 +1,6 @@
 {
   "pending": [
     {
-      "url": "https://www.ed92.org/2023/02/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2023/01/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2022/12/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2022/11/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2022/10/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2022/09/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2022/08/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2022/07/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2022/06/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2022/05/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2022/04/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2022/03/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2022/02/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2022/01/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2021/12/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2021/11/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2021/10/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2021/09/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2021/08/",
-      "via": "ed92"
-    },
-    {
-      "url": "https://www.ed92.org/2021/07/",
-      "via": "ed92"
-    },
-    {
       "url": "https://www.ed92.org/2021/06/",
       "via": "ed92"
     },
@@ -265,7 +185,27 @@
     "https://www.ed92.org/2023/06/": "2026-11-14",
     "https://www.ed92.org/2023/05/": "2026-11-14",
     "https://www.ed92.org/2023/04/": "2026-11-14",
-    "https://www.ed92.org/2023/03/": "2026-11-14"
+    "https://www.ed92.org/2023/03/": "2026-11-14",
+    "https://www.ed92.org/2023/02/": "2026-11-15",
+    "https://www.ed92.org/2023/01/": "2026-11-15",
+    "https://www.ed92.org/2022/12/": "2026-11-15",
+    "https://www.ed92.org/2022/11/": "2026-11-15",
+    "https://www.ed92.org/2022/10/": "2026-11-15",
+    "https://www.ed92.org/2022/09/": "2026-11-15",
+    "https://www.ed92.org/2022/08/": "2026-11-15",
+    "https://www.ed92.org/2022/07/": "2026-11-15",
+    "https://www.ed92.org/2022/06/": "2026-11-15",
+    "https://www.ed92.org/2022/05/": "2026-11-15",
+    "https://www.ed92.org/2022/04/": "2026-11-15",
+    "https://www.ed92.org/2022/03/": "2026-11-15",
+    "https://www.ed92.org/2022/02/": "2026-11-15",
+    "https://www.ed92.org/2022/01/": "2026-11-15",
+    "https://www.ed92.org/2021/12/": "2026-11-15",
+    "https://www.ed92.org/2021/11/": "2026-11-15",
+    "https://www.ed92.org/2021/10/": "2026-11-15",
+    "https://www.ed92.org/2021/09/": "2026-11-15",
+    "https://www.ed92.org/2021/08/": "2026-11-15",
+    "https://www.ed92.org/2021/07/": "2026-11-15"
   },
   "sources": {
     "sm-ed92": {},
@@ -273,12 +213,31 @@
       "maps": [
         "https://tdrnavi.jp/resource/i/sitemap_spot.xml"
       ],
-      "map": 0,
-      "pos": 251,
-      "done": false,
+      "map": 1,
+      "pos": 0,
+      "done": true,
       "since": "",
       "started": "2026-11-14T08:52+09:00",
-      "checked": 251,
+      "checked": 300,
+      "hits": 0,
+      "finished": "2026-11-15T00:21+09:00"
+    },
+    "sm-dmkblog": {
+      "maps": [
+        "https://www.disney-magical-kingdom-blog.com/sitemap.xml?page=1",
+        "https://www.disney-magical-kingdom-blog.com/sitemap.xml?page=2",
+        "https://www.disney-magical-kingdom-blog.com/sitemap.xml?page=3",
+        "https://www.disney-magical-kingdom-blog.com/sitemap.xml?page=4",
+        "https://www.disney-magical-kingdom-blog.com/sitemap.xml?page=5",
+        "https://www.disney-magical-kingdom-blog.com/sitemap.xml?page=6",
+        "https://www.disney-magical-kingdom-blog.com/sitemap.xml?page=7"
+      ],
+      "map": 0,
+      "pos": 11,
+      "done": false,
+      "since": "",
+      "started": "2026-11-15T00:21+09:00",
+      "checked": 11,
       "hits": 0
     }
   }
