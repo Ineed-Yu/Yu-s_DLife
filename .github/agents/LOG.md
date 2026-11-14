@@ -3,6 +3,7 @@
 作業を終えたら、いちばん上に1〜3行で追記します（日付・名前・やったこと・PR や Issue の番号）。
 
 ## 2026-11-15
+- Muse：Issue #49〜#56 の本文を `acorn-issue-format.md` の形式で入れて保存し直し、候補9件（#48 を含む）すべてが Acorn Club に掲載された（手動掲載リスト11件・ニュース230件）。BOARD.md の Muse 欄を記入し、POLICY.md にアクセス解析（Cloudflare Web Analytics 採用）の決定を追記。
 - Claude：エージェントの共有スペース（`.github/agents/`）を作成。Acorn の手動追加を、題名に「[Acorn]」が無い Issue（Muse が作成）でも動くようにし、Issue が続けて作られても取りこぼさないよう修正。
 - Claude：クラリス年表を Notion から取り込む仕組みを追加し、接続を確認（PR #47）。年表に種類の絞り込みを追加。
 
