@@ -1,5 +1,8 @@
 # Acorn Club：入力フォーム（Issues →「Acorn Club の取得元を追加する」）から取得元を追加
-# 動くのは「リポジトリの持ち主本人」が送信・編集したときだけです。送信した時点で管理者の承認とみなします。
+# 動くのは、Issue の作成者が「リポジトリの持ち主」で、本文が取得元の入力フォーム（「サイトの URL」欄あり）のときだけです。
+# 持ち主本人による送信のほか、持ち主のアカウントで動く Muse が作成・編集した Issue も対象です（2026-11-15 管理者決定）。
+# 題名の「[取得元]」は無くても動きます。送信した時点で管理者の承認とみなします。
+# スクリプト側でも作成者の権限・「追加の確認」のチェック・URL の安全・試し取得を確かめます。
 name: Acorn Club の取得元の追加
 
 on:
@@ -14,9 +17,8 @@ permissions:
 jobs:
   add:
     if: >-
-      startsWith(github.event.issue.title, '[取得元]') &&
-      github.event.sender.login == github.repository_owner &&
-      github.event.issue.user.login == github.repository_owner
+      github.event.issue.user.login == github.repository_owner &&
+      contains(github.event.issue.body, '### サイトの URL')
     runs-on: ubuntu-latest
     # 他の自動処理と同時に main を書き換えないよう順番に動かす（ジョブに書く：対象外の Issue の動きで待ちが取り消されないように）
     concurrency:
