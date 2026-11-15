@@ -10,7 +10,8 @@
     "date": "2026-11-15T06:24+09:00",
     "origin": "manual",
     "issue": 53,
-    "hidden": false
+    "hidden": false,
+    "image": "https://www.resortsgal.com/wp-content/uploads/mickeys-christmas-party-characters-6.jpg"
   },
   {
     "id": "d7ac00b23b846d81",
@@ -37,7 +38,8 @@
     "date": "2026-11-13T12:00+09:00",
     "origin": "manual",
     "issue": 51,
-    "hidden": false
+    "hidden": false,
+    "image": "https://disneyparksblog.com/app/uploads/2026/11/The-Three-Caballeros-at-California-Adventure.png"
   },
   {
     "id": "28ca93ebe5f394db",
@@ -50,7 +52,8 @@
     "date": "2026-11-09T12:00+09:00",
     "origin": "manual",
     "issue": 52,
-    "hidden": false
+    "hidden": false,
+    "image": "https://r2-media.wdwnt.com/2026/11/christmas_parade_2026.png"
   },
   {
     "id": "190d8a7ef5750338",
@@ -63,7 +66,8 @@
     "date": "2026-11-09T12:00+09:00",
     "origin": "manual",
     "issue": 56,
-    "hidden": false
+    "hidden": false,
+    "image": "https://toondays.jp/wp-content/uploads/2020/05/787f9c352d570330228659ad82413ab2-scaled.jpg"
   },
   {
     "id": "00c59c9c486f9977",
@@ -76,7 +80,8 @@
     "date": "2026-11-08T12:00+09:00",
     "origin": "manual",
     "issue": 54,
-    "hidden": false
+    "hidden": false,
+    "image_tries": 1
   },
   {
     "id": "4398753cc6c164d7",
@@ -89,7 +94,9 @@
     "date": "2026-11-07T12:00+09:00",
     "origin": "manual",
     "issue": 50,
-    "hidden": false
+    "hidden": false,
+    "image": "https://puchipurabu.com/wp-content/uploads/2026/11/shimamura-disney-2611071.jpg",
+    "release": ""
   },
   {
     "id": "d543e4d6e019f5e3",
@@ -116,7 +123,9 @@
     "date": "2026-11-05T12:00+09:00",
     "origin": "manual",
     "issue": 49,
-    "hidden": false
+    "hidden": false,
+    "image": "https://motto.motobayashi.co.jp/wp-content/uploads/2026/11/チップ＆デール-1.jpg",
+    "release": ""
   },
   {
     "id": "82d26b47f01518d0",
@@ -129,7 +138,8 @@
     "date": "2026-11-04T12:00+09:00",
     "origin": "manual",
     "issue": 55,
-    "hidden": false
+    "hidden": false,
+    "image": ""
   },
   {
     "id": "cdfefea7d7421767",
@@ -142,6 +152,8 @@
     "date": "2026-10-29T12:00+09:00",
     "origin": "manual",
     "issue": 48,
-    "hidden": false
+    "hidden": false,
+    "image": "https://news.dellows.jp/wp-content/uploads/2026/10/952264_1.jpg",
+    "release": "2026-11-01"
   }
 ]
