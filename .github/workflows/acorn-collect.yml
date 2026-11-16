@@ -89,6 +89,11 @@ jobs:
         env:
           X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
           X_MONTHLY_POST_LIMIT: ${{ vars.X_MONTHLY_POST_LIMIT }}
+          # X の運用アカウントのリポスト（運用アカウント本人のキー4つ。未登録なら何もしない）
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
           # 見出しの自動翻訳（Claude API。ブログの翻訳と共通のキー。未登録なら翻訳しない）。月の上限は ACORN_TRANSLATE_MONTHLY_LIMIT（既定 2000 件）
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ACORN_TRANSLATE_MODEL: ${{ vars.ACORN_TRANSLATE_MODEL }}
