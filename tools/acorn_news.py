@@ -1665,7 +1665,7 @@ def backfill(dry_run: bool, now: dt.datetime, windows: int | None = None, fetche
     windows を指定したとき（PR の試し取得）は、直近の期間だけを状態に関係なく調べる。"""
     all_sources = load_json(DATA_DIR / "sources.json", {}).get("sources", [])
     gnews = [s for s in all_sources if s.get("backfill") and "news.google.com/rss/search" in s.get("url", "")]
-    site_search = [s for s in all_sources if s.get("clarice_search") and "feed=rss2" in s.get("url", "")]
+    site_search = [s for s in all_sources if s.get("clarice_search") and ("feed=rss2" in s.get("url", "") or "/feeds/posts/" in s.get("url", ""))]
     page_search = [s for s in all_sources if s.get("type") == "page" and s.get("page_param")]   # 自前のスクレイピング（検索結果のページ）
     to_open: list[tuple[str, str]] = []
     spans = backfill_windows(now)
@@ -1775,7 +1775,12 @@ def backfill(dry_run: bool, now: dt.datetime, windows: int | None = None, fetche
 
 
 def paged_url(url: str, page: int) -> str:
-    return url if page == 1 else f"{url}{'&' if '?' in url else '?'}paged={page}"
+    if page == 1:
+        return url
+    m = re.search(r"[?&]max-results=(\d+)", url)
+    if "/feeds/posts/" in url and m:   # Blogger の配信：start-index（1始まり）で次のページへ
+        return f"{url}&start-index={(page - 1) * int(m.group(1)) + 1}"
+    return f"{url}{'&' if '?' in url else '?'}paged={page}"
 
 
 # ---------------------------------------------------------------- 入力フォーム（手動で追加）
