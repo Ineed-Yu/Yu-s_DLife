@@ -248,14 +248,6 @@
       "safe_check": true
     },
     {
-      "id": "reddit-en",
-      "name": "Reddit",
-      "lang": "en",
-      "url": "https://www.reddit.com/search.rss?q=clarice%20disney&sort=new",
-      "kind": "sns",
-      "safe_check": true
-    },
-    {
       "id": "tdrnavi",
       "name": "TDR NAVI（Bing のサイト内検索）",
       "lang": "ja",
