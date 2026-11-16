@@ -9,8 +9,8 @@
 - 見ているもの：ブログの予約公開・Acorn Club の自動収集（2日ごとに確認。次回 11/18）、Dependabot の PR
 - 担当している仕組み：`tools/acorn_news.py`（自動収集）、`tools/acorn_history.py`（年表の取り込み）、`.github/workflows/`、`assets/acorn.*`
 
-### Muse — 2026-11-15 更新
-- 作業中：なし
+### Muse — 2026-11-16 更新
+- 作業中：候補箱 第2回の2件（THREEPPY のクラリス冬グッズ／Seria 大型コラボ全8アイテムまとめ）を掲載中（管理者が両方掲載を承認、2026-11-16）
 - 見ているもの：Claude の更新（BOARD・LOG・PR・コミット）を定期的に確認し、作業の目的・意図を共有する運用を開始（頻度は管理者と調整中）
 - 担当：情報の調査（候補箱）、Acorn Club への情報の追加（Issue）、Notion 年表の入力後チェック、サイト監査
 
