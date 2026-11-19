@@ -501,6 +501,17 @@
       ]
     },
     {
+      "id": "3ae63d204c7931fa",
+      "title": "「ディズニー×ナムコ」1月30日よりバレンタインキャンペーン開催！ミニー・デイジー・クラリスのおそろいドット柄衣装が可愛すぎる",
+      "url": "https://news.nicovideo.jp/watch/nw18853899",
+      "source": "ニコニコニュース",
+      "lang": "ja",
+      "category": "prize",
+      "official": false,
+      "date": "2026-01-23T17:00+09:00",
+      "origin": "auto"
+    },
+    {
       "id": "0ac570a2b2ee8a83",
       "title": "新年の幕開けを華やかにお祝い！東京ディズニーランド“東京ディズニーリゾートのお正月2026”ニューイヤーズ・グリーティング",
       "url": "https://dtimes.jp/post-1086358/",
@@ -2792,8 +2803,14 @@
       "origin": "auto",
       "image": "https://mezzomiki.jp/wp-content/uploads/2015/04/2015-04-11-15.16.411.jpg",
       "release": "2015-04-11",
-      "others": 1,
+      "others": 2,
       "dupes": [
+        {
+          "title": "クラリスそっくりの「アプリコット」 ディズニーストア限定「UniBEARsity」シリーズ",
+          "url": "https://www.j-cast.com/trend/2015/03/26231230.html?p=all",
+          "source": "J-CAST ニュース",
+          "date": "2015-03-26T16:00+09:00"
+        },
         {
           "title": "クラリスそっくりの「アプリコット」 ディズニーストア限定 ...",
           "url": "https://www.j-cast.com/trend/2015/03/26231230.html?p=all",
@@ -2812,7 +2829,16 @@
       "official": false,
       "date": "2015-03-23T16:00+09:00",
       "origin": "auto",
-      "image": "https://contents.oricon.co.jp/upimg/news/20150323/2050465_201503230433756001427097651c.jpg"
+      "image": "https://contents.oricon.co.jp/upimg/news/20150323/2050465_201503230433756001427097651c.jpg",
+      "others": 1,
+      "dupes": [
+        {
+          "title": "チップとデールが作ったクラリス仕様のユニベアシティ登場",
+          "url": "https://www.oricon.co.jp/news/2050465/full/",
+          "source": "オリコンニュース",
+          "date": "2015-03-23T16:00+09:00"
+        }
+      ]
     },
     {
       "id": "7ad72cbf87d80a06",
