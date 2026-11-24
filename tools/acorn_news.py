@@ -1602,6 +1602,8 @@ def check_history(data: dict) -> list[str]:
             problems.append(f"{where}: title は ja と en の両方が必要です")
         if e.get("end") and not re.fullmatch(r"\d{4}(-\d{2}(-\d{2})?)?", str(e["end"])):
             problems.append(f"{where}: end は YYYY / YYYY-MM / YYYY-MM-DD で書いてください")
+        if e.get("music") and not str(e["music"]).startswith("https://"):
+            problems.append(f"{where}: music（音楽のリンク）は https で書いてください")
         src = e.get("source") or {}
         if src and not (src.get("url") or "").startswith("https://"):
             problems.append(f"{where}: 出典の url は https で書いてください")

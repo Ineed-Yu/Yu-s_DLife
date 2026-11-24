@@ -2,7 +2,9 @@
 """クラリス年表を、管理者の Notion のデータベースから取り込む。
 
   Notion「クラリス年表管理」→「クラリス年表」データベースのうち、公開状態が「公開」の項目だけを読み、
-  acorn-club/history.json の entries を置き換える（プロフィールはこのファイルに手で書いたものをそのまま残す）。
+  acorn-club/history.json の entries に反映する。
+  - Notion から来た項目（origin: notion）だけを入れ替え、それ以前から history.json に手で書いてある項目は残す
+    （管理者が後で取捨選択する。2026-11-25 管理者決定）。プロフィールもそのまま残す。
 
   python3 tools/acorn_history.py            # 取り込んで history.json を更新（自動実行用）
   python3 tools/acorn_history.py --dry-run  # 書き換えずに結果だけ表示
@@ -123,13 +125,18 @@ def to_entry(row: dict) -> tuple[dict | None, str]:
         else:
             return None, f"「{title}」: パーク（またはリゾート・施設）が必要"
         entry["kind"] = KINDS.get(_select(p.get("内容区分")), "other")
+    # 見出しの下の行：「スペシャルイベント名 弾数｜イベント名｜作品名｜版・衣装」（見出しと同じもの・年だけの版は省く）
     details = []
-    if work and work != title:
-        details.append(work)
-    if _text(p.get("版・衣装")):
-        details.append(_text(p.get("版・衣装")))
+    special = " ".join(x for x in (_select(p.get("スペシャルイベント名")), _select(p.get("弾数"))) if x)
+    for part in (special, _select(p.get("イベント名")), work, _text(p.get("版・衣装"))):
+        if not part or part == title or part in details or re.fullmatch(r"\d{4}年?", part):
+            continue
+        details.append(part)
     if details:
-        entry["edition"] = {"ja": "／".join(details)}
+        entry["edition"] = {"ja": "｜".join(details)}
+    music = core.safe_url((p.get("Music") or {}).get("url") or "")
+    if music and core.is_safe_url(music):
+        entry["music"] = music
     if _text(p.get("概要・注記")):
         entry["note"] = {"ja": _text(p.get("概要・注記"))}
     url = core.safe_url((p.get("出典URL") or {}).get("url") or "")
@@ -161,17 +168,19 @@ def run(dry_run: bool, opener=urllib.request.urlopen) -> int:
     if not entries:
         print("::notice title=クラリス年表::Notion に「公開」の項目がまだ無いため、年表は変えていません")
         return 0
-    entries.sort(key=lambda e: (e["date"], e["title"]["ja"]))
     data = core.load_json(core.HISTORY_FILE, {})
-    data["entries"] = entries
+    kept = [e for e in data.get("entries") or [] if e.get("origin") != "notion"]   # 手で書いた項目は残す
+    data["entries"] = sorted(kept + entries, key=lambda e: (str(e["date"]), e["title"]["ja"]))
     problems = core.check_history(data)
     if problems:
         for line in problems[:8]:
             print(f"::warning title=クラリス年表::{line}")
         print("::warning title=クラリス年表::書き方に問題があるため、年表は変えていません")
         return 0
+    entries.sort(key=lambda e: e["date"])
     years = f"{entries[0]['date'][:4]}〜{entries[-1]['date'][:4]}年"
-    print(f"::notice title=クラリス年表::Notion の「公開」{len(entries)} 件（{years}）を取り込み" + (f"・載せられない項目 {len(skipped)} 件" if skipped else ""))
+    print(f"::notice title=クラリス年表::Notion の「公開」{len(entries)} 件（{years}）を取り込み・手で書いた項目 {len(kept)} 件はそのまま"
+          + (f"・載せられない項目 {len(skipped)} 件" if skipped else ""))
     if dry_run:
         return 0
     changed = core.write_if_changed(core.HISTORY_FILE, json.dumps(data, ensure_ascii=False, indent=2) + "\n")

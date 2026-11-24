@@ -57,6 +57,7 @@
         view_history: { ja: 'クラリス年表', en: 'Clarice timeline', fr: 'Chronologie de Clarice', zh: '克拉丽丝年表' },
         profile: { ja: 'プロフィール', en: 'Profile', fr: 'Profil', zh: '简介' },
         source: { ja: '出典', en: 'Source', fr: 'Source', zh: '出处' },
+        music: { ja: '音楽を聴く', en: 'Listen to the music', fr: 'Écouter la musique', zh: '听音乐' },
         allKinds: { ja: 'すべての種類', en: 'All types', fr: 'Tous les types', zh: '全部类型' },
         allParks: { ja: 'すべてのパーク・作品', en: 'All parks and works', fr: 'Tous les parcs et œuvres', zh: '全部乐园与作品' },
         park_film: { ja: '作品（映画・シリーズ）', en: 'Films and series', fr: 'Films et séries', zh: '电影与剧集' },
@@ -582,8 +583,23 @@
             card.appendChild(el('span', 'playbill-title', loc(e.title)));
             if (loc(e.edition)) card.appendChild(el('span', 'history-edition', loc(e.edition)));
             if (loc(e.note)) card.appendChild(el('span', 'history-note', loc(e.note)));
+            const links = [];
+            const music = safeUrl(e.music);
+            if (music) {   // Notion の「Music」（ショー・パレードの音楽のページ）
+                const m = el('a', 'history-source history-music', `♪ ${t('music')}`);
+                m.href = music;
+                m.target = '_blank';
+                m.rel = 'noopener noreferrer';
+                m.appendChild(el('span', 'visually-hidden', t('opens')));
+                links.push(m);
+            }
             const a = sourceLink(e.source);
-            if (a) card.appendChild(a);
+            if (a) links.push(a);
+            if (links.length) {
+                const row = el('span', 'history-links');
+                links.forEach(x => row.appendChild(x));
+                card.appendChild(row);
+            }
             li.appendChild(card);
             list.appendChild(li);
         });
