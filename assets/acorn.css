@@ -365,6 +365,11 @@ html.acorn-intro .club {
     line-height: 1.7;
     color: var(--ink);
 }
+.history-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 14px;
+}
 .history-source {
     display: inline-block;
     margin-top: 6px;
