@@ -346,6 +346,23 @@
       }
     },
     {
+      "date": "2025-04-08",
+      "title": {
+        "ja": "ドナルドのクワッキー・ダック！ダック！ダックシティ！"
+      },
+      "origin": "notion",
+      "end": "2025-06-30",
+      "park": "tdl",
+      "kind": "other",
+      "edition": {
+        "ja": "ディズニー・パルパルーザ 第４弾"
+      },
+      "source": {
+        "name": "olc.co.jp",
+        "url": "https://www.olc.co.jp/ja/news/news_tdr/20241121_01/main/0/link/20251030_02.pdf"
+      }
+    },
+    {
       "date": "2025-07-02",
       "title": {
         "ja": "ドックサイド・スプラッシュ・リミックス"
@@ -353,11 +370,32 @@
       "origin": "notion",
       "end": "2025-09-15",
       "park": "tds",
-      "kind": "show",
+      "kind": "other",
       "edition": {
-        "ja": "サマー・クール・オフ"
+        "ja": "サマー・クールオフ at Tokyo Disney Resort"
       },
-      "music": "https://music.youtube.com/watch?v=UGodFTbp_74&si=gvDnA-ROrc29W78W&drli=1"
+      "music": "https://music.youtube.com/watch?v=UGodFTbp_74&si=gvDnA-ROrc29W78W&drli=1",
+      "source": {
+        "name": "olc.co.jp",
+        "url": "https://www.olc.co.jp/ja/news/news_tdr/20250423_01/main/0/link/20250423_01.pdf"
+      }
+    },
+    {
+      "date": "2026-01-01",
+      "title": {
+        "ja": "ニューイヤーズ・グリーティング"
+      },
+      "origin": "notion",
+      "end": "2026-01-12",
+      "park": "tdl",
+      "kind": "parade",
+      "edition": {
+        "ja": "お正月のスペシャルイベント｜東京ディズニーリゾートのお正月"
+      },
+      "source": {
+        "name": "olc.co.jp",
+        "url": "https://www.olc.co.jp/ja/news/news_tdr/20251028_01/main/0/link/20251028_01.pdf"
+      }
     },
     {
       "date": "2026-01-14",
@@ -370,6 +408,10 @@
       "kind": "parade",
       "edition": {
         "ja": "ディズニー・パルパルーザ 第５弾｜ミニーのファンダーランド"
+      },
+      "source": {
+        "name": "olc.co.jp",
+        "url": "https://www.olc.co.jp/ja/news/news_tdr/20251030_01/main/0/link/20251030_01.pdf"
       }
     },
     {
@@ -387,6 +429,32 @@
       "source": {
         "name": "香港ディズニーランド 報道資料（2025年9月16日）",
         "url": "https://news.hongkongdisneyland.com/en/press/2025-09-16/"
+      }
+    },
+    {
+      "date": "2026-04-15",
+      "title": {
+        "ja": "スパークリング・ジュビリー・セレブレーション"
+      },
+      "origin": "notion",
+      "end": "2027-03-31",
+      "park": "tds",
+      "kind": "other",
+      "edition": {
+        "ja": "東京ディズニーシー25周年｜スパークリング・ジュビリー"
+      }
+    },
+    {
+      "date": "2027-01-01",
+      "title": {
+        "ja": "ニューイヤーズ・グリーティング"
+      },
+      "origin": "notion",
+      "end": "2027-01-11",
+      "park": "tdl",
+      "kind": "other",
+      "edition": {
+        "ja": "東京ディズニーランドのお正月｜お正月のスペシャルイベント"
       }
     },
     {
