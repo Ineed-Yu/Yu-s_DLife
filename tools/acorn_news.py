@@ -10,7 +10,7 @@
   content/acorn/sitemap_state.json   … サイトマップをどこまで調べたか・検索結果から開いて確かめる記事の順番待ち
   content/acorn/exclude.json   … 表示しない情報（URL・言葉）
   content/acorn/groups.json    … 管理者が「同じ商品」と決めた記事のまとまり（期間と見出しの言葉）
-  content/acorn/x_state.json   … X の検索の続きの位置と、今月読んだ件数（従量課金の上限管理）
+  content/acorn/x_state.json   … X の検索・運用アカウントのリポストの続きの位置と、今月読んだ件数（従量課金の上限管理）
         ↓
   acorn-club/news.json         … ページに表示するタイムライン（新しい順）
 
@@ -43,6 +43,7 @@ import datetime as dt
 import email.utils
 import gzip
 import hashlib
+import hmac
 import html
 import io
 import json
@@ -1291,6 +1292,94 @@ def collect_x(src: dict, token: str, state: dict, limit: int, now: dt.datetime, 
     return out, len(tweets)
 
 
+# ---------------------------------------------------------------- X の運用アカウントのリポスト（有料の X API）
+# 管理者が運用アカウント（非公開でもよい）でリポスト・引用した投稿を、タイムラインに載せる。
+# - 載せる投稿を選ぶのは管理者（リポストする＝掲載の承認）。こちらでは「クラリスかどうか」の絞り込みはしない。
+# - キー（Secrets の X_API_KEY・X_API_SECRET・X_ACCESS_TOKEN・X_ACCESS_SECRET：運用アカウント本人のキー）が
+#   4つそろうまで何もしない。非公開のアカウントは本人のキーでしか読めないため、期限の無い OAuth 1.0a の署名を使う。
+# - 読むのは前回より新しい分だけ（since_id）。月に読む件数は、X の検索と合わせて X_MONTHLY_POST_LIMIT を超えない。
+# - 保存するのは元の投稿の ID・日付・言語・種類だけ（本文は保存しない）。表示は X の公式の埋め込み。
+X_API = "https://api.x.com/2"
+X_REPOST_FIRST = 20    # 最初の1回に読む件数（それより前のリポストは載らない）
+X_REPOST_PER_RUN = 30  # 2回目以降、1回に読む件数の上限
+X_REPOST_KEYS = ("X_API_KEY", "X_API_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_SECRET")
+
+
+def _pct(s: str) -> str:
+    return urllib.parse.quote(str(s), safe="-._~")
+
+
+def oauth1_header(method: str, url: str, params: dict, keys: dict, nonce: str | None = None, timestamp: str | None = None) -> str:
+    """OAuth 1.0a（HMAC-SHA1）の Authorization ヘッダーを作る。keys は X_REPOST_KEYS の4つ。"""
+    oauth = {
+        "oauth_consumer_key": keys["X_API_KEY"], "oauth_nonce": nonce or base64.b16encode(os.urandom(16)).decode().lower(),
+        "oauth_signature_method": "HMAC-SHA1", "oauth_timestamp": timestamp or str(int(time.time())),
+        "oauth_token": keys["X_ACCESS_TOKEN"], "oauth_version": "1.0",
+    }
+    pairs = sorted((_pct(k), _pct(v)) for k, v in {**params, **oauth}.items())
+    base = "&".join([method.upper(), _pct(url), _pct("&".join(f"{k}={v}" for k, v in pairs))])
+    key = f"{_pct(keys['X_API_SECRET'])}&{_pct(keys['X_ACCESS_SECRET'])}".encode()
+    oauth["oauth_signature"] = base64.b64encode(hmac.new(key, base.encode(), hashlib.sha1).digest()).decode()
+    return "OAuth " + ", ".join(f'{_pct(k)}="{_pct(v)}"' for k, v in sorted(oauth.items()))
+
+
+def x_user_get(path: str, params: dict, keys: dict) -> dict:
+    url = f"{X_API}{path}"
+    req = urllib.request.Request(f"{url}?{urllib.parse.urlencode(params)}" if params else url,
+                                 headers={"Authorization": oauth1_header("GET", url, params, keys), "User-Agent": USER_AGENT})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        return json.loads(r.read(MAX_FEED_BYTES).decode("utf-8"))
+
+
+def collect_x_reposts(keys: dict, state: dict, limit: int, now: dt.datetime, get=x_user_get) -> tuple[list[dict], int]:
+    """運用アカウントのリポスト・引用から、載せる投稿（元の投稿）を取り出す。state（月・読んだ件数・前回の位置）を更新する。"""
+    month = now.strftime("%Y-%m")
+    if state.get("month") != month:
+        state["month"], state["reads"] = month, 0
+    remaining = limit - state.get("reads", 0)
+    if remaining < 10:
+        raise RuntimeError(f"今月の上限（{limit} 件）に達したため停止中です")
+    rp = state.setdefault("reposts", {})
+    if not rp.get("user_id"):   # 運用アカウントの ID（最初の1回だけ調べる）
+        me = (get("/users/me", {}, keys).get("data") or {})
+        if not str(me.get("id", "")).isdigit():
+            raise RuntimeError("運用アカウントを確認できませんでした")
+        rp["user_id"] = str(me["id"])
+        state["reads"] = state.get("reads", 0) + 1
+    first = not rp.get("since")
+    params = {"max_results": str(max(5, min(X_REPOST_FIRST if first else X_REPOST_PER_RUN, remaining // 2))),
+              "tweet.fields": "created_at,lang,referenced_tweets", "expansions": "referenced_tweets.id", "exclude": "replies"}
+    if not first:
+        params["since_id"] = rp["since"]
+    res = get(f"/users/{rp['user_id']}/tweets", params, keys)
+    posts = res.get("data") or []
+    originals = {str(t.get("id")): t for t in ((res.get("includes") or {}).get("tweets") or [])}
+    state["reads"] = state.get("reads", 0) + len(posts) + len(originals)   # 元の投稿も読んだ件数に数える（多めに見積もる）
+    newest = (res.get("meta") or {}).get("newest_id")
+    if newest:
+        rp["since"] = str(newest)
+    out, seen = [], set()
+    for p in posts:
+        ref = next((r for r in (p.get("referenced_tweets") or []) if r.get("type") in ("retweeted", "quoted")), None)
+        tid = str((ref or {}).get("id", ""))
+        if not tid.isdigit() or tid in seen:
+            continue   # 運用アカウント自身の投稿・返信は載せない
+        seen.add(tid)
+        orig = originals.get(tid) or {}
+        text = orig.get("text") or ""
+        if OTHER_CLARICE.search(text):
+            continue
+        date = parse_date(orig.get("created_at")) or parse_date(p.get("created_at")) or now
+        url = f"https://x.com/i/status/{tid}"
+        out.append({
+            "id": item_id(url), "title": "", "url": url, "source": "X", "via": "x-reposts",
+            "lang": X_LANGS.get((orig.get("lang") or "").lower(), "other"),
+            "category": category_of(text, None) or "other", "official": False,
+            "date": min(date, now).isoformat(timespec="minutes"), "origin": "x", "tweet": tid,
+        })
+    return out, len(posts)
+
+
 # ---------------------------------------------------------------- 保存とタイムラインの組み立て
 def load_json(path: Path, default):
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
@@ -1532,7 +1621,7 @@ def write_if_changed(path: Path, text: str) -> bool:
     return True
 
 
-def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search) -> int:
+def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search, x_user_get_fn=x_user_get) -> int:
     sources = load_json(DATA_DIR / "sources.json", {}).get("sources", [])
     found: list[dict] = []
     ok = 0
@@ -1578,6 +1667,22 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search
         except Exception as e:  # 1つの取得元が失敗しても他は続ける
             notes.append(f"::warning title={src['id']}::{src['name']}: 取得できませんでした（{type(e).__name__}: {str(e)[:120]}）")
             tally.append(f"{src['id']} ×")
+    # X の運用アカウントのリポスト（キーが4つそろうまで停止。試し取得では読まない：読むと課金され、続きの位置も進むため）
+    x_keys = {k: os.environ.get(k, "").strip() for k in X_REPOST_KEYS}
+    if not all(x_keys.values()):
+        notes.append("::notice title=x-reposts::X の運用アカウントのリポスト: キー（X_API_KEY ほか4つ）が未登録のため停止中")
+    elif dry_run:
+        notes.append("::notice title=x-reposts::X の運用アカウントのリポスト: キーは登録済み（試し取得では読みません）")
+    else:
+        try:
+            items, total = collect_x_reposts(x_keys, x_state, x_limit, now, x_user_get_fn)
+            found += items
+            notes.append(f"::notice title=x-reposts::X の運用アカウントのリポスト: 新しい投稿 {total} 件 → 掲載 {len(items)} 件"
+                         f"（今月 {x_state.get('reads', 0)}/{x_limit} 件）")
+        except urllib.error.HTTPError as e:
+            notes.append(f"::warning title=x-reposts::X の運用アカウントのリポスト: 取得できませんでした（HTTP {e.code}。キーや X の利用設定を確認してください）")
+        except Exception as e:
+            notes.append(f"::warning title=x-reposts::X の運用アカウントのリポスト: 取得できませんでした（{type(e).__name__}: {str(e)[:100]}）")
     print(f"::notice title=まとめ::取得元 {ok}/{len(sources)} 件・候補 {len(found)} 件（取得元 候補/配信）: " + "、".join(tally))
     for line in notes:
         print(line)
