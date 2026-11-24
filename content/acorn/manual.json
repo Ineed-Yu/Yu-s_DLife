@@ -1,5 +1,18 @@
 [
   {
+    "id": "23387d26719ab930",
+    "title": "東京ディズニーシー25周年フィナーレにクラリス出演",
+    "url": "https://piratesandprincesses.net/tokyo-disneysea-25th-anniversary-finale-starts-jan-13-with-new-show/",
+    "source": "piratesandprincesses.net",
+    "lang": "en",
+    "category": "show",
+    "official": false,
+    "date": "2027-01-13T12:00+09:00",
+    "origin": "manual",
+    "issue": 69,
+    "hidden": false
+  },
+  {
     "id": "112f226e9b4ff123",
     "title": "セガプライズにクラリス入り「PASTEL DECORA」3点登場",
     "url": "https://segaplaza.jp/prize/D123404/",
@@ -10,6 +23,19 @@
     "date": "2026-12-11T12:00+09:00",
     "origin": "manual",
     "issue": 65,
+    "hidden": false
+  },
+  {
+    "id": "e762b62168640595",
+    "title": "パリでクリスマス衣装のクラリスに会える",
+    "url": "https://thedisneyscoop.com/tigger-clarice-donald-pluto-christmas-outfits-disneyland-paris-photos/",
+    "source": "thedisneyscoop.com",
+    "lang": "en",
+    "category": "greeting",
+    "official": false,
+    "date": "2026-11-22T12:00+09:00",
+    "origin": "manual",
+    "issue": 70,
     "hidden": false
   },
   {
