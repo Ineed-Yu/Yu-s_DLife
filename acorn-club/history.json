@@ -312,20 +312,20 @@
       }
     },
     {
-      "date": "2026-04",
-      "park": "hkdl",
-      "kind": "event",
+      "date": "2024-01-10",
       "title": {
-        "ja": "チップとデールとクラリスのいたずらパーティー",
-        "en": "The Most Mischievous Party with Chip, Dale & Clarice"
+        "ja": "ミニー@ファンダーランド"
       },
-      "note": {
-        "ja": "香港ディズニーランド20周年の催しのひとつ。探検家のクラリスがチップとデールと一緒にグリズリー・ガルチで町じゅうの競争を開き、エリアを歩き回る。",
-        "en": "Part of Hong Kong Disneyland's 20th anniversary: explorer Clarice hosts a town-wide competition in Grizzly Gulch with Chip and Dale and roams the land."
+      "origin": "notion",
+      "end": "2024-03-19",
+      "park": "tdl",
+      "kind": "parade",
+      "edition": {
+        "ja": "ディズニー・パルパルーザ 第１弾｜ミニーのファンダーランド"
       },
       "source": {
-        "name": "香港ディズニーランド 報道資料（2025年9月16日）",
-        "url": "https://news.hongkongdisneyland.com/en/press/2025-09-16/"
+        "name": "olc.co.jp",
+        "url": "https://www.olc.co.jp/ja/news/news_tdr/20231101_02/main/0/link/20231101_1.pdf"
       }
     },
     {
@@ -343,6 +343,67 @@
       "source": {
         "name": "Dtimes（2025年1月1日）",
         "url": "https://dtimes.jp/post-964374/"
+      }
+    },
+    {
+      "date": "2025-07-02",
+      "title": {
+        "ja": "ドックサイド・スプラッシュ・リミックス"
+      },
+      "origin": "notion",
+      "end": "2025-09-15",
+      "park": "tds",
+      "kind": "show",
+      "edition": {
+        "ja": "サマー・クール・オフ"
+      },
+      "music": "https://music.youtube.com/watch?v=UGodFTbp_74&si=gvDnA-ROrc29W78W&drli=1"
+    },
+    {
+      "date": "2026-01-14",
+      "title": {
+        "ja": "ミニー@ファンダーランド"
+      },
+      "origin": "notion",
+      "end": "2026-03-02",
+      "park": "tdl",
+      "kind": "parade",
+      "edition": {
+        "ja": "ディズニー・パルパルーザ 第５弾｜ミニーのファンダーランド"
+      }
+    },
+    {
+      "date": "2026-04",
+      "park": "hkdl",
+      "kind": "event",
+      "title": {
+        "ja": "チップとデールとクラリスのいたずらパーティー",
+        "en": "The Most Mischievous Party with Chip, Dale & Clarice"
+      },
+      "note": {
+        "ja": "香港ディズニーランド20周年の催しのひとつ。探検家のクラリスがチップとデールと一緒にグリズリー・ガルチで町じゅうの競争を開き、エリアを歩き回る。",
+        "en": "Part of Hong Kong Disneyland's 20th anniversary: explorer Clarice hosts a town-wide competition in Grizzly Gulch with Chip and Dale and roams the land."
+      },
+      "source": {
+        "name": "香港ディズニーランド 報道資料（2025年9月16日）",
+        "url": "https://news.hongkongdisneyland.com/en/press/2025-09-16/"
+      }
+    },
+    {
+      "date": "2027-01-13",
+      "title": {
+        "ja": "ミニー@ファンダーランド"
+      },
+      "origin": "notion",
+      "end": "2027-03-31",
+      "park": "tdl",
+      "kind": "parade",
+      "edition": {
+        "ja": "ディズニー・パルパルーザ 第７弾｜ミニーのファンダーランド"
+      },
+      "source": {
+        "name": "olc.co.jp",
+        "url": "https://www.olc.co.jp/ja/news/news_tdr/20261104-03/main/0/link/20261104_01.pdf"
       }
     }
   ]

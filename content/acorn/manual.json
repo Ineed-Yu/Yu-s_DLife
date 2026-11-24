@@ -10,7 +10,8 @@
     "date": "2027-01-13T12:00+09:00",
     "origin": "manual",
     "issue": 69,
-    "hidden": false
+    "hidden": false,
+    "image": "https://i0.wp.com/piratesandprincesses.net/wp-content/uploads/2026/11/tokyo-disneysea-25th-anniversary.jpeg?fit=1456%2C819&ssl=1"
   },
   {
     "id": "112f226e9b4ff123",
@@ -23,7 +24,9 @@
     "date": "2026-12-11T12:00+09:00",
     "origin": "manual",
     "issue": 65,
-    "hidden": false
+    "hidden": false,
+    "image": "https://segaplaza.jp/images-v3/prize/D123404_1cb59e/large/D123404_01.webp",
+    "release": "2026-12-11"
   },
   {
     "id": "e762b62168640595",
@@ -36,7 +39,8 @@
     "date": "2026-11-22T12:00+09:00",
     "origin": "manual",
     "issue": 70,
-    "hidden": false
+    "hidden": false,
+    "image": "https://thedisneyscoop.com/wp-content/uploads/2026/11/donald-duck-christmas-outfit-disneyland-paris.jpg"
   },
   {
     "id": "dd8d0dacaf9f3cd0",
@@ -49,7 +53,9 @@
     "date": "2026-11-17T12:00+09:00",
     "origin": "manual",
     "issue": 68,
-    "hidden": false
+    "hidden": false,
+    "image": "https://d3bo0mk5kk7egf.cloudfront.net/imgstore/ElementGalleryItems/wdwmagic-plus/Fullsize/Pin-Trading_Full_69667.jpg",
+    "release": "2026-12-02"
   },
   {
     "id": "59137791adc8e3b0",
@@ -62,7 +68,9 @@
     "date": "2026-11-15T12:00+09:00",
     "origin": "manual",
     "issue": 62,
-    "hidden": false
+    "hidden": false,
+    "image": "https://puchipurabu.com/wp-content/uploads/2026/11/100kin-chipdale-4.jpg",
+    "release": ""
   },
   {
     "id": "0afe505055c75453",
@@ -175,7 +183,8 @@
     "date": "2026-11-08T12:00+09:00",
     "origin": "manual",
     "issue": 67,
-    "hidden": false
+    "hidden": false,
+    "image": "https://r2-media.wdwnt.com/2026/11/DisneyJollywoodNights2026_GeorgeSandersonNeedleman_3-scaled.jpg"
   },
   {
     "id": "4398753cc6c164d7",
@@ -203,7 +212,8 @@
     "date": "2026-11-07T12:00+09:00",
     "origin": "manual",
     "issue": 66,
-    "hidden": false
+    "hidden": false,
+    "image": "https://www.neverendingvoyage.com/wp-content/uploads/2027/01/top-disneyland-paris-christmas.jpg"
   },
   {
     "id": "d543e4d6e019f5e3",
