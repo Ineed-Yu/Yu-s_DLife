@@ -312,6 +312,23 @@
       }
     },
     {
+      "date": "2024-01-01",
+      "title": {
+        "ja": "ニューイヤーズ・グリーティング"
+      },
+      "origin": "notion",
+      "end": "2024-01-13",
+      "park": "tdl",
+      "kind": "greeting",
+      "edition": {
+        "ja": "お正月のスペシャルイベント｜東京ディズニーリゾートのお正月"
+      },
+      "source": {
+        "name": "olc.co.jp",
+        "url": "https://www.olc.co.jp/ja/news/news_tdr/20241105_01/main/0/link/20241105_01.pdf"
+      }
+    },
+    {
       "date": "2024-01-10",
       "title": {
         "ja": "ミニー@ファンダーランド"
@@ -319,7 +336,7 @@
       "origin": "notion",
       "end": "2024-03-19",
       "park": "tdl",
-      "kind": "parade",
+      "kind": "other",
       "edition": {
         "ja": "ディズニー・パルパルーザ 第１弾｜ミニーのファンダーランド"
       },
@@ -348,18 +365,18 @@
     {
       "date": "2025-04-08",
       "title": {
-        "ja": "ドナルドのクワッキー・ダック！ダック！ダックシティ！"
+        "ja": "クワッキーセレブレーション★ドナルド・ザ・レジェンド"
       },
       "origin": "notion",
       "end": "2025-06-30",
       "park": "tdl",
       "kind": "other",
       "edition": {
-        "ja": "ディズニー・パルパルーザ 第４弾"
+        "ja": "ディズニー・パルパルーザ 第４弾｜ドナルドのクワッキー・ダック！ダック！ダックシティ！"
       },
       "source": {
         "name": "olc.co.jp",
-        "url": "https://www.olc.co.jp/ja/news/news_tdr/20241121_01/main/0/link/20251030_02.pdf"
+        "url": "https://www.olc.co.jp/ja/news/news_tdr/202500205_01/main/0/link/20250205_01.pdf"
       }
     },
     {
@@ -388,7 +405,7 @@
       "origin": "notion",
       "end": "2026-01-12",
       "park": "tdl",
-      "kind": "parade",
+      "kind": "greeting",
       "edition": {
         "ja": "お正月のスペシャルイベント｜東京ディズニーリゾートのお正月"
       },
@@ -405,7 +422,7 @@
       "origin": "notion",
       "end": "2026-03-02",
       "park": "tdl",
-      "kind": "parade",
+      "kind": "other",
       "edition": {
         "ja": "ディズニー・パルパルーザ 第５弾｜ミニーのファンダーランド"
       },
@@ -432,16 +449,37 @@
       }
     },
     {
+      "date": "2026-04-09",
+      "title": {
+        "ja": "イッツ・ア・スウィーツフルタイム！"
+      },
+      "origin": "notion",
+      "end": "2026-06-30",
+      "park": "tdl",
+      "kind": "other",
+      "edition": {
+        "ja": "ディズニー・パルパルーザ 第６弾｜ヴァネロペのスウィーツ・ポップ・ワールド｜2026年版"
+      },
+      "source": {
+        "name": "olc.co.jp",
+        "url": "https://www.olc.co.jp/ja/news/news_tdr/20260205_01/main/0/link/20260205_01.pdf"
+      }
+    },
+    {
       "date": "2026-04-15",
       "title": {
         "ja": "スパークリング・ジュビリー・セレブレーション"
       },
       "origin": "notion",
-      "end": "2027-03-31",
+      "end": "2027-01-12",
       "park": "tds",
       "kind": "other",
       "edition": {
-        "ja": "東京ディズニーシー25周年｜スパークリング・ジュビリー"
+        "ja": "東京ディズニーシー25周年｜スパークリング・ジュビリー｜通常版"
+      },
+      "source": {
+        "name": "olc.co.jp",
+        "url": "https://www.olc.co.jp/ja/news/news_tdr/20250825_01/main/0/link/20250825_01.pdf"
       }
     },
     {
@@ -452,9 +490,26 @@
       "origin": "notion",
       "end": "2027-01-11",
       "park": "tdl",
-      "kind": "other",
+      "kind": "greeting",
       "edition": {
         "ja": "東京ディズニーランドのお正月｜お正月のスペシャルイベント"
+      }
+    },
+    {
+      "date": "2027-01-13",
+      "title": {
+        "ja": "スパークリング・ジュビリー・セレブレーション・フィナーレ"
+      },
+      "origin": "notion",
+      "end": "2027-03-31",
+      "park": "tds",
+      "kind": "other",
+      "edition": {
+        "ja": "東京ディズニーシー25周年｜スパークリング・ジュビリー｜フィナーレ版"
+      },
+      "source": {
+        "name": "olc.co.jp",
+        "url": "https://www.olc.co.jp/ja/news/news_tdr/20261104-02/main/0/link/20261104_02.pdf"
       }
     },
     {
@@ -465,7 +520,7 @@
       "origin": "notion",
       "end": "2027-03-31",
       "park": "tdl",
-      "kind": "parade",
+      "kind": "other",
       "edition": {
         "ja": "ディズニー・パルパルーザ 第７弾｜ミニーのファンダーランド"
       },
