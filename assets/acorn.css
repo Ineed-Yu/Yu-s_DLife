@@ -895,3 +895,57 @@ html.acorn-intro-soft .curtain-title {
 html.acorn-intro-soft .curtain {
     animation: curtain-done 0.6s ease 1s forwards;
 }
+
+/* グッズタブ：発売の記録（Notion「クラリスグッズ発売情報」） */
+.releases.playbill {
+    display: block;
+    margin: 0 0 22px;
+    padding: 12px 16px;
+}
+.releases-title {
+    display: list-item;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 15px;
+}
+.releases-title:focus-visible {
+    outline: 2px solid var(--heartwood);
+    outline-offset: 3px;
+}
+.releases-list {
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0;
+}
+.release {
+    display: grid;
+    grid-template-columns: 8.5em 1fr;
+    gap: 2px 12px;
+    padding: 8px 0;
+    border-top: 1px solid rgba(107, 86, 67, 0.18);
+}
+.release-date {
+    font-size: 13px;
+    color: #6b5643;
+    font-variant-numeric: tabular-nums;
+}
+.release-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.release-name {
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+.release-meta,
+.release-note {
+    font-size: 13px;
+    color: #6b5643;
+}
+@media (max-width: 520px) {
+    .release {
+        grid-template-columns: 1fr;
+    }
+}

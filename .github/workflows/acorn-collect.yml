@@ -116,7 +116,7 @@ jobs:
       - name: RSS の無いサイトの記事を開いて確かめる
         run: python3 tools/acorn_news.py pages --budget 240
 
-      # クラリス年表：管理者の Notion のデータベースの「公開」の項目を取り込む（キー NOTION_TOKEN が未登録なら何もしない。読むだけ）
+      # クラリス年表とグッズの発売の記録（releases.json）：管理者の Notion のデータベースの「公開」の項目を取り込む（キー NOTION_TOKEN が未登録なら何もしない。読むだけ）
       - name: クラリス年表を Notion から取り込む
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
@@ -128,7 +128,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for path in content/acorn acorn-club/news.json acorn-club/history.json; do
+          for path in content/acorn acorn-club/news.json acorn-club/history.json acorn-club/releases.json; do
             if [ -e "$path" ]; then git add -A -- "$path"; fi
           done
           if git diff --cached --quiet; then

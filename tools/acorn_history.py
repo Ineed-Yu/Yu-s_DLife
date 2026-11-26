@@ -6,7 +6,7 @@
   - Notion から来た項目（origin: notion）だけを入れ替え、それ以前から history.json に手で書いてある項目は残す
     （管理者が後で取捨選択する。2026-11-25 管理者決定）。プロフィールもそのまま残す。
 
-  python3 tools/acorn_history.py            # 取り込んで history.json を更新（自動実行用）
+  python3 tools/acorn_history.py            # 取り込んで history.json・releases.json（グッズの発売の記録）を更新（自動実行用）
   python3 tools/acorn_history.py --dry-run  # 書き換えずに結果だけ表示
 
 - 連携用のキー（GitHub の Secrets の NOTION_TOKEN）が未登録なら何もしない。
@@ -145,7 +145,64 @@ def to_entry(row: dict) -> tuple[dict | None, str]:
     return entry, ""
 
 
+# ---------------------------------------------------------------- クラリスグッズ発売情報（グッズタブの「発売の記録」）
+# Notion「クラリス年表管理」→「クラリスグッズ発売情報」のうち「公開」の項目を acorn-club/releases.json に書く（2026-11-27 管理者決定）。
+DEFAULT_GOODS_DB = "ab2d8f1e7d7d822891b601b757dbae46"
+RELEASES_FILE = core.ROOT / "acorn-club" / "releases.json"
+COUNTRIES = {"JP": "jp", "US": "us", "FR": "fr", "UK": "uk", "CH": "cn", "CN": "cn", "HK": "hk"}   # 初売国（CH は中国）
+
+
+def to_release(row: dict) -> tuple[dict | None, str]:
+    p = row.get("properties") or {}
+    name = _text(p.get("グッズ名"))
+    if not name:
+        return None, "グッズ名が空"
+    date = (((p.get("発売日") or {}).get("date") or {}).get("start") or "")[:10]
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date):
+        return None, f"「{name}」: 発売日が必要"
+    item: dict = {"date": date, "name": {"ja": name}}
+    if _select(p.get("ブランド")):
+        item["brand"] = _select(p.get("ブランド"))
+    country = COUNTRIES.get(_select(p.get("初売国")).upper())
+    if country:
+        item["country"] = country
+    if _text(p.get("注釈")):
+        item["note"] = {"ja": _text(p.get("注釈"))}
+    url = core.safe_url((p.get("出典URL") or {}).get("url") or "")
+    if url and core.is_safe_url(url):
+        item["source"] = {"name": core.source_from_host(url), "url": url}
+    return item, ""
+
+
+def run_releases(dry_run: bool, token: str, opener=urllib.request.urlopen) -> None:
+    db = re.sub(r"[^0-9a-fA-F]", "", os.environ.get("NOTION_GOODS_DB", "") or DEFAULT_GOODS_DB)
+    try:
+        rows = notion_query(db, token, opener)
+    except Exception as e:   # 読めなかったときは、今の記録をそのまま残す
+        print(f"::warning title=グッズ発売情報::Notion から読めませんでした（{type(e).__name__}: {str(e)[:120]}）。発売の記録は変えていません")
+        return
+    items, skipped = [], []
+    for row in rows:
+        item, why = to_release(row)
+        (items.append(item) if item else skipped.append(why))
+    for why in skipped[:8]:
+        print(f"::warning title=グッズ発売情報（載せられない項目）::{why}")
+    items.sort(key=lambda i: (i["date"], i["name"]["ja"]), reverse=True)
+    print(f"::notice title=グッズ発売情報::Notion の「公開」{len(items)} 件を「発売の記録」に反映" + (f"・載せられない項目 {len(skipped)} 件" if skipped else ""))
+    if dry_run:
+        return
+    changed = core.write_if_changed(RELEASES_FILE, json.dumps({"items": items}, ensure_ascii=False, indent=2) + "\n")
+    print("発売の記録：" + ("更新しました" if changed else "変更なし"))
+
+
 def run(dry_run: bool, opener=urllib.request.urlopen) -> int:
+    token = os.environ.get("NOTION_TOKEN", "").strip()
+    if token:
+        run_releases(dry_run, token, opener)
+    return run_history(dry_run, opener)
+
+
+def run_history(dry_run: bool, opener=urllib.request.urlopen) -> int:
     token = os.environ.get("NOTION_TOKEN", "").strip()
     if not token:
         print("::notice title=クラリス年表::Notion の連携用キー（NOTION_TOKEN）が未登録のため、取り込みは停止中")
