@@ -1705,7 +1705,15 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search
                     or "・".join(str(x.get("message", "")) for x in body.get("errors") or [])
             except Exception:
                 why = ""
-            hint = f"。診断：{x_check_app_keys(x_keys)}" if e.code == 401 else ""
+            hint = ""
+            if e.code == 401:
+                # キーそのものは出さず、形だけを確かめる（OAuth 2.0 の鍵との取り違えを見分けるため）
+                tok = x_keys["X_ACCESS_TOKEN"]
+                m = re.fullmatch(r"(\d+)-[A-Za-z0-9]+", tok)
+                form = (f"Access Token は OAuth 1.0 の形（数字-英数字・アカウント番号 {m.group(1)}）" if m
+                        else f"Access Token が OAuth 1.0 の形（数字-英数字）ではない（{len(tok)}文字）")
+                lens = "・".join(f"{k} {len(v)}文字" for k, v in x_keys.items())
+                hint = f"。診断：{x_check_app_keys(x_keys)}／{form}／長さ {lens}"
             notes.append(f"::warning title=x-reposts::X の運用アカウントのリポスト: 取得できませんでした（HTTP {e.code}"
                          + (f"：{why[:200]}" if why else "") + hint + "。キーや X の利用設定を確認してください）")
         except Exception as e:
