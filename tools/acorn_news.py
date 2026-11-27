@@ -1323,6 +1323,22 @@ def oauth1_header(method: str, url: str, params: dict, keys: dict, nonce: str | 
     return "OAuth " + ", ".join(f'{_pct(k)}="{_pct(v)}"' for k, v in sorted(oauth.items()))
 
 
+def x_check_app_keys(keys: dict) -> str:
+    """API Key と API Key Secret の組が正しいかだけを確かめる（アプリ用のトークンを発行してもらう。投稿は読まないので課金されない）。"""
+    cred = base64.b64encode(f"{_pct(keys['X_API_KEY'])}:{_pct(keys['X_API_SECRET'])}".encode()).decode()
+    req = urllib.request.Request("https://api.x.com/oauth2/token", data=b"grant_type=client_credentials", method="POST",
+                                 headers={"Authorization": f"Basic {cred}", "User-Agent": USER_AGENT,
+                                          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            ok = bool(json.loads(r.read(4000).decode("utf-8")).get("access_token"))
+        return "API Key と API Key Secret の組は正しい（Access Token 側を確認してください）" if ok else "API Key の確認で応答が不明"
+    except urllib.error.HTTPError as e:
+        return f"API Key と API Key Secret の組が正しくない可能性（HTTP {e.code}）"
+    except Exception as e:
+        return f"API Key の確認ができなかった（{type(e).__name__}）"
+
+
 def x_user_get(path: str, params: dict, keys: dict) -> dict:
     url = f"{X_API}{path}"
     req = urllib.request.Request(f"{url}?{urllib.parse.urlencode(params)}" if params else url,
@@ -1689,8 +1705,9 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search
                     or "・".join(str(x.get("message", "")) for x in body.get("errors") or [])
             except Exception:
                 why = ""
+            hint = f"。診断：{x_check_app_keys(x_keys)}" if e.code == 401 else ""
             notes.append(f"::warning title=x-reposts::X の運用アカウントのリポスト: 取得できませんでした（HTTP {e.code}"
-                         + (f"：{why[:200]}" if why else "") + "。キーや X の利用設定を確認してください）")
+                         + (f"：{why[:200]}" if why else "") + hint + "。キーや X の利用設定を確認してください）")
         except Exception as e:
             notes.append(f"::warning title=x-reposts::X の運用アカウントのリポスト: 取得できませんでした（{type(e).__name__}: {str(e)[:100]}）")
     print(f"::notice title=まとめ::取得元 {ok}/{len(sources)} 件・候補 {len(found)} 件（取得元 候補/配信）: " + "、".join(tally))
