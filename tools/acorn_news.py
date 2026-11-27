@@ -1339,8 +1339,8 @@ def x_check_app_keys(keys: dict) -> str:
         return f"API Key の確認ができなかった（{type(e).__name__}）"
 
 
-def x_user_get(path: str, params: dict, keys: dict) -> dict:
-    url = f"{X_API}{path}"
+def x_user_get(path: str, params: dict, keys: dict, base: str = X_API) -> dict:
+    url = f"{base}{path}"
     req = urllib.request.Request(f"{url}?{urllib.parse.urlencode(params)}" if params else url,
                                  headers={"Authorization": oauth1_header("GET", url, params, keys), "User-Agent": USER_AGENT})
     with urllib.request.urlopen(req, timeout=30) as r:
@@ -1707,13 +1707,15 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search
                 why = ""
             hint = ""
             if e.code == 401:
-                # キーそのものは出さず、形だけを確かめる（OAuth 2.0 の鍵との取り違えを見分けるため）
-                tok = x_keys["X_ACCESS_TOKEN"]
-                m = re.fullmatch(r"(\d+)-[A-Za-z0-9]+", tok)
-                form = (f"Access Token は OAuth 1.0 の形（数字-英数字・アカウント番号 {m.group(1)}）" if m
-                        else f"Access Token が OAuth 1.0 の形（数字-英数字）ではない（{len(tok)}文字）")
-                lens = "・".join(f"{k} {len(v)}文字" for k, v in x_keys.items())
-                hint = f"。診断：{x_check_app_keys(x_keys)}／{form}／長さ {lens}"
+                # 原因の切り分け（キーそのものは出さない）：① API Key の組 ② 旧ドメイン（api.twitter.com）での同じ確認
+                try:
+                    x_user_get("/users/me", {}, x_keys, "https://api.twitter.com/2")
+                    alt = "api.twitter.com では本人確認に成功（api.x.com 側の問題）"
+                except urllib.error.HTTPError as e2:
+                    alt = f"api.twitter.com でも HTTP {e2.code}"
+                except Exception as e2:
+                    alt = f"api.twitter.com で確認できず（{type(e2).__name__}）"
+                hint = f"。診断：{x_check_app_keys(x_keys)}／{alt}"
             notes.append(f"::warning title=x-reposts::X の運用アカウントのリポスト: 取得できませんでした（HTTP {e.code}"
                          + (f"：{why[:200]}" if why else "") + hint + "。キーや X の利用設定を確認してください）")
         except Exception as e:
