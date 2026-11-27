@@ -1682,7 +1682,15 @@ def collect(dry_run: bool, now: dt.datetime, fetcher=fetch, x_search_fn=x_search
             notes.append(f"::notice title=x-reposts::X の運用アカウントのリポスト: 新しい投稿 {total} 件 → 掲載 {len(items)} 件"
                          f"（今月 {x_state.get('reads', 0)}/{x_limit} 件）")
         except urllib.error.HTTPError as e:
-            notes.append(f"::warning title=x-reposts::X の運用アカウントのリポスト: 取得できませんでした（HTTP {e.code}。キーや X の利用設定を確認してください）")
+            # X の応答の理由（キーは含まれない）も出して、原因を調べられるようにする
+            try:
+                body = json.loads(e.read(4000).decode("utf-8", "replace"))
+                why = "・".join(str(body.get(k)) for k in ("title", "detail", "reason") if body.get(k)) \
+                    or "・".join(str(x.get("message", "")) for x in body.get("errors") or [])
+            except Exception:
+                why = ""
+            notes.append(f"::warning title=x-reposts::X の運用アカウントのリポスト: 取得できませんでした（HTTP {e.code}"
+                         + (f"：{why[:200]}" if why else "") + "。キーや X の利用設定を確認してください）")
         except Exception as e:
             notes.append(f"::warning title=x-reposts::X の運用アカウントのリポスト: 取得できませんでした（{type(e).__name__}: {str(e)[:100]}）")
     print(f"::notice title=まとめ::取得元 {ok}/{len(sources)} 件・候補 {len(found)} 件（取得元 候補/配信）: " + "、".join(tally))
