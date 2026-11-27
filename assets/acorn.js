@@ -86,6 +86,9 @@
         region_hi: { ja: 'ハワイ', en: 'Hawaii', fr: 'Hawaï', zh: '夏威夷' },
         region_cn: { ja: '中国', en: 'China', fr: 'Chine', zh: '中国' },
         region_hk: { ja: '香港', en: 'Hong Kong', fr: 'Hong Kong', zh: '香港' },
+        region_uk: { ja: 'イギリス', en: 'UK', fr: 'Royaume-Uni', zh: '英国' },
+        firstSold: { ja: '初売', en: 'First sold in', fr: 'Première vente', zh: '首发' },
+        releasesMore: { ja: 'すべて表示', en: 'Show all', fr: 'Tout afficher', zh: '全部显示' },
         regionLabel: { ja: 'リージョンを選ぶ', en: 'Choose a region', fr: 'Choisir une région', zh: '选择地区' },
         machineTranslated: { ja: '見出しは自動翻訳', en: 'Headline auto-translated', fr: 'Titre traduit automatiquement', zh: '标题为自动翻译' },
         langFallback: {
@@ -142,6 +145,8 @@
     const VIEWS = ['history', 'goods', 'appear', 'misc'];
     const PARKS = ['film', 'tdl', 'tds', 'dl', 'wdw', 'dlp', 'shdl', 'hkdl', 'aulani'];
     let chron = null;     // クラリス年表（/acorn-club/history.json）
+    let releases = null;  // グッズの発売の記録（/acorn-club/releases.json）
+    let releasesAll = false;
     let historyFailed = false;
     let historyPark = 'all';
     let historyKind = 'all';   // 年表の種類（Notion の「内容区分」＋作品）
@@ -630,7 +635,56 @@
             });
     }
 
+    // グッズタブの「発売の記録」：新しい順。年を選んでいればその年だけ。種類（ぬいぐるみ等）で絞っているときは出さない
+    function renderReleases() {
+        const box = document.getElementById('releases');
+        const ol = document.getElementById('releases-list');
+        if (!box || !ol) return;
+        const items = (releases || []).filter(r => state.year === 'all' || String(r.date).slice(0, 4) === state.year);
+        box.hidden = state.view !== 'goods' || state.category !== 'all' || !items.length;
+        if (box.hidden) return;
+        ol.replaceChildren();
+        const LIMIT = 6;
+        items.slice(0, releasesAll ? items.length : LIMIT).forEach(r => {
+            const li = el('li', 'release');
+            const d = historyDate(r.date, true);
+            const time = el('time', 'release-date', d.label || r.date);
+            time.dateTime = r.date;
+            li.appendChild(time);
+            const body = el('span', 'release-body');
+            body.appendChild(el('span', 'release-name', loc(r.name)));
+            const meta = [r.brand, r.country ? `${t('firstSold')}：${t('region_' + r.country)}` : ''].filter(Boolean).join('｜');
+            if (meta) body.appendChild(el('span', 'release-meta', meta));
+            if (loc(r.note)) body.appendChild(el('span', 'release-note', loc(r.note)));
+            const a = sourceLink(r.source);
+            if (a) body.appendChild(a);
+            li.appendChild(body);
+            ol.appendChild(li);
+        });
+        if (!releasesAll && items.length > LIMIT) {
+            const li = el('li');
+            const more = el('button', 'filter-chip timeline-more', `${t('releasesMore')}（${items.length}）`);
+            more.type = 'button';
+            more.addEventListener('click', () => { releasesAll = true; renderReleases(); });
+            li.appendChild(more);
+            ol.appendChild(li);
+        }
+    }
+
+    function loadReleases() {
+        fetch('/acorn-club/releases.json', { cache: 'no-cache' })
+            .then(r => (r.ok ? r.json() : { items: [] }))
+            .then(json => {
+                releases = (Array.isArray(json.items) ? json.items : [])
+                    .filter(r => r && r.name && /^\d{4}-\d{2}-\d{2}$/.test(String(r.date)))
+                    .sort((a, b) => String(b.date).localeCompare(String(a.date)));
+                renderReleases();
+            })
+            .catch(() => { releases = []; });
+    }
+
     function render() {
+        renderReleases();
         const list = document.getElementById('timeline-list');
         const empty = document.getElementById('timeline-empty');
         if (!list || !empty) return;
@@ -719,6 +773,7 @@
     }
 
     function load() {
+        loadReleases();
         fetch('/acorn-club/news.json', { cache: 'no-cache' })
             .then(r => {
                 if (!r.ok) throw new Error(`HTTP ${r.status}`);
